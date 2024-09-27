@@ -14,9 +14,9 @@
 					<div class="card mb-3">
 						<div class="card-header">
 							<input type="file" id="loadSource" accept=".epub,.txt,.html,.htm,.css,.xml,.json">
-							<button class="btn btn-sm btn-danger" id="clearSource">Clear</button>
-							<button class="btn btn-sm btn-secondary" id="uppercaseSource">UPPERCASE</button>
-							<button class="btn btn-sm btn-secondary" id="lowercaseSource">lowercase</button>
+							<button class="btn btn-sm" style="background-color: rgb(237, 53, 36); color: white;" id="clearSource">Clear</button>
+							<button class="btn btn-sm" style="background-color: rgb(68, 79, 173); color: white;" id="uppercaseSource">UPPERCASE</button>
+							<button class="btn btn-sm" style="background-color: rgb(68, 79, 173); color: white;" id="lowercaseSource">lowercase</button>
 						</div>
 						<div class="card-body">
 							<p>Words: <span id="sourceWords">0</span>, Characters: <span id="sourceChars">0</span>
@@ -29,10 +29,10 @@
 					<div class="card mb-3">
 						<div class="card-header">
 							<input type="file" id="loadTarget" accept=".epub,.txt,.html,.htm,.css,.xml,.json">
-							<button class="btn btn-sm btn-danger" id="clearTarget">Clear</button>
-							<button class="btn btn-sm btn-secondary" id="uppercaseTarget">UPPERCASE</button>
-							<button class="btn btn-sm btn-secondary" id="lowercaseTarget">lowercase</button>
-							<button class="btn btn-sm btn-info" id="generateTarget">Generate with ChatGPT</button>
+							<button class="btn btn-sm" style="background-color: rgb(237, 53, 36); color: white;" id="clearTarget">Clear</button>
+							<button class="btn btn-sm" style="background-color: rgb(68, 79, 173); color: white;" id="uppercaseTarget">UPPERCASE</button>
+							<button class="btn btn-sm" style="background-color: rgb(68, 79, 173); color: white;" id="lowercaseTarget">lowercase</button>
+							<button class="btn btn-sm" style="background-color: rgb(20, 199, 222); color: white;" id="generateTarget">Generate with ChatGPT</button>
 						</div>
 						<div class="card-body">
 							<p>Words: <span id="targetWords">0</span>, Characters: <span id="targetChars">0</span>
@@ -44,8 +44,8 @@
 			</div>
 			<div class="row">
 				<div class="col-12 text-center">
-					<button class="btn btn-lg btn-success" id="compareBtn">Compare</button>
-					<button class="btn btn-lg btn-warning" id="switchBtn">Switch Texts</button>
+					<button class="btn btn-lg" style="background-color: rgb(46, 218, 119); color: white;" id="compareBtn">Compare</button>
+					<button class="btn btn-lg" style="background-color: rgb(250, 157, 1); color: white;" id="switchBtn">Switch Texts</button>
 				</div>
 			</div>
 			<div class="row mt-3">
@@ -64,7 +64,7 @@
 							<div class="mb-3">
 								<label for="customPrompt" class="form-label">Custom Prompt:</label>
 								<input type="text" class="form-control" id="customPrompt">
-								<button class="btn btn-primary mt-2" id="savePrompt">Save Prompt</button>
+								<button class="btn" style="background-color: rgb(1, 111, 255); color: white;" id="savePrompt">Save Prompt</button>
 							</div>
 						</div>
 					</div>
