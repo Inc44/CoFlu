@@ -1,5 +1,6 @@
 body {
 background-color: rgb(199, 195, 189);
+color: black;
 }
 .card {
 box-shadow: 0.15rem 0.15rem 0.15rem black;
@@ -29,17 +30,6 @@ color: rgb(237, 53, 36);
 .diff-insertion {
 background-color: rgb(233, 251, 241);
 color: rgb(46, 218, 119);
-}
-.line {
-display: inline-block;
-width: calc(100% - 3rem);
-}
-.line-number {
-display: inline-block;
-width: 3rem;
-text-align: right;
-padding-right: 1rem;
-color: rgb(140, 84, 208);
 }
 #customPromptContainer {
 display: none;
