@@ -123,126 +123,65 @@ document.addEventListener('DOMContentLoaded', () => {
 	function compareTexts() {
 		const source = sourceText.value;
 		const target = targetText.value;
-		const levenshtein = calculateLevenshtein(source, target);
-		document.getElementById('levenshtein').textContent = levenshtein;
-		const diff = Diff.diffChars(source, target);
-		const commonChars = diff.filter(part => !part.added && !part.removed).reduce((sum, part) => sum + part.value.length, 0);
-		const totalChars = Math.max(source.length, target.length);
-		const commonPercentage = (commonChars / totalChars * 100).toFixed(2);
-		const differencePercentage = (100 - commonPercentage).toFixed(2);
-		document.getElementById('commonPercentage').textContent = commonPercentage;
-		document.getElementById('differencePercentage').textContent = differencePercentage;
-		document.getElementById('commonSymbols').textContent = commonChars;
-		document.getElementById('differenceSymbols').textContent = totalChars - commonChars;
+		const dmp = new diff_match_patch();
+		const diffs = dmp.diff_main(source, target);
+		dmp.diff_cleanupSemantic(diffs);
 		const singleColumnDiff = document.getElementById('singleColumnDiff');
-		singleColumnDiff.innerHTML = generateSingleColumnDiffView(diff);
-		const [leftColumn, rightColumn] = generateDoubleColumnDiffView(diff);
+		singleColumnDiff.innerHTML = generateSingleColumnDiffView(diffs);
+		const [leftColumn, rightColumn] = generateDoubleColumnDiffView(diffs);
 		document.getElementById('leftColumn').innerHTML = leftColumn;
 		document.getElementById('rightColumn').innerHTML = rightColumn;
+		updateDiffStats(diffs);
+		const levenshtein = dmp.diff_levenshtein(diffs);
+		document.getElementById('levenshtein').textContent = levenshtein;
 	}
 
-	function calculateLevenshtein(a, b) {
-		if (a.length === 0) return b.length;
-		if (b.length === 0) return a.length;
-		const matrix = [];
-		for (let i = 0; i <= b.length; i++) {
-			matrix[i] = [i];
-		}
-		for (let j = 0; j <= a.length; j++) {
-			matrix[0][j] = j;
-		}
-		for (let i = 1; i <= b.length; i++) {
-			for (let j = 1; j <= a.length; j++) {
-				if (b.charAt(i - 1) === a.charAt(j - 1)) {
-					matrix[i][
-						j
-					] = matrix[i - 1][
-						j - 1
-					];
-				} else {
-					matrix[i][
-						j
-					] = Math.min(matrix[i - 1]
-						[j - 1] + 1, matrix[i]
-						[j - 1] + 1, matrix[i - 1]
-						[
-							j
-						] + 1);
-				}
-			}
-		}
-		return matrix[b.length][
-			a.length
-		];
-	}
-
-	function generateSingleColumnDiffView(diff) {
+	function generateSingleColumnDiffView(diffs) {
 		let html = '';
-		let lineNumber = 1;
-		let lineContent = '';
-		diff.forEach(part => {
-			const lines = part.value.split('\n');
-			lines.forEach((line, index) => {
-				const spanClass = part.added ? 'added' : part.removed ? 'removed' : '';
-				lineContent += `<span class="${spanClass}">${escapeHtml(line)}</span>`;
-				if (index < lines.length - 1 || part.value.endsWith('\n')) {
-					html += `<div class="line-number">${lineNumber}</div><div class="line">${lineContent}</div>`;
-					lineNumber++;
-					lineContent = '';
-				}
-			});
+		diffs.forEach(([type, text]) => {
+			if (type === 0) {
+				html += `<span class="diff-equal">${escapeHtml(text)}</span>`;
+			} else if (type === -1) {
+				html += `<span class="diff-deletion">${escapeHtml(text)}</span>`;
+			} else if (type === 1) {
+				html += `<span class="diff-insertion">${escapeHtml(text)}</span>`;
+			}
 		});
-		if (lineContent) {
-			html += `<div class="line-number">${lineNumber}</div><div class="line">${lineContent}</div>`;
-		}
 		return html;
 	}
 
-	function generateDoubleColumnDiffView(diff) {
-		let leftColumn = '';
-		let rightColumn = '';
-		let leftLineNumber = 1;
-		let rightLineNumber = 1;
-		let leftLineContent = '';
-		let rightLineContent = '';
-		diff.forEach(part => {
-			const lines = part.value.split('\n');
-			lines.forEach((line, index) => {
-				if (part.added) {
-					rightLineContent += escapeHtml(line);
-					if (index < lines.length - 1 || part.value.endsWith('\n')) {
-						rightColumn += `<div class="line-number">${rightLineNumber}</div><div class="line"><span class="added">${rightLineContent}</span></div>`;
-						rightLineNumber++;
-						rightLineContent = '';
-					}
-				} else if (part.removed) {
-					leftLineContent += escapeHtml(line);
-					if (index < lines.length - 1 || part.value.endsWith('\n')) {
-						leftColumn += `<div class="line-number">${leftLineNumber}</div><div class="line"><span class="removed">${leftLineContent}</span></div>`;
-						leftLineNumber++;
-						leftLineContent = '';
-					}
-				} else {
-					leftLineContent += escapeHtml(line);
-					rightLineContent += escapeHtml(line);
-					if (index < lines.length - 1 || part.value.endsWith('\n')) {
-						leftColumn += `<div class="line-number">${leftLineNumber}</div><div class="line">${leftLineContent}</div>`;
-						rightColumn += `<div class="line-number">${rightLineNumber}</div><div class="line">${rightLineContent}</div>`;
-						leftLineNumber++;
-						rightLineNumber++;
-						leftLineContent = '';
-						rightLineContent = '';
-					}
-				}
-			});
+	function generateDoubleColumnDiffView(diffs) {
+		let leftHtml = '';
+		let rightHtml = '';
+		diffs.forEach(([type, text]) => {
+			if (type === 0) {
+				leftHtml += `<span class="diff-equal">${escapeHtml(text)}</span>`;
+				rightHtml += `<span class="diff-equal">${escapeHtml(text)}</span>`;
+			} else if (type === -1) {
+				leftHtml += `<span class="diff-deletion">${escapeHtml(text)}</span>`;
+			} else if (type === 1) {
+				rightHtml += `<span class="diff-insertion">${escapeHtml(text)}</span>`;
+			}
 		});
-		if (leftLineContent) {
-			leftColumn += `<div class="line-number">${leftLineNumber}</div><div class="line">${leftLineContent}</div>`;
-		}
-		if (rightLineContent) {
-			rightColumn += `<div class="line-number">${rightLineNumber}</div><div class="line">${rightLineContent}</div>`;
-		}
-		return [leftColumn, rightColumn];
+		return [leftHtml, rightHtml];
+	}
+
+	function updateDiffStats(diffs) {
+		let added = 0,
+			removed = 0,
+			common = 0;
+		diffs.forEach(([type, text]) => {
+			if (type === 1) added += text.length;
+			else if (type === -1) removed += text.length;
+			else common += text.length;
+		});
+		const total = added + removed + common;
+		const commonPercentage = (common / total * 100).toFixed(2);
+		const differencePercentage = (100 - commonPercentage).toFixed(2);
+		document.getElementById('commonPercentage').textContent = commonPercentage;
+		document.getElementById('differencePercentage').textContent = differencePercentage;
+		document.getElementById('commonSymbols').textContent = common;
+		document.getElementById('differenceSymbols').textContent = added + removed;
 	}
 
 	function escapeHtml(unsafe) {
@@ -299,14 +238,12 @@ const Diff = {
 		const matrix = [];
 		const m = oldStr.length;
 		const n = newStr.length;
-		// Initialize the matrix
 		for (let i = 0; i <= m; i++) {
 			matrix[i] = [i];
 		}
 		for (let j = 1; j <= n; j++) {
 			matrix[0][j] = j;
 		}
-		// Fill the matrix
 		for (let i = 1; i <= m; i++) {
 			for (let j = 1; j <= n; j++) {
 				if (oldStr[i - 1] === newStr[j - 1]) {
@@ -319,18 +256,14 @@ const Diff = {
 					matrix[i][
 						j
 					] = Math.min(matrix[i - 1]
-						[j - 1] + 1, // substitution
-						matrix[i]
-						[j - 1] + 1, // insertion
-						matrix[i - 1]
+						[j - 1] + 1, matrix[i]
+						[j - 1] + 1, matrix[i - 1]
 						[
 							j
-						] + 1 // deletion
-					);
+						] + 1);
 				}
 			}
 		}
-		// Backtrack to find the diff
 		const diff = [];
 		let i = m,
 			j = n;
