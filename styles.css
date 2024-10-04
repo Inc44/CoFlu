@@ -41,7 +41,7 @@ text-align: right;
 padding-right: 1rem;
 color: rgb(140, 84, 208);
 }
-#customPrompt {
+#customPromptContainer {
 display: none;
 }
 .form-control,

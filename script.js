@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const generateTargetBtn = document.getElementById('generateTarget');
 	const apiKeyInput = document.getElementById('apiKey');
 	const promptSelect = document.getElementById('promptSelect');
+	const customPromptContainer = document.getElementById('customPromptContainer');
 	const customPromptInput = document.getElementById('customPrompt');
 	const savePromptBtn = document.getElementById('savePrompt');
 	document.getElementById('loadSource').addEventListener('change', (e) => loadFile(e, sourceText));
@@ -199,11 +200,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	function loadPrompts() {
 		const prompts = JSON.parse(getFromLocalStorage('chatgpt_prompts') || '[]');
 		promptSelect.innerHTML = `
-            <option value="Proofread this text but only fix grammar">Proofread this text but only fix grammar</option>
-            <option value="Proofread this text improving clarity and flow">Proofread this text improving clarity and flow</option>
-            <option value="Proofread this text but only fix grammar and Markdown style">Proofread this text but only fix grammar and Markdown style</option>
-            <option value="custom">Custom prompt</option>
-        `;
+			<option value="Proofread this text but only fix grammar">Proofread this text but only fix grammar</option>
+			<option value="Proofread this text improving clarity and flow">Proofread this text improving clarity and flow</option>
+			<option value="Proofread this text but only fix grammar and Markdown style">Proofread this text but only fix grammar and Markdown style</option>
+			<option value="custom">Custom prompt</option>
+		`;
 		prompts.forEach((prompt, index) => {
 			const option = document.createElement('option');
 			option.value = prompt;
@@ -212,9 +213,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 		promptSelect.addEventListener('change', function() {
 			if (this.value === 'custom') {
-				customPromptInput.style.display = 'block';
+				customPromptContainer.style.display = 'block';
 			} else {
-				customPromptInput.style.display = 'none';
+				customPromptContainer.style.display = 'none';
 			}
 		});
 	}
@@ -233,65 +234,3 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 });
-const Diff = {
-	diffChars: function(oldStr, newStr) {
-		const matrix = [];
-		const m = oldStr.length;
-		const n = newStr.length;
-		for (let i = 0; i <= m; i++) {
-			matrix[i] = [i];
-		}
-		for (let j = 1; j <= n; j++) {
-			matrix[0][j] = j;
-		}
-		for (let i = 1; i <= m; i++) {
-			for (let j = 1; j <= n; j++) {
-				if (oldStr[i - 1] === newStr[j - 1]) {
-					matrix[i][
-						j
-					] = matrix[i - 1][
-						j - 1
-					];
-				} else {
-					matrix[i][
-						j
-					] = Math.min(matrix[i - 1]
-						[j - 1] + 1, matrix[i]
-						[j - 1] + 1, matrix[i - 1]
-						[
-							j
-						] + 1);
-				}
-			}
-		}
-		const diff = [];
-		let i = m,
-			j = n;
-		while (i > 0 || j > 0) {
-			if (i > 0 && j > 0 && oldStr[i - 1] === newStr[j - 1]) {
-				diff.unshift({
-					value: oldStr[i - 1]
-				});
-				i--;
-				j--;
-			} else if (j > 0 && (i === 0 || matrix[i][
-					j - 1
-				] <= matrix[i - 1][
-					j
-				])) {
-				diff.unshift({
-					added: true,
-					value: newStr[j - 1]
-				});
-				j--;
-			} else {
-				diff.unshift({
-					removed: true,
-					value: oldStr[i - 1]
-				});
-				i--;
-			}
-		}
-		return diff;
-	}
-};
