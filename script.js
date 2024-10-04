@@ -125,7 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		const target = targetText.value;
 		const levenshtein = calculateLevenshtein(source, target);
 		document.getElementById('levenshtein').textContent = levenshtein;
-		const commonChars = source.split('').filter((char, index) => char === target[index]).length;
+		const diff = Diff.diffChars(source, target);
+		const commonChars = diff.filter(part => !part.added && !part.removed).reduce((sum, part) => sum + part.value.length, 0);
 		const totalChars = Math.max(source.length, target.length);
 		const commonPercentage = (commonChars / totalChars * 100).toFixed(2);
 		const differencePercentage = (100 - commonPercentage).toFixed(2);
@@ -134,10 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.getElementById('commonSymbols').textContent = commonChars;
 		document.getElementById('differenceSymbols').textContent = totalChars - commonChars;
 		const singleColumnDiff = document.getElementById('singleColumnDiff');
-		singleColumnDiff.innerHTML = generateSingleColumnDiffView(source, target);
-		const [leftColumn,
-			rightColumn
-		] = generateDoubleColumnDiff(source, target);
+		singleColumnDiff.innerHTML = generateSingleColumnDiffView(diff);
+		const [leftColumn, rightColumn] = generateDoubleColumnDiffView(diff);
 		document.getElementById('leftColumn').innerHTML = leftColumn;
 		document.getElementById('rightColumn').innerHTML = rightColumn;
 	}
@@ -177,47 +176,73 @@ document.addEventListener('DOMContentLoaded', () => {
 		];
 	}
 
-	function generateSingleColumnDiffView(source, target) {
-		const diff = Diff.diffChars(source, target);
+	function generateSingleColumnDiffView(diff) {
 		let html = '';
+		let lineNumber = 1;
+		let lineContent = '';
 		diff.forEach(part => {
-			const spanClass = part.added ? 'added' : part.removed ? 'removed' : '';
-			html += `<span class="${spanClass}">${escapeHtml(part.value)}</span>`;
+			const lines = part.value.split('\n');
+			lines.forEach((line, index) => {
+				const spanClass = part.added ? 'added' : part.removed ? 'removed' : '';
+				lineContent += `<span class="${spanClass}">${escapeHtml(line)}</span>`;
+				if (index < lines.length - 1 || part.value.endsWith('\n')) {
+					html += `<div class="line-number">${lineNumber}</div><div class="line">${lineContent}</div>`;
+					lineNumber++;
+					lineContent = '';
+				}
+			});
 		});
+		if (lineContent) {
+			html += `<div class="line-number">${lineNumber}</div><div class="line">${lineContent}</div>`;
+		}
 		return html;
 	}
 
-	function generateDoubleColumnDiff(source, target) {
-		const sourceLines = source.split('\n');
-		const targetLines = target.split('\n');
+	function generateDoubleColumnDiffView(diff) {
 		let leftColumn = '';
 		let rightColumn = '';
-		const maxLines = Math.max(sourceLines.length, targetLines.length);
-		for (let i = 0; i < maxLines; i++) {
-			const sourceLine = sourceLines[i] || '';
-			const targetLine = targetLines[i] || '';
-			const lineNumber = i + 1;
-			const lineDiff = Diff.diffChars(sourceLine, targetLine);
-			let leftLineHtml = '';
-			let rightLineHtml = '';
-			lineDiff.forEach(part => {
+		let leftLineNumber = 1;
+		let rightLineNumber = 1;
+		let leftLineContent = '';
+		let rightLineContent = '';
+		diff.forEach(part => {
+			const lines = part.value.split('\n');
+			lines.forEach((line, index) => {
 				if (part.added) {
-					rightLineHtml += `<span class="added">${escapeHtml(part.value)}</span>`;
-					leftLineHtml += ''.repeat(part.value.length);
+					rightLineContent += escapeHtml(line);
+					if (index < lines.length - 1 || part.value.endsWith('\n')) {
+						rightColumn += `<div class="line-number">${rightLineNumber}</div><div class="line"><span class="added">${rightLineContent}</span></div>`;
+						rightLineNumber++;
+						rightLineContent = '';
+					}
 				} else if (part.removed) {
-					leftLineHtml += `<span class="removed">${escapeHtml(part.value)}</span>`;
-					rightLineHtml += ''.repeat(part.value.length);
+					leftLineContent += escapeHtml(line);
+					if (index < lines.length - 1 || part.value.endsWith('\n')) {
+						leftColumn += `<div class="line-number">${leftLineNumber}</div><div class="line"><span class="removed">${leftLineContent}</span></div>`;
+						leftLineNumber++;
+						leftLineContent = '';
+					}
 				} else {
-					leftLineHtml += escapeHtml(part.value);
-					rightLineHtml += escapeHtml(part.value);
+					leftLineContent += escapeHtml(line);
+					rightLineContent += escapeHtml(line);
+					if (index < lines.length - 1 || part.value.endsWith('\n')) {
+						leftColumn += `<div class="line-number">${leftLineNumber}</div><div class="line">${leftLineContent}</div>`;
+						rightColumn += `<div class="line-number">${rightLineNumber}</div><div class="line">${rightLineContent}</div>`;
+						leftLineNumber++;
+						rightLineNumber++;
+						leftLineContent = '';
+						rightLineContent = '';
+					}
 				}
 			});
-			leftColumn += `<div class="line-number">${lineNumber}</div><div class="line">${leftLineHtml}</div>`;
-			rightColumn += `<div class="line-number">${lineNumber}</div><div class="line">${rightLineHtml}</div>`;
+		});
+		if (leftLineContent) {
+			leftColumn += `<div class="line-number">${leftLineNumber}</div><div class="line">${leftLineContent}</div>`;
 		}
-		return [leftColumn,
-			rightColumn
-		];
+		if (rightLineContent) {
+			rightColumn += `<div class="line-number">${rightLineNumber}</div><div class="line">${rightLineContent}</div>`;
+		}
+		return [leftColumn, rightColumn];
 	}
 
 	function escapeHtml(unsafe) {

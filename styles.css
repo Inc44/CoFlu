@@ -1,89 +1,60 @@
 body {
-    background-color: rgb(199, 195, 189); /* beige */
-   }
-   
-   .card {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-   
-    margin-bottom: 20px;
-   }
-   
-   textarea {
-    resize: vertical;
-   }
-   
-   .btn-group-sm > .btn,
-   .btn-sm {
-    padding: 0.25rem 0.5rem;
-   
-    font-size: 0.875rem;
-   
-    line-height: 1.5;
-   
-    border-radius: 0.2rem;
-   }
-   
-   #singleColumnDiff,
-   #doubleColumnDiff {
-    font-family: monospace;
-   
-    white-space: pre-wrap;
-   
-    word-wrap: break-word;
-   
-    max-height: 500px;
-   
-    overflow-y: auto;
-   }
-   
-   #doubleColumnDiff {
-    display: flex;
-   }
-   
-   .diff-column {
-    width: 50%;
-   
-    padding: 10px;
-   
-    border: 1px solid rgb(68, 79, 173); /* darkslate */
-   }
-   
-   .removed {
-    background-color: rgb(237, 53, 36); /* red */
-   }
-   
-   .added {
-    background-color: rgb(46, 218, 119); /* green */
-   }
-   
-   .line {
-    display: inline-block;
-   
-    width: calc(100% - 30px);
-   }
-   
-   .line-number {
-    display: inline-block;
-   
-    width: 30px;
-   
-    text-align: right;
-   
-    padding-right: 5px;
-   
-    color: rgb(140, 84, 208); /* purple */
-   }
-   
-   #customPrompt {
-    display: none;
-   }
-   
-   .form-control,
-   .form-select {
-    margin-bottom: 10px;
-   }
-   
-   #savePrompt {
-    margin-top: 10px;
-   }
-   
+background-color: rgb(199, 195, 189); /* beige */
+}
+.card {
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+margin-bottom: 20px;
+}
+textarea {
+resize: vertical;
+}
+.btn-group-sm > .btn,
+.btn-sm {
+padding: 0.25rem 0.5rem;
+font-size: 0.875rem;
+line-height: 1.5;
+border-radius: 0.2rem;
+}
+#singleColumnDiff,
+#doubleColumnDiff {
+font-family: monospace;
+white-space: pre-wrap;
+word-wrap: break-word;
+max-height: 500px;
+overflow-y: auto;
+}
+#doubleColumnDiff {
+display: flex;
+}
+.diff-column {
+width: 50%;
+padding: 10px;
+border: 1px solid rgb(68, 79, 173); /* darkslate */
+}
+.removed {
+background-color: rgb(237, 53, 36); /* red */
+}
+.added {
+background-color: rgb(46, 218, 119); /* green */
+}
+.line {
+display: inline-block;
+width: calc(100% - 30px);
+}
+.line-number {
+display: inline-block;
+width: 30px;
+text-align: right;
+padding-right: 5px;
+color: rgb(140, 84, 208); /* purple */
+}
+#customPrompt {
+display: none;
+}
+.form-control,
+.form-select {
+margin-bottom: 10px;
+}
+#savePrompt {
+margin-top: 10px;
+}
