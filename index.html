@@ -53,9 +53,9 @@
 			<div class="row mt-3">
 				<div class="col-12 text-center">
 					<div class="button-group">
-						<button class="btn btn-lg" id="switchBtn">Switch Texts</button>
+						<button class="btn btn-lg" id="switchBtn">Switch</button>
 						<button class="btn btn-lg" id="compareBtn">Compare</button>
-						<button class="btn btn-lg" id="generateTarget">Generate with ChatGPT</button>
+						<button class="btn btn-lg" id="generateTarget">Generate</button>
 					</div>
 				</div>
 			</div>
@@ -63,7 +63,14 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-body">
-							<h5>ChatGPT Settings</h5>
+							<h5>AI Settings</h5>
+							<div class="mb-3">
+								<label for="apiModel" class="form-label">API Model:</label>
+								<select class="form-select" id="apiModel">
+									<option value="chatgpt">ChatGPT</option>
+									<option value="claude">Claude</option>
+								</select>
+							</div>
 							<div class="mb-3">
 								<label for="apiKey" class="form-label">API Key:</label>
 								<input type="password" class="form-control" id="apiKey" placeholder="Type / Paste API Key">

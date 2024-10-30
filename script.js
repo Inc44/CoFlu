@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const compareBtn = document.getElementById('compareBtn');
 	const switchBtn = document.getElementById('switchBtn');
 	const generateTargetBtn = document.getElementById('generateTarget');
+	const apiModelSelect = document.getElementById('apiModel');
 	const apiKeyInput = document.getElementById('apiKey');
 	const promptSelect = document.getElementById('promptSelect');
 	const customPromptContainer = document.getElementById('customPromptContainer');
@@ -30,18 +31,26 @@ document.addEventListener('DOMContentLoaded', () => {
 		updateStats(targetText, 'target');
 		saveToLocalStorage('targetText', targetText.value);
 	});
+	apiModelSelect.addEventListener('change', () => {
+		saveToLocalStorage('selected_api_model', apiModelSelect.value);
+		updateApiKeyLabel();
+		loadApiKey();
+	});
 	apiKeyInput.addEventListener('input', () => {
-		saveToLocalStorage('chatgpt_api_key', apiKeyInput.value);
+		saveApiKey();
 	});
 	streamingToggle.addEventListener('change', () => {
 		saveToLocalStorage('streaming_enabled', streamingToggle.checked);
 	});
 	sourceText.value = getFromLocalStorage('sourceText') || '';
 	targetText.value = getFromLocalStorage('targetText') || '';
+	apiModelSelect.value = getFromLocalStorage('selected_api_model') || 'chatgpt';
 	apiKeyInput.value = getFromLocalStorage('chatgpt_api_key') || '';
 	streamingToggle.checked = getFromLocalStorage('streaming_enabled') !== 'false';
 	updateStats(sourceText, 'source');
 	updateStats(targetText, 'target');
+	updateApiKeyLabel();
+	loadApiKey();
 	loadPrompts();
 
 	function loadFile(event, textArea) {
@@ -87,8 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 	async function generateTargetText() {
 		const apiKey = apiKeyInput.value;
+		const apiModel = document.getElementById('apiModel').value;
 		if (!apiKey) {
-			alert("Please enter your ChatGPT API key.");
+			alert("Please enter your API key.");
 			return;
 		}
 		saveToLocalStorage('chatgpt_api_key', apiKey);
@@ -98,71 +108,148 @@ document.addEventListener('DOMContentLoaded', () => {
 		const fullPrompt = prompt + "\n\n" + sourceText.value;
 		targetText.value = '';
 		try {
-			const requestBody = {
-				model: "chatgpt-4o-latest",
-				messages: [{
-					role: "user",
-					content: fullPrompt
-				}],
-				temperature: 0,
-				max_tokens: 16383,
-				stream: streamingToggle.checked
-			};
-			const response = await fetch('https://api.openai.com/v1/chat/completions', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${apiKey}`
-				},
-				body: JSON.stringify(requestBody)
-			});
-			if (streamingToggle.checked) {
-				const reader = response.body.getReader();
-				const decoder = new TextDecoder();
-				let buffer = '';
-				let accumulatedText = '';
+			if (apiModel === 'chatgpt') {
+				await generateWithChatGPT(apiKey, fullPrompt);
+			} else if (apiModel === 'claude') {
+				await generateWithClaude(apiKey, fullPrompt);
+			}
+		} catch (error) {
+			handleApiError(error, document.getElementById('apiModel').value);
+		}
+	}
+	async function generateWithChatGPT(apiKey, fullPrompt) {
+		const requestBody = {
+			model: "chatgpt-4o-latest",
+			messages: [{
+				role: "user",
+				content: fullPrompt
+			}],
+			temperature: 0,
+			max_tokens: 16383,
+			stream: streamingToggle.checked
+		};
+		const response = await fetch('https://api.openai.com/v1/chat/completions', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${apiKey}`
+			},
+			body: JSON.stringify(requestBody)
+		});
+		handleResponse(response, 'chatgpt');
+	}
+	async function generateWithClaude(apiKey, fullPrompt) {
+		const requestBody = {
+			model: "claude-3-5-sonnet-20241022",
+			messages: [{
+				role: "user",
+				content: fullPrompt
+			}],
+			temperature: 0,
+			max_tokens: 8192,
+			stream: streamingToggle.checked
+		};
+		const response = await fetch('https://api.anthropic.com/v1/messages', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'x-api-key': apiKey,
+				'anthropic-version': '2023-06-01'
+			},
+			body: JSON.stringify(requestBody)
+		});
+		handleResponse(response, 'claude');
+	}
+	async function handleResponse(response, apiType) {
+		if (streamingToggle.checked) {
+			const reader = response.body.getReader();
+			const decoder = new TextDecoder();
+			let buffer = '';
+			let accumulatedText = '';
+			while (true) {
+				const {
+					done,
+					value
+				} = await reader.read();
+				if (done) break;
+				buffer += decoder.decode(value);
 				while (true) {
-					const { done, value } = await reader.read();
-					if (done) break;
-					buffer += decoder.decode(value);
-					while (true) {
-						const newlineIndex = buffer.indexOf('\n');
-						if (newlineIndex === -1) break;
-						const line = buffer.slice(0, newlineIndex);
-						buffer = buffer.slice(newlineIndex + 1);
-						if (line.startsWith('data: ')) {
-							const data = line.slice(6);
-							if (data === '[DONE]') continue;
-							try {
-								const parsed = JSON.parse(data);
-								const content = parsed.choices[0]?.delta?.content;
-								if (content) {
-									accumulatedText += content;
-									targetText.value = accumulatedText;
-									updateStats(targetText, 'target');
-									saveToLocalStorage('targetText', accumulatedText);
-									targetText.scrollTop = targetText.scrollHeight;
-								}
-							} catch (e) {
-								console.error('Error parsing JSON:', e);
+					const newlineIndex = buffer.indexOf('\n');
+					if (newlineIndex === -1) break;
+					const line = buffer.slice(0, newlineIndex);
+					buffer = buffer.slice(newlineIndex + 1);
+					if (line.startsWith('data: ')) {
+						const data = line.slice(6);
+						if (data === '[DONE]') continue;
+						try {
+							const parsed = JSON.parse(data);
+							let content;
+							if (apiType === 'chatgpt') {
+								content = parsed.choices[0]?.delta?.content;
+							} else if (apiType === 'claude') {
+								content = parsed.delta?.text;
 							}
+							if (content) {
+								accumulatedText += content;
+								targetText.value = accumulatedText;
+								updateStats(targetText, 'target');
+								saveToLocalStorage('targetText', accumulatedText);
+								targetText.scrollTop = targetText.scrollHeight;
+							}
+						} catch (e) {
+							console.error('Error parsing JSON:', e);
 						}
 					}
 				}
-			} else {
-				const data = await response.json();
-				const content = data.choices[0]?.message?.content;
-				if (content) {
-					targetText.value = content;
-					updateStats(targetText, 'target');
-					saveToLocalStorage('targetText', content);
-					targetText.scrollTop = targetText.scrollHeight;
-				}
 			}
-		} catch (error) {
-			alert("Failed to generate text. Please check your API key and try again.");
-			console.error("Error:", error);
+		} else {
+			const data = await response.json();
+			let content;
+			if (apiType === 'chatgpt') {
+				content = data.choices[0]?.message?.content;
+			} else if (apiType === 'claude') {
+				content = data.content[0]?.text;
+			}
+			if (content) {
+				targetText.value = content;
+				updateStats(targetText, 'target');
+				saveToLocalStorage('targetText', content);
+				targetText.scrollTop = targetText.scrollHeight;
+			}
 		}
+	}
+
+	function updateApiKeyLabel() {
+		const apiModel = document.getElementById('apiModel').value;
+		const apiKeyLabel = document.querySelector('label[for="apiKey"]');
+		apiKeyLabel.textContent = apiModel === 'chatgpt' ? 'OpenAI API Key:' : 'Anthropic API Key:';
+	}
+
+	function saveApiKey() {
+		const apiKey = apiKeyInput.value;
+		const apiModel = document.getElementById('apiModel').value;
+		const storageKey = apiModel === 'chatgpt' ? 'chatgpt_api_key' : 'claude_api_key';
+		saveToLocalStorage(storageKey, apiKey);
+	}
+
+	function loadApiKey() {
+		const apiModel = document.getElementById('apiModel').value;
+		const storageKey = apiModel === 'chatgpt' ? 'chatgpt_api_key' : 'claude_api_key';
+		apiKeyInput.value = getFromLocalStorage(storageKey) || '';
+	}
+
+	function handleApiError(error, apiType) {
+		let errorMessage = "An error occurred while generating text. ";
+		if (apiType === 'chatgpt') {
+			errorMessage += "Please check your OpenAI API key and ensure you have sufficient credits.";
+		} else if (apiType === 'claude') {
+			errorMessage += "Please check your Anthropic API key and ensure you have sufficient credits.";
+		}
+		if (error.response) {
+			errorMessage += `\n\nError ${error.response.status}: ${error.response.statusText}`;
+		}
+		alert(errorMessage);
+		console.error("Error:", error);
 	}
 
 	function compareTexts() {
