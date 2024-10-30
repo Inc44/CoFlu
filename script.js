@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const customPromptContainer = document.getElementById('customPromptContainer');
 	const customPromptInput = document.getElementById('customPrompt');
 	const savePromptBtn = document.getElementById('savePrompt');
+	const streamingToggle = document.getElementById('streamingToggle');
 	document.getElementById('loadSource').addEventListener('change', (e) => loadFile(e, sourceText));
 	document.getElementById('loadTarget').addEventListener('change', (e) => loadFile(e, targetText));
 	document.getElementById('clearSource').addEventListener('click', () => clearText(sourceText));
@@ -32,9 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	apiKeyInput.addEventListener('input', () => {
 		saveToLocalStorage('chatgpt_api_key', apiKeyInput.value);
 	});
+	streamingToggle.addEventListener('change', () => {
+		saveToLocalStorage('streaming_enabled', streamingToggle.checked);
+	});
 	sourceText.value = getFromLocalStorage('sourceText') || '';
 	targetText.value = getFromLocalStorage('targetText') || '';
 	apiKeyInput.value = getFromLocalStorage('chatgpt_api_key') || '';
+	streamingToggle.checked = getFromLocalStorage('streaming_enabled') !== 'false';
 	updateStats(sourceText, 'source');
 	updateStats(targetText, 'target');
 	loadPrompts();
@@ -81,69 +86,80 @@ document.addEventListener('DOMContentLoaded', () => {
 		saveToLocalStorage('targetText', targetText.value);
 	}
 	async function generateTargetText() {
-        const apiKey = apiKeyInput.value;
-        if (!apiKey) {
-            alert("Please enter your ChatGPT API key.");
-            return;
-        }
-        saveToLocalStorage('chatgpt_api_key', apiKey);
-        const selectedPrompt = promptSelect.value;
-        const customPrompt = customPromptInput.value;
-        const prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
-        const fullPrompt = prompt + "\n\n" + sourceText.value;
-        targetText.value = '';
-        try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: "gpt-4o",
-                    messages: [{
-                        role: "user",
-                        content: fullPrompt
-                    }],
-                    temperature: 0,
-                    max_tokens: 4000,
-                    stream: true
-                })
-            });
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let buffer = '';
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                buffer += decoder.decode(value);
-                while (true) {
-                    const newlineIndex = buffer.indexOf('\n');
-                    if (newlineIndex === -1) break;
-                    const line = buffer.slice(0, newlineIndex);
-                    buffer = buffer.slice(newlineIndex + 1);
-                    if (line.startsWith('data: ')) {
-                        const data = line.slice(6);
-                        if (data === '[DONE]') continue;
-                        try {
-                            const parsed = JSON.parse(data);
-                            const content = parsed.choices[0]?.delta?.content;
-                            if (content) {
-                                targetText.value += content;
-                                updateStats(targetText, 'target');
-                                targetText.scrollTop = targetText.scrollHeight;
-                            }
-                        } catch (e) {
-                            console.error('Error parsing JSON:', e);
-                        }
-                    }
-                }
-            }
-        } catch (error) {
-            alert("Failed to generate text. Please check your API key and try again.");
-            console.error("Error:", error);
-        }
-    }
+		const apiKey = apiKeyInput.value;
+		if (!apiKey) {
+			alert("Please enter your ChatGPT API key.");
+			return;
+		}
+		saveToLocalStorage('chatgpt_api_key', apiKey);
+		const selectedPrompt = promptSelect.value;
+		const customPrompt = customPromptInput.value;
+		const prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
+		const fullPrompt = prompt + "\n\n" + sourceText.value;
+		targetText.value = '';
+		try {
+			const requestBody = {
+				model: "chatgpt-4o-latest",
+				messages: [{
+					role: "user",
+					content: fullPrompt
+				}],
+				temperature: 0,
+				max_tokens: 16383,
+				stream: streamingToggle.checked
+			};
+			const response = await fetch('https://api.openai.com/v1/chat/completions', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${apiKey}`
+				},
+				body: JSON.stringify(requestBody)
+			});
+			if (streamingToggle.checked) {
+				const reader = response.body.getReader();
+				const decoder = new TextDecoder();
+				let buffer = '';
+				while (true) {
+					const { done, value } = await reader.read();
+					if (done) break;
+					buffer += decoder.decode(value);
+					while (true) {
+						const newlineIndex = buffer.indexOf('\n');
+						if (newlineIndex === -1) break;
+						const line = buffer.slice(0, newlineIndex);
+						buffer = buffer.slice(newlineIndex + 1);
+						if (line.startsWith('data: ')) {
+							const data = line.slice(6);
+							if (data === '[DONE]') continue;
+							try {
+								const parsed = JSON.parse(data);
+								const content = parsed.choices[0]?.delta?.content;
+								if (content) {
+									targetText.value += content;
+									updateStats(targetText, 'target');
+									targetText.scrollTop = targetText.scrollHeight;
+								}
+							} catch (e) {
+								console.error('Error parsing JSON:', e);
+							}
+						}
+					}
+				}
+			} else {
+				const data = await response.json();
+				const content = data.choices[0]?.message?.content;
+				if (content) {
+					targetText.value = content;
+					updateStats(targetText, 'target');
+					targetText.scrollTop = targetText.scrollHeight;
+				}
+			}
+		} catch (error) {
+			alert("Failed to generate text. Please check your API key and try again.");
+			console.error("Error:", error);
+		}
+	}
 
 	function compareTexts() {
 		const source = sourceText.value;
