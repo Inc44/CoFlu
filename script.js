@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				const reader = response.body.getReader();
 				const decoder = new TextDecoder();
 				let buffer = '';
+				let accumulatedText = '';
 				while (true) {
 					const { done, value } = await reader.read();
 					if (done) break;
@@ -136,8 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
 								const parsed = JSON.parse(data);
 								const content = parsed.choices[0]?.delta?.content;
 								if (content) {
-									targetText.value += content;
+									accumulatedText += content;
+									targetText.value = accumulatedText;
 									updateStats(targetText, 'target');
+									saveToLocalStorage('targetText', accumulatedText);
 									targetText.scrollTop = targetText.scrollHeight;
 								}
 							} catch (e) {
@@ -152,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				if (content) {
 					targetText.value = content;
 					updateStats(targetText, 'target');
+					saveToLocalStorage('targetText', content);
 					targetText.scrollTop = targetText.scrollHeight;
 				}
 			}
