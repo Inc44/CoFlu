@@ -112,6 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
 				await generateWithChatGPT(apiKey, fullPrompt);
 			} else if (apiModel === 'claude') {
 				await generateWithClaude(apiKey, fullPrompt);
+			} else if (apiModel === 'groq') {
+				await generateWithGroq(apiKey, fullPrompt);
 			}
 		} catch (error) {
 			handleApiError(error, document.getElementById('apiModel').value);
@@ -160,6 +162,27 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 		handleResponse(response, 'claude');
 	}
+	async function generateWithGroq(apiKey, fullPrompt) {
+		const requestBody = {
+			messages: [{
+				role: "user",
+				content: fullPrompt
+			}],
+			model: "llama-3.2-90b-text-preview",
+			temperature: 0,
+			max_tokens: 8192,
+			stream: streamingToggle.checked
+		};
+		const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${apiKey}`
+			},
+			body: JSON.stringify(requestBody)
+		});
+		handleResponse(response, 'groq');
+	}
 	async function handleResponse(response, apiType) {
 		if (streamingToggle.checked) {
 			const reader = response.body.getReader();
@@ -188,6 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
 								content = parsed.choices[0]?.delta?.content;
 							} else if (apiType === 'claude') {
 								content = parsed.delta?.text;
+							} else if (apiType === 'groq') {
+								content = parsed.choices[0]?.delta?.content;
 							}
 							if (content) {
 								accumulatedText += content;
@@ -209,6 +234,8 @@ document.addEventListener('DOMContentLoaded', () => {
 				content = data.choices[0]?.message?.content;
 			} else if (apiType === 'claude') {
 				content = data.content[0]?.text;
+			} else if (apiType === 'groq') {
+				content = data.choices[0]?.message?.content;
 			}
 			if (content) {
 				targetText.value = content;
@@ -222,28 +249,62 @@ document.addEventListener('DOMContentLoaded', () => {
 	function updateApiKeyLabel() {
 		const apiModel = document.getElementById('apiModel').value;
 		const apiKeyLabel = document.querySelector('label[for="apiKey"]');
-		apiKeyLabel.textContent = apiModel === 'chatgpt' ? 'OpenAI API Key:' : 'Anthropic API Key:';
+		if (apiModel === 'chatgpt') {
+			apiKeyLabel.textContent = 'OpenAI API Key:';
+		} else if (apiModel === 'claude') {
+			apiKeyLabel.textContent = 'Anthropic API Key:';
+		} else if (apiModel === 'groq') {
+			apiKeyLabel.textContent = 'Groq API Key:';
+		}
 	}
 
 	function saveApiKey() {
 		const apiKey = apiKeyInput.value;
 		const apiModel = document.getElementById('apiModel').value;
-		const storageKey = apiModel === 'chatgpt' ? 'chatgpt_api_key' : 'claude_api_key';
+		let storageKey;
+		switch (apiModel) {
+			case 'chatgpt':
+				storageKey = 'chatgpt_api_key';
+				break;
+			case 'claude':
+				storageKey = 'claude_api_key';
+				break;
+			case 'groq':
+				storageKey = 'groq_api_key';
+				break;
+		}
 		saveToLocalStorage(storageKey, apiKey);
 	}
 
 	function loadApiKey() {
 		const apiModel = document.getElementById('apiModel').value;
-		const storageKey = apiModel === 'chatgpt' ? 'chatgpt_api_key' : 'claude_api_key';
+		let storageKey;
+		switch (apiModel) {
+			case 'chatgpt':
+				storageKey = 'chatgpt_api_key';
+				break;
+			case 'claude':
+				storageKey = 'claude_api_key';
+				break;
+			case 'groq':
+				storageKey = 'groq_api_key';
+				break;
+		}
 		apiKeyInput.value = getFromLocalStorage(storageKey) || '';
 	}
 
 	function handleApiError(error, apiType) {
 		let errorMessage = "An error occurred while generating text. ";
-		if (apiType === 'chatgpt') {
-			errorMessage += "Please check your OpenAI API key and ensure you have sufficient credits.";
-		} else if (apiType === 'claude') {
-			errorMessage += "Please check your Anthropic API key and ensure you have sufficient credits.";
+		switch (apiType) {
+			case 'chatgpt':
+				errorMessage += "Please check your OpenAI API key.";
+				break;
+			case 'claude':
+				errorMessage += "Please check your Anthropic API key.";
+				break;
+			case 'groq':
+				errorMessage += "Please check your Groq API key.";
+				break;
 		}
 		if (error.response) {
 			errorMessage += `\n\nError ${error.response.status}: ${error.response.statusText}`;
