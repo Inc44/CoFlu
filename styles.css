@@ -10,12 +10,15 @@ textarea {
 resize: vertical;
 }
 #singleColumnDiff,
+.diff-column {
+padding: 1rem;
+}
+#singleColumnDiff,
 #doubleColumnDiff {
 font-family: monospace;
 white-space: pre-wrap;
 word-wrap: break-word;
 overflow-y: auto;
-padding: 1rem;
 }
 #doubleColumnDiff {
 display: flex;
