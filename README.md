@@ -1,6 +1,6 @@
 # CoFlu
 
-CoFlu is a comprehensive text comparison tool that allows users to compare two pieces of text, generate text using ChatGPT, and view differences in both single and double column formats. This tool is particularly useful for proofreading, editing, and ensuring consistency between different versions of text.
+CoFlu is a comprehensive text comparison tool that allows users to compare two pieces of text, generate text using ChatGPT, and view differences in both single and double-column formats. This tool is particularly useful for proofreading, editing, and ensuring consistency between different versions of text.
 
 ## Features
 
@@ -8,7 +8,7 @@ CoFlu is a comprehensive text comparison tool that allows users to compare two p
 - **Text Transformation**: Convert text to uppercase or lowercase.
 - **Text Generation**: Generate text using ChatGPT with customizable prompts.
 - **Text Comparison**: Compare two texts and view differences using Levenshtein distance and percentage differences.
-- **Diff Views**: View differences in single column or double column formats.
+- **Diff Views**: View differences in single-column or double-column formats.
 - **Local Storage**: Save and load text and settings from local storage.
 
 ## Usage
@@ -28,6 +28,11 @@ CoFlu is a comprehensive text comparison tool that allows users to compare two p
 
 - [Bootstrap 5.3.3](https://getbootstrap.com/)
 - [ChatGPT API](https://platform.openai.com/api-keys/)
+
+## Inspiration
+
+- [Count Words Free - Compare Texts](https://countwordsfree.com/comparetexts)
+- [EditGPT](https://editgpt.app/)
 
 ## License
 
