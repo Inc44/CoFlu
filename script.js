@@ -478,8 +478,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		const prompts = JSON.parse(getFromLocalStorage('chatgpt_prompts') || '[]');
 		elements.promptSelect.innerHTML = `
                 <option value="Proofread this text but only fix grammar">Proofread this text but only fix grammar</option>
+		<option value="Proofread this text but only fix grammar and Markdown style">Proofread this text but only fix grammar and Markdown style</option>
                 <option value="Proofread this text improving clarity and flow">Proofread this text improving clarity and flow</option>
-                <option value="Proofread this text but only fix grammar and Markdown style">Proofread this text but only fix grammar and Markdown style</option>
+                <option value="Proofread this text, fixing only awkward parts</option>
+                <option value="Proofread this text</option>
+                <option value="Markdown OCR</option>
                 <option value="custom">Custom prompt</option>
               `;
 		prompts.forEach((prompt, index) => {
