@@ -39,6 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.getElementById('lowercaseSource').addEventListener('click', () => transformText(elements.sourceText, 'lowercase'));
 		document.getElementById('uppercaseTarget').addEventListener('click', () => transformText(elements.targetText, 'uppercase'));
 		document.getElementById('lowercaseTarget').addEventListener('click', () => transformText(elements.targetText, 'lowercase'));
+		document.getElementById('unboldSource').addEventListener('click', () => unboldText(elements.sourceText));
+		document.getElementById('unboldTarget').addEventListener('click', () => unboldText(elements.targetText));
+		document.getElementById('latexSource').addEventListener('click', () => fixLatex(elements.sourceText));
+		document.getElementById('latexTarget').addEventListener('click', () => fixLatex(elements.targetText));
 		// Main functionality buttons: compare, switch, generate, and save custom prompt
 		elements.compareBtn.addEventListener('click', compareTexts);
 		elements.switchBtn.addEventListener('click', switchTexts);
@@ -363,6 +367,33 @@ document.addEventListener('DOMContentLoaded', () => {
 	 */
 	function transformText(textArea, type) {
 		textArea.value = type === 'uppercase' ? textArea.value.toUpperCase() : textArea.value.toLowerCase();
+		updateStats(textArea, textArea === elements.sourceText ? 'source' : 'target');
+		saveToLocalStorage(textArea === elements.sourceText ? 'sourceText' : 'targetText', textArea.value);
+	}
+	/**
+	 * Removes bold markdown syntax from text.
+	 * @param {HTMLElement} textArea - The text area to transform.
+	 */
+	function unboldText(textArea) {
+		textArea.value = textArea.value.replace(/\*\*/g, '');
+		updateStats(textArea, textArea === elements.sourceText ? 'source' : 'target');
+		saveToLocalStorage(textArea === elements.sourceText ? 'sourceText' : 'targetText', textArea.value);
+	}
+	/**
+	 * Fixes LaTeX syntax in text.
+	 * @param {HTMLElement} textArea - The text area to transform.
+	 */
+	function fixLatex(textArea) {
+		let text = textArea.value;
+		// Replace \[ \] with $$ $$ without any spaces
+		text = text.replace(/\\[\s\n]*\[([\s\S]*?)\\[\s\n]*\]/g, (match, p1) => {
+			return `$$\n${p1.trim()}\n$$`;
+		});
+		// Replace \( \) with $ $ without any spaces
+		text = text.replace(/\\[\s\n]*\(([\s\S]*?)\\[\s\n]*\)/g, (match, p1) => {
+			return `$${p1.trim()}$`;
+		});
+		textArea.value = text;
 		updateStats(textArea, textArea === elements.sourceText ? 'source' : 'target');
 		saveToLocalStorage(textArea === elements.sourceText ? 'sourceText' : 'targetText', textArea.value);
 	}

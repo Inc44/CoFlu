@@ -63,11 +63,15 @@ color: white;
 background-color: rgb(46, 218, 119);
 color: white;
 }
-#generateTarget {
+#generateTarget,
+#latexSource,
+#latexTarget {
 background-color: rgb(20, 199, 222);
 color: white;
 }
-#savePrompt {
+#savePrompt,
+#unboldSource,
+#unboldTarget {
 background-color: rgb(1, 111, 255);
 color: white;
 }
