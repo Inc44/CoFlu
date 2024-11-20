@@ -10,20 +10,24 @@ textarea {
 resize: vertical;
 }
 #singleColumnDiff,
-.diff-column {
+.diff-column,
+.markdown-column {
 padding: 1rem;
 }
 #singleColumnDiff,
-#doubleColumnDiff {
+#doubleColumnDiff,
+#doubleColumnMarkdownView {
 font-family: monospace;
 white-space: pre-wrap;
 word-wrap: break-word;
 overflow-y: auto;
 }
-#doubleColumnDiff {
+#doubleColumnDiff,
+#doubleColumnMarkdownView {
 display: flex;
 }
-.diff-column {
+.diff-column,
+.markdown-column {
 width: 50%;
 }
 .diff-deletion {
@@ -80,6 +84,10 @@ color: white;
 #lowercaseSource,
 #lowercaseTarget {
 background-color: rgb(68, 79, 173);
+color: white;
+}
+#renderMarkdownBtn {
+background-color: rgb(140, 84, 208);
 color: white;
 }
 .upload-file {

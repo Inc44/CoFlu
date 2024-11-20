@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		compareBtn: document.getElementById('compareBtn'),
 		switchBtn: document.getElementById('switchBtn'),
 		generateTargetBtn: document.getElementById('generateTarget'),
+		renderMarkdownBtn: document.getElementById('renderMarkdownBtn'),
 		apiModelSelect: document.getElementById('apiModel'),
 		apiKeyInput: document.getElementById('apiKey'),
 		promptSelect: document.getElementById('promptSelect'),
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		savePromptBtn: document.getElementById('savePrompt'),
 		streamingToggle: document.getElementById('streamingToggle')
 	};
+	let abortController = null;
 	// API key storage keys for different models
 	const API_KEYS = {
 		chatgpt: 'chatgpt_api_key',
@@ -43,10 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.getElementById('unboldTarget').addEventListener('click', () => unboldText(elements.targetText));
 		document.getElementById('latexSource').addEventListener('click', () => fixLatex(elements.sourceText));
 		document.getElementById('latexTarget').addEventListener('click', () => fixLatex(elements.targetText));
-		// Main functionality buttons: compare, switch, generate, and save custom prompt
+		// Main functionality buttons: compare, switch, generate, render markdown, and save custom prompt
 		elements.compareBtn.addEventListener('click', compareTexts);
 		elements.switchBtn.addEventListener('click', switchTexts);
-		elements.generateTargetBtn.addEventListener('click', generateTargetText);
+		elements.generateTargetBtn.addEventListener('click', handleGenerateButton);
+		elements.renderMarkdownBtn.addEventListener('click', renderMarkdown);
 		elements.savePromptBtn.addEventListener('click', saveCustomPrompt);
 		// Input event listeners for source and target text areas to update stats and save to localStorage
 		elements.sourceText.addEventListener('input', () => {
@@ -134,6 +137,19 @@ document.addEventListener('DOMContentLoaded', () => {
 		apiKeyLabel.textContent = labels[apiModel] || 'API Key:';
 	}
 	/**
+	 * Handles the click event of the Generate button,
+	 * toggles between generating and stopping the generation.
+	 */
+	function handleGenerateButton() {
+		if (elements.generateTargetBtn.dataset.generating === 'true') {
+			// Currently generating, so stop the generation
+			stopGeneration();
+		} else {
+			// Not generating, start generation
+			generateTargetText();
+		}
+	}
+	/**
 	 * Generates target text using the selected API model and prompt.
 	 * Handles both streaming and non-streaming responses.
 	 */
@@ -152,6 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		// Clear the target text area before generating new content
 		elements.targetText.value = '';
 		try {
+			// Change the Generate button to red and update text to 'Stop Generating'
+			elements.generateTargetBtn.style.backgroundColor = 'red';
+			elements.generateTargetBtn.textContent = 'Stop Generating';
+			elements.generateTargetBtn.dataset.generating = 'true';
+			// Initialize AbortController to allow stopping the generation
+			abortController = new AbortController();
 			// Map API models to their respective generation functions
 			const generators = {
 				chatgpt: generateWithChatGPT,
@@ -160,10 +182,17 @@ document.addEventListener('DOMContentLoaded', () => {
 			};
 			const generator = generators[apiModel];
 			if (generator) {
-				await generator(apiKey, fullPrompt);
+				await generator(apiKey, fullPrompt, abortController);
 			}
 		} catch (error) {
-			handleApiError(error, apiModel);
+			if (error.name === 'AbortError') {
+				console.log('Generation aborted by the user.');
+			} else {
+				handleApiError(error, apiModel);
+			}
+		} finally {
+			// Reset the Generate button after generation is complete or stopped
+			resetGenerateButton();
 		}
 	}
 	/**
@@ -191,7 +220,24 @@ document.addEventListener('DOMContentLoaded', () => {
 			return null;
 		}
 	}
-	async function generateWithChatGPT(apiKey, fullPrompt) {
+	/**
+	 * Stops the ongoing generation by aborting the fetch request.
+	 */
+	function stopGeneration() {
+		if (abortController) {
+			abortController.abort();
+		}
+	}
+	/**
+	 * Resets the Generate button to its original state.
+	 */
+	function resetGenerateButton() {
+		elements.generateTargetBtn.style.backgroundColor = '';
+		elements.generateTargetBtn.textContent = 'Generate';
+		elements.generateTargetBtn.dataset.generating = 'false';
+		abortController = null;
+	}
+	async function generateWithChatGPT(apiKey, fullPrompt, abortController) {
 		const requestBody = {
 			model: "chatgpt-4o-latest",
 			messages: [{
@@ -208,11 +254,12 @@ document.addEventListener('DOMContentLoaded', () => {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${apiKey}`
 			},
-			body: JSON.stringify(requestBody)
+			body: JSON.stringify(requestBody),
+			signal: abortController.signal
 		});
 		await handleResponse(response, 'chatgpt');
 	}
-	async function generateWithClaude(apiKey, fullPrompt) {
+	async function generateWithClaude(apiKey, fullPrompt, abortController) {
 		const requestBody = {
 			model: "claude-3-5-sonnet-20241022",
 			messages: [{
@@ -230,11 +277,12 @@ document.addEventListener('DOMContentLoaded', () => {
 				'x-api-key': apiKey,
 				'anthropic-version': '2023-06-01'
 			},
-			body: JSON.stringify(requestBody)
+			body: JSON.stringify(requestBody),
+			signal: abortController.signal
 		});
 		await handleResponse(response, 'claude');
 	}
-	async function generateWithGroq(apiKey, fullPrompt) {
+	async function generateWithGroq(apiKey, fullPrompt, abortController) {
 		const requestBody = {
 			messages: [{
 				role: "user",
@@ -251,7 +299,8 @@ document.addEventListener('DOMContentLoaded', () => {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${apiKey}`
 			},
-			body: JSON.stringify(requestBody)
+			body: JSON.stringify(requestBody),
+			signal: abortController.signal
 		});
 		await handleResponse(response, 'groq');
 	}
@@ -503,19 +552,33 @@ document.addEventListener('DOMContentLoaded', () => {
 		return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 	}
 	/**
+	 * Renders the markdown content from the source and target text areas into the double-column markdown view.
+	 */
+	function renderMarkdown() {
+		const sourceMarkdown = elements.sourceText.value;
+		const targetMarkdown = elements.targetText.value;
+		const leftHtml = marked.parse(sourceMarkdown);
+		const rightHtml = marked.parse(targetMarkdown);
+		document.getElementById('leftColumn').innerHTML = leftHtml;
+		document.getElementById('rightColumn').innerHTML = rightHtml;
+	
+		// Trigger MathJax typesetting
+		MathJax.typesetPromise();
+	}
+	/**
 	 * Loads saved custom prompts from localStorage and populates the prompt select dropdown.
 	 */
 	function loadPrompts() {
 		const prompts = JSON.parse(getFromLocalStorage('chatgpt_prompts') || '[]');
 		elements.promptSelect.innerHTML = `
-                <option value="Proofread this text but only fix grammar">Proofread this text but only fix grammar</option>
-		<option value="Proofread this text but only fix grammar and Markdown style">Proofread this text but only fix grammar and Markdown style</option>
-                <option value="Proofread this text improving clarity and flow">Proofread this text improving clarity and flow</option>
-                <option value="Proofread this text, fixing only awkward parts">Proofread this text, fixing only awkward parts</option>
-                <option value="Proofread this text">Proofread this text</option>
-                <option value="Markdown OCR">Markdown OCR</option>
-                <option value="custom">Custom prompt</option>
-              `;
+            <option value="Proofread this text but only fix grammar">Proofread this text but only fix grammar</option>
+            <option value="Proofread this text but only fix grammar and Markdown style">Proofread this text but only fix grammar and Markdown style</option>
+            <option value="Proofread this text improving clarity and flow">Proofread this text improving clarity and flow</option>
+            <option value="Proofread this text, fixing only awkward parts">Proofread this text, fixing only awkward parts</option>
+            <option value="Proofread this text">Proofread this text</option>
+            <option value="Markdown OCR">Markdown OCR</option>
+            <option value="custom">Custom prompt</option>
+        `;
 		prompts.forEach((prompt, index) => {
 			const option = document.createElement('option');
 			option.value = prompt;
