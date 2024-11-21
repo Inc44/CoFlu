@@ -10,24 +10,20 @@ textarea {
 resize: vertical;
 }
 #singleColumnDiff,
-.diff-column,
-.markdown-column {
+.diff-column {
 padding: 1rem;
 }
 #singleColumnDiff,
-#doubleColumnDiff,
-#doubleColumnMarkdownView {
+#doubleColumnDiff {
 font-family: monospace;
 white-space: pre-wrap;
 word-wrap: break-word;
 overflow-y: auto;
 }
-#doubleColumnDiff,
-#doubleColumnMarkdownView {
+#doubleColumnDiff {
 display: flex;
 }
-.diff-column,
-.markdown-column {
+.diff-column {
 width: 50%;
 }
 .diff-deletion {
@@ -106,4 +102,24 @@ height: 100%;
 display: inline-block;
 background-color: rgb(140, 84, 208);
 color: white;
+}
+@media print {
+* {
+margin: 0 !important;
+padding: 0 !important;
+box-shadow: none !important;
+border: none !important;
+}
+h5,
+#leftColumn,
+.container > .row:not(:last-child) {
+display: none !important;
+}
+#doubleColumnDiff,
+#rightColumn {
+display: block;
+box-shadow: none;
+height: 100%;
+width: 100%;
+}
 }

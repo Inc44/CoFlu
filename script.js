@@ -561,7 +561,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		const rightHtml = marked.parse(targetMarkdown);
 		document.getElementById('leftColumn').innerHTML = leftHtml;
 		document.getElementById('rightColumn').innerHTML = rightHtml;
-	
 		// Trigger MathJax typesetting
 		MathJax.typesetPromise();
 	}
