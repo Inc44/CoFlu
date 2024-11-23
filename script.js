@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const API_KEYS = {
 		chatgpt: 'chatgpt_api_key',
 		claude: 'claude_api_key',
+		gemini: 'gemini_api_key',
 		groq: 'groq_api_key'
 	};
 	// Initialize event listeners for various UI interactions
@@ -132,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const labels = {
 			chatgpt: 'OpenAI API Key:',
 			claude: 'Anthropic API Key:',
+			gemini: 'Google API Key:',
 			groq: 'Groq API Key:'
 		};
 		apiKeyLabel.textContent = labels[apiModel] || 'API Key:';
@@ -178,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			const generators = {
 				chatgpt: generateWithChatGPT,
 				claude: generateWithClaude,
+				gemini: generateWithGemini,
 				groq: generateWithGroq
 			};
 			const generator = generators[apiModel];
@@ -282,6 +285,42 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 		await handleResponse(response, 'claude');
 	}
+	async function generateWithGemini(apiKey, fullPrompt, abortController) {
+		const {
+			GoogleGenerativeAI
+		} = await import("@google/generative-ai");
+		const genAI = new GoogleGenerativeAI(apiKey);
+		const model = genAI.getGenerativeModel({
+			model: "gemini-1.5-flash-8b"
+		});
+		try {
+			if (elements.streamingToggle.checked) {
+				const response = await model.generateContentStream(fullPrompt);
+				let accumulatedText = '';
+				for await (const chunk of response.stream) {
+					const chunkText = chunk.text();
+					accumulatedText += chunkText;
+					elements.targetText.value = accumulatedText;
+					updateStats(elements.targetText, 'target');
+					saveToLocalStorage('targetText', accumulatedText);
+					elements.targetText.scrollTop = elements.targetText.scrollHeight;
+				}
+			} else {
+				const response = await model.generateContent(fullPrompt);
+				const text = response.response.text();
+				elements.targetText.value = text;
+				updateStats(elements.targetText, 'target');
+				saveToLocalStorage('targetText', text);
+				elements.targetText.scrollTop = elements.targetText.scrollHeight;
+			}
+		} catch (error) {
+			if (error.name === 'AbortError') {
+				throw error;
+			}
+			console.error('Gemini API Error:', error);
+			throw new Error(`Gemini API error: ${error.message}`);
+		}
+	}
 	async function generateWithGroq(apiKey, fullPrompt, abortController) {
 		const requestBody = {
 			messages: [{
@@ -344,6 +383,9 @@ document.addEventListener('DOMContentLoaded', () => {
 							case 'claude':
 								content = parsed.delta?.text;
 								break;
+							case 'gemini':
+								content = parsed.choices[0]?.delta?.content || parsed.choices[0]?.text;
+								break;
 							case 'groq':
 								content = parsed.choices[0]?.delta?.content;
 								break;
@@ -371,6 +413,9 @@ document.addEventListener('DOMContentLoaded', () => {
 				break;
 			case 'claude':
 				content = data.content[0]?.text;
+				break;
+			case 'gemini':
+				content = data.candidates[0]?.output || data.candidates[0]?.text;
 				break;
 			case 'groq':
 				content = data.choices[0]?.message?.content;
@@ -568,7 +613,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	 * Loads saved custom prompts from localStorage and populates the prompt select dropdown.
 	 */
 	function loadPrompts() {
-		const prompts = JSON.parse(getFromLocalStorage('chatgpt_prompts') || '[]');
+		const prompts = JSON.parse(getFromLocalStorage('prompts') || '[]');
 		elements.promptSelect.innerHTML = `
             <option value="Proofread this text but only fix grammar">Proofread this text but only fix grammar</option>
             <option value="Proofread this text but only fix grammar and Markdown style">Proofread this text but only fix grammar and Markdown style</option>
@@ -595,9 +640,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	function saveCustomPrompt() {
 		const customPrompt = elements.customPromptInput.value.trim();
 		if (customPrompt) {
-			const prompts = JSON.parse(getFromLocalStorage('chatgpt_prompts') || '[]');
+			const prompts = JSON.parse(getFromLocalStorage('prompts') || '[]');
 			prompts.push(customPrompt);
-			saveToLocalStorage('chatgpt_prompts', JSON.stringify(prompts));
+			saveToLocalStorage('prompts', JSON.stringify(prompts));
 			loadPrompts();
 			elements.customPromptInput.value = '';
 			alert('Custom prompt saved!');
@@ -608,13 +653,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	/**
 	 * Handles API errors and displays appropriate error messages to the user.
 	 * @param {Error} error - The error object.
-	 * @param {string} apiType - The type of API (chatgpt, claude, groq).
+	 * @param {string} apiType - The type of API (chatgpt, claude, gemini, groq).
 	 */
 	function handleApiError(error, apiType) {
 		let errorMessage = "An error occurred while generating text. ";
 		const apiMessages = {
 			chatgpt: "Please check your OpenAI API key.",
 			claude: "Please check your Anthropic API key.",
+			gemini: "Please check your Google API key.",
 			groq: "Please check your Groq API key."
 		};
 		errorMessage += apiMessages[apiType] || "Please check your API key.";
@@ -627,7 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	/**
 	 * Validates the API key format based on the selected API model.
 	 * @param {string} apiKey - The API key to validate.
-	 * @param {string} apiType - The type of API (chatgpt, claude, groq).
+	 * @param {string} apiType - The type of API (chatgpt, claude, gemini, groq).
 	 * @returns {boolean} - True if the API key is valid, false otherwise.
 	 */
 	function validateApiKey(apiKey, apiType) {
@@ -638,6 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const validationPatterns = {
 			chatgpt: /^sk-[A-Za-z0-9]{32,}$/,
 			claude: /^sk-ant-[A-Za-z0-9]{32,}$/,
+			gemini: /^AI[A-Za-z0-9-_]{32,}$/,
 			groq: /^gsk_[A-Za-z0-9]{32,}$/
 		};
 		const pattern = validationPatterns[apiType];

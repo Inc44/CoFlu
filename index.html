@@ -11,6 +11,12 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/diff-match-patch/1.0.5/index.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/15.0.1/marked.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+		<script type="importmap"> {
+			  "imports": {
+				"@google/generative-ai": "https://esm.run/@google/generative-ai"
+			  }
+			}
+		  </script>
 		<script src="script.js"></script>
 	</head>
 	<body>
@@ -77,6 +83,7 @@
 								<select class="form-select" id="apiModel">
 									<option value="chatgpt">ChatGPT</option>
 									<option value="claude">Claude</option>
+									<option value="gemini">Gemini</option>
 									<option value="groq">Groq</option>
 								</select>
 							</div>
