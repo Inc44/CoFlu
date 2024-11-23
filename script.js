@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
-	// DOM element references for various UI components
+document.addEventListener('DOMContentLoaded', () =>
+{
 	const elements = {
 		sourceText: document.getElementById('sourceText'),
 		targetText: document.getElementById('targetText'),
@@ -15,677 +15,641 @@ document.addEventListener('DOMContentLoaded', () => {
 		savePromptBtn: document.getElementById('savePrompt'),
 		streamingToggle: document.getElementById('streamingToggle')
 	};
-	let abortController = null;
-	// API key storage keys for different models
 	const API_KEYS = {
 		chatgpt: 'chatgpt_api_key',
 		claude: 'claude_api_key',
 		gemini: 'gemini_api_key',
 		groq: 'groq_api_key'
 	};
-	// Initialize event listeners for various UI interactions
-	initializeEventListeners();
-	// Load initial state from localStorage and set up the UI
-	loadInitialState();
-	/**
-	 * Initializes event listeners for various buttons and inputs.
-	 */
-	function initializeEventListeners() {
-		// File input handling for loading source and target text files
-		document.getElementById('loadSource').addEventListener('change', (e) => loadFile(e, elements.sourceText));
-		document.getElementById('loadTarget').addEventListener('change', (e) => loadFile(e, elements.targetText));
-		// Clear buttons for source and target text areas
-		document.getElementById('clearSource').addEventListener('click', () => clearText(elements.sourceText));
-		document.getElementById('clearTarget').addEventListener('click', () => clearText(elements.targetText));
-		// Text transformation buttons (uppercase/lowercase) for source and target text areas
-		document.getElementById('uppercaseSource').addEventListener('click', () => transformText(elements.sourceText, 'uppercase'));
-		document.getElementById('lowercaseSource').addEventListener('click', () => transformText(elements.sourceText, 'lowercase'));
-		document.getElementById('uppercaseTarget').addEventListener('click', () => transformText(elements.targetText, 'uppercase'));
-		document.getElementById('lowercaseTarget').addEventListener('click', () => transformText(elements.targetText, 'lowercase'));
-		document.getElementById('unboldSource').addEventListener('click', () => unboldText(elements.sourceText));
-		document.getElementById('unboldTarget').addEventListener('click', () => unboldText(elements.targetText));
-		document.getElementById('latexSource').addEventListener('click', () => fixLatex(elements.sourceText));
-		document.getElementById('latexTarget').addEventListener('click', () => fixLatex(elements.targetText));
-		// Main functionality buttons: compare, switch, generate, render markdown, and save custom prompt
+	let abortController = null;
+	const apiConfig = {
+		chatgpt:
+		{
+			url: 'https://api.openai.com/v1/chat/completions',
+			model: "chatgpt-4o-latest",
+			apiKeyHeader: 'Authorization',
+			apiKeyPrefix: 'Bearer ',
+			extractContent: data => data.choices[0]?.message?.content,
+			extractStreamContent: data => data.choices[0]?.delta?.content
+		},
+		claude:
+		{
+			url: 'https://api.anthropic.com/v1/messages',
+			model: "claude-3-5-sonnet-20241022",
+			apiKeyHeader: 'x-api-key',
+			apiKeyPrefix: '',
+			additionalHeaders:
+			{
+				'anthropic-version': '2023-06-01'
+			},
+			extractContent: data => data.content[0]?.text,
+			extractStreamContent: data => data.delta?.text
+		},
+		gemini:
+		{
+			generate: generateWithGemini,
+			extractContent: data => data.response.text() || data.response.candidates[0]?.output,
+			extractStreamContent: chunk => chunk.text()
+		},
+		groq:
+		{
+			url: 'https://api.groq.com/openai/v1/chat/completions',
+			model: "llama-3.2-90b-vision-preview",
+			apiKeyHeader: 'Authorization',
+			apiKeyPrefix: 'Bearer ',
+			extractContent: data => data.choices[0]?.message?.content,
+			extractStreamContent: data => data.choices[0]?.delta?.content
+		}
+	};
+	const standardPrompts = ["Proofread this text but only fix grammar", "Proofread this text but only fix grammar and Markdown style", "Proofread this text improving clarity and flow", "Proofread this text, fixing only awkward parts", "Proofread this text", "Markdown OCR"];
+	const apiKeyLabels = {
+		chatgpt: 'OpenAI API Key:',
+		claude: 'Anthropic API Key:',
+		gemini: 'Google API Key:',
+		groq: 'Groq API Key:'
+	};
+
+	function initializeEventListeners()
+	{
+		['source', 'target'].forEach(type => setupTextareaEvents(type, elements[`${type}Text`]));
+		setupButtonClickEvents();
+		elements.apiModelSelect.addEventListener('change', handleApiModelChange);
+		elements.apiKeyInput.addEventListener('input', handleApiKeyChange);
+		elements.streamingToggle.addEventListener('change', handleStreamingToggleChange);
+		['loadSource', 'loadTarget'].forEach(id =>
+		{
+			const type = id === 'loadSource' ? 'source' : 'target';
+			document.getElementById(id)
+				.addEventListener('change', (e) => handleFileUpload(e, elements[`${type}Text`], type))
+		})
+	}
+
+	function setupTextareaEvents(type, textArea)
+	{
+		textArea.addEventListener('input', () => handleTextareaInput(textArea, type));
+	}
+
+	function handleTextareaInput(textArea, type)
+	{
+		updateStats(textArea, type);
+		saveText(type, textArea.value);
+	}
+
+	function saveText(type, text)
+	{
+		saveToLocalStorage(`${type}Text`, text)
+	}
+
+	function setupButtonClickEvents()
+	{
+		const buttonActions = {
+			'clearSource': () => clearText(elements.sourceText, 'source'),
+			'clearTarget': () => clearText(elements.targetText, 'target'),
+			'uppercaseSource': () => transformText(elements.sourceText, 'uppercase', 'source'),
+			'lowercaseSource': () => transformText(elements.sourceText, 'lowercase', 'source'),
+			'uppercaseTarget': () => transformText(elements.targetText, 'uppercase', 'target'),
+			'lowercaseTarget': () => transformText(elements.targetText, 'lowercase', 'target'),
+			'unboldSource': () => unboldText(elements.sourceText, 'source'),
+			'unboldTarget': () => unboldText(elements.targetText, 'target'),
+			'latexSource': () => fixLatex(elements.sourceText, 'source'),
+			'latexTarget': () => fixLatex(elements.targetText, 'target'),
+		};
+		Object.keys(buttonActions)
+			.forEach(id =>
+			{
+				document.getElementById(id)
+					.addEventListener('click', buttonActions[id])
+			});
 		elements.compareBtn.addEventListener('click', compareTexts);
 		elements.switchBtn.addEventListener('click', switchTexts);
 		elements.generateTargetBtn.addEventListener('click', handleGenerateButton);
 		elements.renderMarkdownBtn.addEventListener('click', renderMarkdown);
 		elements.savePromptBtn.addEventListener('click', saveCustomPrompt);
-		// Input event listeners for source and target text areas to update stats and save to localStorage
-		elements.sourceText.addEventListener('input', () => {
-			updateStats(elements.sourceText, 'source');
-			saveToLocalStorage('sourceText', elements.sourceText.value);
-		});
-		elements.targetText.addEventListener('input', () => {
-			updateStats(elements.targetText, 'target');
-			saveToLocalStorage('targetText', elements.targetText.value);
-		});
-		// API model selection change handler to update API key and save the selected model
-		elements.apiModelSelect.addEventListener('change', () => {
-			const selectedModel = elements.apiModelSelect.value;
-			saveToLocalStorage('selected_api_model', selectedModel);
-			updateApiKeyLabel();
-			loadApiKey(selectedModel);
-		});
-		// API key input handler to save the API key for the selected model
-		elements.apiKeyInput.addEventListener('input', () => {
-			const selectedModel = elements.apiModelSelect.value;
-			saveApiKey(selectedModel, elements.apiKeyInput.value);
-		});
-		// Streaming toggle change handler to save the streaming preference
-		elements.streamingToggle.addEventListener('change', () => {
-			saveToLocalStorage('streaming_enabled', elements.streamingToggle.checked);
-		});
 	}
-	/**
-	 * Loads the initial state from localStorage and updates the UI accordingly.
-	 */
-	function loadInitialState() {
-		// Load saved text content for source and target text areas
+
+	function handleApiModelChange()
+	{
+		const selectedModel = elements.apiModelSelect.value;
+		saveToLocalStorage('selected_api_model', selectedModel);
+		updateApiKeyLabel();
+		loadApiKey(selectedModel);
+	}
+
+	function handleApiKeyChange()
+	{
+		const apiType = elements.apiModelSelect.value;
+		const apiKey = elements.apiKeyInput.value;
+		validateApiKey(apiKey, apiType);
+		saveApiKey(apiType, apiKey);
+	}
+
+	function handleStreamingToggleChange()
+	{
+		saveToLocalStorage('streaming_enabled', elements.streamingToggle.checked);
+	}
+
+	function loadInitialState()
+	{
 		elements.sourceText.value = getFromLocalStorage('sourceText') || '';
 		elements.targetText.value = getFromLocalStorage('targetText') || '';
-		// Load saved API model selection and corresponding API key
 		const savedModel = getFromLocalStorage('selected_api_model') || 'chatgpt';
 		elements.apiModelSelect.value = savedModel;
 		loadApiKey(savedModel);
-		// Load streaming toggle state
 		elements.streamingToggle.checked = getFromLocalStorage('streaming_enabled') !== 'false';
-		// Update UI elements like word/character stats and API key label
 		updateStats(elements.sourceText, 'source');
 		updateStats(elements.targetText, 'target');
 		updateApiKeyLabel();
-		// Load saved custom prompts
 		loadPrompts();
 	}
-	/**
-	 * Saves the API key for the selected model to localStorage.
-	 * @param {string} model - The selected API model.
-	 * @param {string} key - The API key to save.
-	 */
-	function saveApiKey(model, key) {
+
+	function saveToLocalStorage(key, value)
+	{
+		try
+		{
+			localStorage.setItem(key, value);
+		}
+		catch (e)
+		{
+			console.error('Error saving to localStorage:', e);
+		}
+	}
+
+	function getFromLocalStorage(key)
+	{
+		try
+		{
+			return localStorage.getItem(key);
+		}
+		catch (e)
+		{
+			console.error('Error reading from localStorage:', e);
+			return null;
+		}
+	}
+
+	function saveApiKey(model, key)
+	{
 		const storageKey = API_KEYS[model];
-		if (storageKey) {
+		if (storageKey)
+		{
 			saveToLocalStorage(storageKey, key);
 		}
 	}
-	/**
-	 * Loads the API key for the selected model from localStorage.
-	 * @param {string} model - The selected API model.
-	 */
-	function loadApiKey(model) {
+
+	function loadApiKey(model)
+	{
 		const storageKey = API_KEYS[model];
-		if (storageKey) {
+		if (storageKey)
+		{
 			elements.apiKeyInput.value = getFromLocalStorage(storageKey) || '';
 		}
 	}
 
-	function getApiKey(model) {
+	function getApiKey(model)
+	{
 		const storageKey = API_KEYS[model];
-		return storageKey ? getFromLocalStorage(storageKey) : '';
+		return storageKey ? getFromLocalStorage(storageKey) || '' : '';
 	}
-	/**
-	 * Updates the label for the API key input field based on the selected API model.
-	 */
-	function updateApiKeyLabel() {
+
+	function updateApiKeyLabel()
+	{
 		const apiModel = elements.apiModelSelect.value;
 		const apiKeyLabel = document.querySelector('label[for="apiKey"]');
-		const labels = {
-			chatgpt: 'OpenAI API Key:',
-			claude: 'Anthropic API Key:',
-			gemini: 'Google API Key:',
-			groq: 'Groq API Key:'
-		};
-		apiKeyLabel.textContent = labels[apiModel] || 'API Key:';
+		apiKeyLabel.textContent = apiKeyLabels[apiModel] || 'API Key:';
 	}
-	/**
-	 * Handles the click event of the Generate button,
-	 * toggles between generating and stopping the generation.
-	 */
-	function handleGenerateButton() {
-		if (elements.generateTargetBtn.dataset.generating === 'true') {
-			// Currently generating, so stop the generation
-			stopGeneration();
-		} else {
-			// Not generating, start generation
-			generateTargetText();
-		}
+
+	function handleGenerateButton()
+	{
+		elements.generateTargetBtn.dataset.generating === 'true' ? stopGeneration() : generateTargetText();
 	}
-	/**
-	 * Generates target text using the selected API model and prompt.
-	 * Handles both streaming and non-streaming responses.
-	 */
-	async function generateTargetText() {
+	async function generateTargetText()
+	{
 		const apiModel = elements.apiModelSelect.value;
 		const apiKey = getApiKey(apiModel);
-		if (!apiKey) {
+		if (!apiKey)
+		{
 			alert("Please enter your API key.");
 			return;
 		}
 		const selectedPrompt = elements.promptSelect.value;
 		const customPrompt = elements.customPromptInput.value;
 		const prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
-		// Combine the prompt with the source text
 		const fullPrompt = prompt + "\n\n" + elements.sourceText.value;
-		// Clear the target text area before generating new content
 		elements.targetText.value = '';
-		try {
-			// Change the Generate button to red and update text to 'Stop Generating'
-			elements.generateTargetBtn.style.backgroundColor = 'red';
-			elements.generateTargetBtn.textContent = 'Stop Generating';
-			elements.generateTargetBtn.dataset.generating = 'true';
-			// Initialize AbortController to allow stopping the generation
+		try
+		{
+			setGeneratingButtonState(true);
 			abortController = new AbortController();
-			// Map API models to their respective generation functions
-			const generators = {
-				chatgpt: generateWithChatGPT,
-				claude: generateWithClaude,
-				gemini: generateWithGemini,
-				groq: generateWithGroq
-			};
-			const generator = generators[apiModel];
-			if (generator) {
-				await generator(apiKey, fullPrompt, abortController);
+			if (apiModel === 'gemini')
+			{
+				await apiConfig.gemini.generate(apiKey, fullPrompt, abortController)
 			}
-		} catch (error) {
-			if (error.name === 'AbortError') {
-				console.log('Generation aborted by the user.');
-			} else {
+			else
+			{
+				const config = apiConfig[apiModel]
+				const requestBody = {
+					model: config.model,
+					messages: [
+					{
+						role: "user",
+						content: fullPrompt
+					}],
+					temperature: 0,
+					max_tokens: apiModel === 'claude' || apiModel === 'groq' ? 8192 : 16383,
+					stream: elements.streamingToggle.checked
+				};
+				const headers = {
+					'Content-Type': 'application/json',
+					[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
+					...config.additionalHeaders
+				};
+				const response = await fetch(config.url,
+				{
+					method: 'POST',
+					headers,
+					body: JSON.stringify(requestBody),
+					signal: abortController.signal
+				});
+				await handleResponse(response, apiModel);
+			}
+		}
+		catch (error)
+		{
+			if (error.name !== 'AbortError')
+			{
 				handleApiError(error, apiModel);
 			}
-		} finally {
-			// Reset the Generate button after generation is complete or stopped
-			resetGenerateButton();
+		}
+		finally
+		{
+			setGeneratingButtonState(false);
+			abortController = null;
 		}
 	}
-	/**
-	 * Saves a value to localStorage.
-	 * @param {string} key - The key under which to save the value.
-	 * @param {string} value - The value to save.
-	 */
-	function saveToLocalStorage(key, value) {
-		try {
-			localStorage.setItem(key, value);
-		} catch (e) {
-			console.error('Error saving to localStorage:', e);
+
+	function setGeneratingButtonState(isGenerating)
+	{
+		elements.generateTargetBtn.style.backgroundColor = isGenerating ? 'red' : '';
+		elements.generateTargetBtn.textContent = isGenerating ? 'Stop Generating' : 'Generate';
+		elements.generateTargetBtn.dataset.generating = isGenerating;
+	}
+	async function handleResponse(response, apiModel)
+	{
+		if (!response.ok)
+		{
+			throw new Error(`API request failed with status ${response.status}`);
+		}
+		const config = apiConfig[apiModel]
+		if (elements.streamingToggle.checked)
+		{
+			const reader = response.body.getReader();
+			const decoder = new TextDecoder();
+			let buffer = '';
+			let accumulatedText = '';
+			while (true)
+			{
+				const
+				{
+					done,
+					value
+				} = await reader.read();
+				if (done) break;
+				buffer += decoder.decode(value);
+				const lines = buffer.split('\n');
+				for (const line of lines)
+				{
+					if (line.startsWith('data: '))
+					{
+						const data = line.slice(6);
+						if (data === '[DONE]') continue;
+						try
+						{
+							const parsed = JSON.parse(data);
+							const content = config.extractStreamContent(parsed);
+							if (content)
+							{
+								accumulatedText += content;
+								elements.targetText.value = accumulatedText;
+								updateStats(elements.targetText, 'target');
+								saveText('target', accumulatedText);
+								elements.targetText.scrollTop = elements.targetText.scrollHeight;
+							}
+						}
+						catch (e)
+						{
+							console.error('Error parsing streaming JSON:', e);
+						}
+					}
+				}
+				buffer = lines.pop() || '';
+			}
+		}
+		else
+		{
+			const data = await response.json();
+			const content = config.extractContent(data)
+			if (content)
+			{
+				elements.targetText.value = content;
+				updateStats(elements.targetText, 'target');
+				saveText('target', content);
+				elements.targetText.scrollTop = elements.targetText.scrollHeight;
+			}
 		}
 	}
-	/**
-	 * Retrieves a value from localStorage.
-	 * @param {string} key - The key of the value to retrieve.
-	 * @returns {string|null} - The retrieved value or null if not found.
-	 */
-	function getFromLocalStorage(key) {
-		try {
-			return localStorage.getItem(key);
-		} catch (e) {
-			console.error('Error reading from localStorage:', e);
-			return null;
-		}
-	}
-	/**
-	 * Stops the ongoing generation by aborting the fetch request.
-	 */
-	function stopGeneration() {
-		if (abortController) {
+
+	function stopGeneration()
+	{
+		if (abortController)
+		{
 			abortController.abort();
 		}
 	}
-	/**
-	 * Resets the Generate button to its original state.
-	 */
-	function resetGenerateButton() {
-		elements.generateTargetBtn.style.backgroundColor = '';
-		elements.generateTargetBtn.textContent = 'Generate';
-		elements.generateTargetBtn.dataset.generating = 'false';
-		abortController = null;
-	}
-	async function generateWithChatGPT(apiKey, fullPrompt, abortController) {
-		const requestBody = {
-			model: "chatgpt-4o-latest",
-			messages: [{
-				role: "user",
-				content: fullPrompt
-			}],
-			temperature: 0,
-			max_tokens: 16383,
-			stream: elements.streamingToggle.checked
-		};
-		const response = await fetch('https://api.openai.com/v1/chat/completions', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${apiKey}`
-			},
-			body: JSON.stringify(requestBody),
-			signal: abortController.signal
-		});
-		await handleResponse(response, 'chatgpt');
-	}
-	async function generateWithClaude(apiKey, fullPrompt, abortController) {
-		const requestBody = {
-			model: "claude-3-5-sonnet-20241022",
-			messages: [{
-				role: "user",
-				content: fullPrompt
-			}],
-			temperature: 0,
-			max_tokens: 8192,
-			stream: elements.streamingToggle.checked
-		};
-		const response = await fetch('https://api.anthropic.com/v1/messages', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'x-api-key': apiKey,
-				'anthropic-version': '2023-06-01'
-			},
-			body: JSON.stringify(requestBody),
-			signal: abortController.signal
-		});
-		await handleResponse(response, 'claude');
-	}
-	async function generateWithGemini(apiKey, fullPrompt, abortController) {
-		const {
+	async function generateWithGemini(apiKey, fullPrompt, abortController)
+	{
+		const
+		{
 			GoogleGenerativeAI
 		} = await import("@google/generative-ai");
 		const genAI = new GoogleGenerativeAI(apiKey);
-		const model = genAI.getGenerativeModel({
+		const model = genAI.getGenerativeModel(
+		{
 			model: "gemini-exp-1121"
 		});
 		const generationConfig = {
 			temperature: 0,
-			topP: 1,
 			maxOutputTokens: 8192
 		};
-		try {
-			if (elements.streamingToggle.checked) {
+		try
+		{
+			if (elements.streamingToggle.checked)
+			{
 				const response = await model.generateContentStream(fullPrompt, [generationConfig]);
 				let accumulatedText = '';
-				for await (const chunk of response.stream) {
-					const chunkText = chunk.text();
-					accumulatedText += chunkText;
+				for await (const chunk of response.stream)
+				{
+					if (abortController.signal.aborted) throw new DOMException('Aborted', 'AbortError')
+					const content = apiConfig.gemini.extractStreamContent(chunk);
+					accumulatedText += content;
 					elements.targetText.value = accumulatedText;
 					updateStats(elements.targetText, 'target');
-					saveToLocalStorage('targetText', accumulatedText);
+					saveText('target', accumulatedText);
 					elements.targetText.scrollTop = elements.targetText.scrollHeight;
 				}
-			} else {
+			}
+			else
+			{
 				const response = await model.generateContent(fullPrompt, [generationConfig]);
-				const text = response.response.text();
-				elements.targetText.value = text;
+				const content = apiConfig.gemini.extractContent(response);
+				elements.targetText.value = content;
 				updateStats(elements.targetText, 'target');
-				saveToLocalStorage('targetText', text);
+				saveText('target', content);
 				elements.targetText.scrollTop = elements.targetText.scrollHeight;
 			}
-		} catch (error) {
-			if (error.name === 'AbortError') {
+		}
+		catch (error)
+		{
+			if (error.name === 'AbortError')
+			{
 				throw error;
 			}
 			console.error('Gemini API Error:', error);
 			throw new Error(`Gemini API error: ${error.message}`);
 		}
 	}
-	async function generateWithGroq(apiKey, fullPrompt, abortController) {
-		const requestBody = {
-			messages: [{
-				role: "user",
-				content: fullPrompt
-			}],
-			model: "llama-3.2-90b-text-preview",
-			temperature: 0,
-			max_tokens: 8192,
-			stream: elements.streamingToggle.checked
-		};
-		const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${apiKey}`
-			},
-			body: JSON.stringify(requestBody),
-			signal: abortController.signal
-		});
-		await handleResponse(response, 'groq');
-	}
-	async function handleResponse(response, apiType) {
-		if (!response.ok) {
-			throw new Error(`API request failed with status ${response.status}`);
-		}
-		if (elements.streamingToggle.checked) {
-			await handleStreamingResponse(response, apiType);
-		} else {
-			await handleNonStreamingResponse(response, apiType);
-		}
-	}
-	async function handleStreamingResponse(response, apiType) {
-		const reader = response.body.getReader();
-		const decoder = new TextDecoder();
-		let buffer = '';
-		let accumulatedText = '';
-		while (true) {
-			const {
-				done,
-				value
-			} = await reader.read();
-			if (done) break;
-			buffer += decoder.decode(value);
-			while (true) {
-				const newlineIndex = buffer.indexOf('\n');
-				if (newlineIndex === -1) break;
-				const line = buffer.slice(0, newlineIndex);
-				buffer = buffer.slice(newlineIndex + 1);
-				if (line.startsWith('data: ')) {
-					const data = line.slice(6);
-					if (data === '[DONE]') continue;
-					try {
-						const parsed = JSON.parse(data);
-						let content;
-						switch (apiType) {
-							case 'chatgpt':
-								content = parsed.choices[0]?.delta?.content;
-								break;
-							case 'claude':
-								content = parsed.delta?.text;
-								break;
-							case 'gemini':
-								content = parsed.choices[0]?.delta?.content || parsed.choices[0]?.text;
-								break;
-							case 'groq':
-								content = parsed.choices[0]?.delta?.content;
-								break;
-						}
-						if (content) {
-							accumulatedText += content;
-							elements.targetText.value = accumulatedText;
-							updateStats(elements.targetText, 'target');
-							saveToLocalStorage('targetText', accumulatedText);
-							elements.targetText.scrollTop = elements.targetText.scrollHeight;
-						}
-					} catch (e) {
-						console.error('Error parsing streaming JSON:', e);
-					}
-				}
-			}
-		}
-	}
-	async function handleNonStreamingResponse(response, apiType) {
-		const data = await response.json();
-		let content;
-		switch (apiType) {
-			case 'chatgpt':
-				content = data.choices[0]?.message?.content;
-				break;
-			case 'claude':
-				content = data.content[0]?.text;
-				break;
-			case 'gemini':
-				content = data.candidates[0]?.output || data.candidates[0]?.text;
-				break;
-			case 'groq':
-				content = data.choices[0]?.message?.content;
-				break;
-		}
-		if (content) {
-			elements.targetText.value = content;
-			updateStats(elements.targetText, 'target');
-			saveToLocalStorage('targetText', content);
-			elements.targetText.scrollTop = elements.targetText.scrollHeight;
-		}
-	}
-	/**
-	 * Handles file loading for source or target text areas.
-	 * @param {Event} event - The file input change event.
-	 * @param {HTMLElement} textArea - The text area to load the file content into.
-	 */
-	function loadFile(event, textArea) {
+
+	function handleFileUpload(event, textArea, type)
+	{
 		const file = event.target.files[0];
-		if (file) {
+		if (file)
+		{
 			const reader = new FileReader();
-			reader.onload = function(e) {
+			reader.onload = (e) =>
+			{
 				textArea.value = e.target.result;
-				updateStats(textArea, textArea === elements.sourceText ? 'source' : 'target');
-				saveToLocalStorage(textArea === elements.sourceText ? 'sourceText' : 'targetText', textArea.value);
+				updateStats(textArea, type);
+				saveText(type, textArea.value);
 			};
 			reader.readAsText(file);
 		}
 	}
-	/**
-	 * Clears the content of a text area and updates the stats.
-	 * @param {HTMLElement} textArea - The text area to clear.
-	 */
-	function clearText(textArea) {
+
+	function clearText(textArea, type)
+	{
 		textArea.value = "";
-		updateStats(textArea, textArea === elements.sourceText ? 'source' : 'target');
-		saveToLocalStorage(textArea === elements.sourceText ? 'sourceText' : 'targetText', '');
+		updateStats(textArea, type);
+		saveText(type, '');
 	}
-	/**
-	 * Transforms the text in a text area to uppercase or lowercase.
-	 * @param {HTMLElement} textArea - The text area to transform.
-	 * @param {string} type - The transformation type ('uppercase' or 'lowercase').
-	 */
-	function transformText(textArea, type) {
+
+	function transformText(textArea, type, storageType)
+	{
 		textArea.value = type === 'uppercase' ? textArea.value.toUpperCase() : textArea.value.toLowerCase();
-		updateStats(textArea, textArea === elements.sourceText ? 'source' : 'target');
-		saveToLocalStorage(textArea === elements.sourceText ? 'sourceText' : 'targetText', textArea.value);
+		updateStats(textArea, storageType);
+		saveText(storageType, textArea.value);
 	}
-	/**
-	 * Removes bold markdown syntax from text.
-	 * @param {HTMLElement} textArea - The text area to transform.
-	 */
-	function unboldText(textArea) {
+
+	function unboldText(textArea, type)
+	{
 		textArea.value = textArea.value.replace(/\*\*/g, '');
-		updateStats(textArea, textArea === elements.sourceText ? 'source' : 'target');
-		saveToLocalStorage(textArea === elements.sourceText ? 'sourceText' : 'targetText', textArea.value);
+		handleTextareaInput(textArea, type);
 	}
-	/**
-	 * Fixes LaTeX syntax in text.
-	 * @param {HTMLElement} textArea - The text area to transform.
-	 */
-	function fixLatex(textArea) {
+
+	function fixLatex(textArea, type)
+	{
 		let text = textArea.value;
-		// Replace \[ \] with $$ $$ without any spaces
-		text = text.replace(/\\[\s\n]*\[([\s\S]*?)\\[\s\n]*\]/g, (match, p1) => {
-			return `$$\n${p1.trim()}\n$$`;
-		});
-		// Replace \( \) with $ $ without any spaces
-		text = text.replace(/\\[\s\n]*\(([\s\S]*?)\\[\s\n]*\)/g, (match, p1) => {
-			return `$${p1.trim()}$`;
-		});
+		text = text.replace(/\\[\s\n]*\[([\s\S]*?)\\[\s\n]*\]/g, (match, p1) => `$$\n${p1.trim()}\n$$`);
+		text = text.replace(/\\[\s\n]*\(([\s\S]*?)\\[\s\n]*\)/g, (match, p1) => `$${p1.trim()}$`);
 		textArea.value = text;
-		updateStats(textArea, textArea === elements.sourceText ? 'source' : 'target');
-		saveToLocalStorage(textArea === elements.sourceText ? 'sourceText' : 'targetText', textArea.value);
+		handleTextareaInput(textArea, type);
 	}
-	/**
-	 * Updates the word and character count stats for a text area.
-	 * @param {HTMLElement} textArea - The text area to analyze.
-	 * @param {string} type - The type of text area ('source' or 'target').
-	 */
-	function updateStats(textArea, type) {
-		const words = textArea.value.trim().split(/\s+/).length;
+
+	function updateStats(textArea, type)
+	{
+		const words = textArea.value.trim()
+			.split(/\s+/)
+			.length;
 		const chars = textArea.value.length;
-		document.getElementById(`${type}Words`).textContent = words;
-		document.getElementById(`${type}Chars`).textContent = chars;
+		document.getElementById(`${type}Words`)
+			.textContent = words;
+		document.getElementById(`${type}Chars`)
+			.textContent = chars;
 	}
-	/**
-	 * Switches the content between the source and target text areas.
-	 */
-	function switchTexts() {
+
+	function switchTexts()
+	{
 		const temp = elements.sourceText.value;
 		elements.sourceText.value = elements.targetText.value;
 		elements.targetText.value = temp;
 		updateStats(elements.sourceText, 'source');
 		updateStats(elements.targetText, 'target');
-		saveToLocalStorage('sourceText', elements.sourceText.value);
-		saveToLocalStorage('targetText', elements.targetText.value);
+		saveText('source', elements.sourceText.value)
+		saveText('target', elements.targetText.value)
 	}
-	/**
-	 * Compares the content of the source and target text areas and displays the differences.
-	 */
-	function compareTexts() {
+
+	function compareTexts()
+	{
 		const source = elements.sourceText.value;
 		const target = elements.targetText.value;
 		const dmp = new diff_match_patch();
 		const diffs = dmp.diff_main(source, target);
 		dmp.diff_cleanupSemantic(diffs);
-		// Display the differences in single and double column views
-		document.getElementById('singleColumnDiff').innerHTML = generateSingleColumnDiffView(diffs);
+		document.getElementById('singleColumnDiff')
+			.innerHTML = generateSingleColumnDiffView(diffs);
 		const [leftColumn, rightColumn] = generateDoubleColumnDiffView(diffs);
-		document.getElementById('leftColumn').innerHTML = leftColumn;
-		document.getElementById('rightColumn').innerHTML = rightColumn;
-		// Update the difference stats
+		document.getElementById('leftColumn')
+			.innerHTML = leftColumn;
+		document.getElementById('rightColumn')
+			.innerHTML = rightColumn;
 		updateDiffStats(diffs);
-		// Calculate and display the Levenshtein distance
 		const levenshtein = dmp.diff_levenshtein(diffs);
-		document.getElementById('levenshtein').textContent = levenshtein;
+		document.getElementById('levenshtein')
+			.textContent = levenshtein;
 	}
-	/**
-	 * Generates the single-column diff view for the differences between source and target texts.
-	 * @param {Array} diffs - The array of differences.
-	 * @returns {string} - The HTML string for the single-column diff view.
-	 */
-	function generateSingleColumnDiffView(diffs) {
-		return diffs.map(([type, text]) => {
-			const className = type === 0 ? 'diff-equal' : type === -1 ? 'diff-deletion' : 'diff-insertion';
-			return `<span class="${className}">${escapeHtml(text)}</span>`;
-		}).join('');
+
+	function generateSingleColumnDiffView(diffs)
+	{
+		return diffs.map(([type, text]) =>
+			{
+				const className = type === 0 ? 'diff-equal' : type === -1 ? 'diff-deletion' : 'diff-insertion';
+				return `<span class="${className}">${escapeHtml(text)}</span>`;
+			})
+			.join('');
 	}
-	/**
-	 * Generates the double-column diff view for the differences between source and target texts.
-	 * @param {Array} diffs - The array of differences.
-	 * @returns {Array} - An array containing the HTML for the left and right columns.
-	 */
-	function generateDoubleColumnDiffView(diffs) {
+
+	function generateDoubleColumnDiffView(diffs)
+	{
 		let leftHtml = '';
 		let rightHtml = '';
-		diffs.forEach(([type, text]) => {
+		diffs.forEach(([type, text]) =>
+		{
 			const escapedText = escapeHtml(text);
-			if (type === 0) {
+			if (type === 0)
+			{
 				leftHtml += `<span class="diff-equal">${escapedText}</span>`;
 				rightHtml += `<span class="diff-equal">${escapedText}</span>`;
-			} else if (type === -1) {
+			}
+			else if (type === -1)
+			{
 				leftHtml += `<span class="diff-deletion">${escapedText}</span>`;
-			} else if (type === 1) {
+			}
+			else if (type === 1)
+			{
 				rightHtml += `<span class="diff-insertion">${escapedText}</span>`;
 			}
 		});
 		return [leftHtml, rightHtml];
 	}
-	/**
-	 * Updates the difference stats (added, removed, common symbols) and displays them.
-	 * @param {Array} diffs - The array of differences.
-	 */
-	function updateDiffStats(diffs) {
+
+	function updateDiffStats(diffs)
+	{
 		let added = 0,
 			removed = 0,
 			common = 0;
-		diffs.forEach(([type, text]) => {
+		diffs.forEach(([type, text]) =>
+		{
 			if (type === 1) added += text.length;
 			else if (type === -1) removed += text.length;
 			else common += text.length;
 		});
 		const total = added + removed + common;
-		const commonPercentage = (common / total * 100).toFixed(2);
-		const differencePercentage = (100 - parseFloat(commonPercentage)).toFixed(2);
-		// Update the UI with the calculated stats
-		document.getElementById('commonPercentage').textContent = commonPercentage;
-		document.getElementById('differencePercentage').textContent = differencePercentage;
-		document.getElementById('commonSymbols').textContent = common;
-		document.getElementById('differenceSymbols').textContent = added + removed;
+		const commonPercentage = (common / total * 100)
+			.toFixed(2);
+		const differencePercentage = (100 - parseFloat(commonPercentage))
+			.toFixed(2);
+		document.getElementById('commonPercentage')
+			.textContent = commonPercentage;
+		document.getElementById('differencePercentage')
+			.textContent = differencePercentage;
+		document.getElementById('commonSymbols')
+			.textContent = common;
+		document.getElementById('differenceSymbols')
+			.textContent = added + removed;
 	}
-	/**
-	 * Escapes HTML special characters to prevent XSS attacks.
-	 * @param {string} unsafe - The unsafe string to escape.
-	 * @returns {string} - The escaped string.
-	 */
-	function escapeHtml(unsafe) {
-		return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+
+	function escapeHtml(unsafe)
+	{
+		return unsafe.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#039;");
 	}
-	/**
-	 * Renders the markdown content from the source and target text areas into the double-column markdown view.
-	 */
-	function renderMarkdown() {
+
+	function renderMarkdown()
+	{
 		const sourceMarkdown = elements.sourceText.value;
 		const targetMarkdown = elements.targetText.value;
-		const leftHtml = marked.parse(sourceMarkdown);
-		const rightHtml = marked.parse(targetMarkdown);
-		document.getElementById('leftColumn').innerHTML = leftHtml;
-		document.getElementById('rightColumn').innerHTML = rightHtml;
-		// Trigger MathJax typesetting
+		document.getElementById('leftColumn')
+			.innerHTML = marked.parse(sourceMarkdown);
+		document.getElementById('rightColumn')
+			.innerHTML = marked.parse(targetMarkdown);
 		MathJax.typesetPromise();
 	}
-	/**
-	 * Loads saved custom prompts from localStorage and populates the prompt select dropdown.
-	 */
-	function loadPrompts() {
+
+	function loadPrompts()
+	{
 		const prompts = JSON.parse(getFromLocalStorage('prompts') || '[]');
-		elements.promptSelect.innerHTML = `
-            <option value="Proofread this text but only fix grammar">Proofread this text but only fix grammar</option>
-            <option value="Proofread this text but only fix grammar and Markdown style">Proofread this text but only fix grammar and Markdown style</option>
-            <option value="Proofread this text improving clarity and flow">Proofread this text improving clarity and flow</option>
-            <option value="Proofread this text, fixing only awkward parts">Proofread this text, fixing only awkward parts</option>
-            <option value="Proofread this text">Proofread this text</option>
-            <option value="Markdown OCR">Markdown OCR</option>
-            <option value="custom">Custom prompt</option>
-        `;
-		prompts.forEach((prompt, index) => {
+		elements.promptSelect.innerHTML = standardPrompts.map(prompt => `<option value="${prompt}">${prompt}</option>`)
+			.join('') + '<option value="custom">Custom prompt</option>';
+		prompts.forEach((prompt, index) =>
+		{
 			const option = document.createElement('option');
 			option.value = prompt;
 			option.textContent = `Custom ${index + 1}: ${prompt.substring(0, 30)}${prompt.length > 30 ? '...' : ''}`;
 			elements.promptSelect.insertBefore(option, elements.promptSelect.lastElementChild);
 		});
-		// Show or hide the custom prompt input based on the selected option
-		elements.promptSelect.addEventListener('change', function() {
-			elements.customPromptContainer.style.display = this.value === 'custom' ? 'block' : 'none';
+		elements.promptSelect.addEventListener('change', () =>
+		{
+			elements.customPromptContainer.style.display = elements.promptSelect.value === 'custom' ? 'block' : 'none';
 		});
 	}
-	/**
-	 * Saves a custom prompt entered by the user to localStorage.
-	 */
-	function saveCustomPrompt() {
+
+	function saveCustomPrompt()
+	{
 		const customPrompt = elements.customPromptInput.value.trim();
-		if (customPrompt) {
+		if (customPrompt)
+		{
 			const prompts = JSON.parse(getFromLocalStorage('prompts') || '[]');
 			prompts.push(customPrompt);
 			saveToLocalStorage('prompts', JSON.stringify(prompts));
 			loadPrompts();
 			elements.customPromptInput.value = '';
 			alert('Custom prompt saved!');
-		} else {
+		}
+		else
+		{
 			alert('Please enter a custom prompt before saving.');
 		}
 	}
-	/**
-	 * Handles API errors and displays appropriate error messages to the user.
-	 * @param {Error} error - The error object.
-	 * @param {string} apiType - The type of API (chatgpt, claude, gemini, groq).
-	 */
-	function handleApiError(error, apiType) {
-		let errorMessage = "An error occurred while generating text. ";
-		const apiMessages = {
-			chatgpt: "Please check your OpenAI API key.",
-			claude: "Please check your Anthropic API key.",
-			gemini: "Please check your Google API key.",
-			groq: "Please check your Groq API key."
+
+	function handleApiError(error, apiType)
+	{
+		const baseErrorMessage = "An error occurred while generating text. ";
+		const apiErrorMessages = {
+			chatgpt: "Please check your OpenAI API key and ensure your request respects OpenAI rate limits.",
+			claude: "Please check your Anthropic API key and ensure your request respects Anthropic rate limits.",
+			gemini: "Please check your Google API key and ensure your request respects Google rate limits.",
+			groq: "Please check your Groq API key and ensure your request respects Groq rate limits."
 		};
-		errorMessage += apiMessages[apiType] || "Please check your API key.";
-		if (error.response) {
-			errorMessage += `\n\nError ${error.response.status}: ${error.response.statusText}`;
+		const errorMessage = baseErrorMessage + (apiErrorMessages[apiType] || "Please check your API key and request parameters.");
+		if (error.response && error.response.status)
+		{
+			alert(`${errorMessage}\n\nStatus: ${error.response.status}`);
 		}
-		alert(errorMessage);
+		else if (error.message)
+		{
+			alert(`${errorMessage}\n\nMessage: ${error.message}`);
+		}
+		else
+		{
+			alert(errorMessage)
+		}
 		console.error("API Error:", error);
 	}
-	/**
-	 * Validates the API key format based on the selected API model.
-	 * @param {string} apiKey - The API key to validate.
-	 * @param {string} apiType - The type of API (chatgpt, claude, gemini, groq).
-	 * @returns {boolean} - True if the API key is valid, false otherwise.
-	 */
-	function validateApiKey(apiKey, apiType) {
-		if (!apiKey) {
-			return false;
-		}
-		// Basic validation patterns for different API keys
+
+	function validateApiKey(apiKey, apiType)
+	{
+		if (!apiKey) return false;
 		const validationPatterns = {
 			chatgpt: /^sk-[A-Za-z0-9]{32,}$/,
 			claude: /^sk-ant-[A-Za-z0-9]{32,}$/,
@@ -693,31 +657,19 @@ document.addEventListener('DOMContentLoaded', () => {
 			groq: /^gsk_[A-Za-z0-9]{32,}$/
 		};
 		const pattern = validationPatterns[apiType];
-		return pattern ? pattern.test(apiKey) : true;
+		const isValid = pattern ? pattern.test(apiKey) : true;
+		elements.apiKeyInput.classList.toggle('invalid', !isValid);
+		return isValid;
 	}
-	/**
-	 * Handles changes to the API key input field and validates the key.
-	 */
-	function handleApiKeyChange() {
-		const apiType = elements.apiModelSelect.value;
-		const apiKey = elements.apiKeyInput.value;
-		if (apiKey && !validateApiKey(apiKey, apiType)) {
-			elements.apiKeyInput.classList.add('invalid');
-		} else {
-			elements.apiKeyInput.classList.remove('invalid');
-			saveApiKey(apiType, apiKey);
-		}
-	}
-	// Add event listener for API key input validation
-	elements.apiKeyInput.addEventListener('input', handleApiKeyChange);
-	// Save unsaved state to localStorage before the window unloads
-	window.addEventListener('beforeunload', (event) => {
-		saveToLocalStorage('sourceText', elements.sourceText.value);
-		saveToLocalStorage('targetText', elements.targetText.value);
+	window.addEventListener('beforeunload', () =>
+	{
+		saveText('source', elements.sourceText.value)
+		saveText('target', elements.targetText.value)
 	});
-	// Global error handler to catch and handle unexpected errors
-	window.onerror = function(msg, url, lineNo, columnNo, error) {
-		console.error('Global error:', {
+	window.onerror = (msg, url, lineNo, columnNo, error) =>
+	{
+		console.error('Global error:',
+		{
 			msg,
 			url,
 			lineNo,
@@ -727,4 +679,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		alert('An unexpected error occurred. Please refresh the page and try again.');
 		return false;
 	};
+	initializeEventListeners();
+	loadInitialState();
 });
