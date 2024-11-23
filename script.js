@@ -118,6 +118,8 @@ document.addEventListener('DOMContentLoaded', () =>
 			'unboldTarget': () => unboldText(elements.targetText, 'target'),
 			'latexSource': () => fixLatex(elements.sourceText, 'source'),
 			'latexTarget': () => fixLatex(elements.targetText, 'target'),
+			'htmlSource': () => fixHtml(elements.sourceText, 'source'),
+			'htmlTarget': () => fixHtml(elements.targetText, 'target'),
 		};
 		Object.keys(buttonActions)
 			.forEach(id =>
@@ -548,6 +550,12 @@ document.addEventListener('DOMContentLoaded', () =>
 		text = text.replace(/\\[\s\n]*\[([\s\S]*?)\\[\s\n]*\]/g, (match, p1) => `$$\n${p1.trim()}\n$$`);
 		text = text.replace(/\\[\s\n]*\(([\s\S]*?)\\[\s\n]*\)/g, (match, p1) => `$${p1.trim()}$`);
 		textArea.value = text;
+		handleTextareaInput(textArea, type);
+	}
+
+	function fixHtml(textArea, type)
+	{
+		textArea.value = textArea.value.replace(/&nbsp;/g, ' ');
 		handleTextareaInput(textArea, type);
 	}
 
