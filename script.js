@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', () =>
 		groq: 'groq_api_key'
 	};
 	const MAX_IMAGE_UPLOADS = {
-		chatgpt: 3000,
+		chatgpt: 100,
 		claude: 100,
-		gemini: 3000,
+		gemini: 100,
 		groq: 1
 	};
 	const MAX_IMAGE_SIZE_MB = {
@@ -157,6 +157,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		loadApiKey(selectedModel);
 		uploadedImages = {};
 		updateImageDisplay();
+		updateImageUploadVisibility();
 	}
 
 	function handleApiKeyChange()
@@ -185,6 +186,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		updateApiKeyLabel();
 		loadPrompts();
 		updateImageDisplay();
+		updateImageUploadVisibility();
 	}
 
 	function saveToLocalStorage(key, value)
@@ -276,23 +278,18 @@ document.addEventListener('DOMContentLoaded', () =>
 			abortController = new AbortController();
 			if (apiModel === 'gemini')
 			{
-				await apiConfig.gemini.generate(apiKey, fullPrompt, abortController)
+				await apiConfig.gemini.generate(apiKey, fullPrompt, abortController);
 			}
 			else
 			{
-				const config = apiConfig[apiModel]
+				const config = apiConfig[apiModel];
 				const requestBody = {
 					model: config.model,
-					messages: [
-					{
-						role: "user",
-						content: fullPrompt
-					}],
+					messages: formatMessagesWithImages(fullPrompt, imageContent),
 					temperature: 0,
 					max_tokens: apiModel === 'claude' || apiModel === 'groq' ? 8192 : 16383,
 					stream: elements.streamingToggle.checked
 				};
-				requestBody.messages[0].content = [...imageContent, ...requestBody.messages[0].content];
 				const headers = {
 					'Content-Type': 'application/json',
 					[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
@@ -610,6 +607,13 @@ document.addEventListener('DOMContentLoaded', () =>
 		}
 	}
 
+	function updateImageUploadVisibility()
+	{
+		const apiModel = elements.apiModelSelect.value;
+		const imageUploadCard = document.querySelector('.card:has(#imageList)');
+		imageUploadCard.style.display = (apiModel === 'claude' || apiModel === 'gemini') ? 'none' : 'block';
+	}
+
 	function removeImage(event)
 	{
 		const filename = event.target.dataset.filename;
@@ -622,6 +626,32 @@ document.addEventListener('DOMContentLoaded', () =>
 		textArea.value = "";
 		updateStats(textArea, type);
 		saveText(type, '');
+	}
+
+	function formatMessagesWithImages(prompt, imageContent)
+	{
+		const apiModel = elements.apiModelSelect.value;
+		if (apiModel === 'groq')
+		{
+			return [
+			{
+				role: "user",
+				content: [
+				{
+					type: "text",
+					text: prompt
+				}, ...imageContent.map(img => (
+				{
+					type: "image_url",
+					image_url: img.image_url
+				}))]
+			}];
+		}
+		return [
+		{
+			role: "user",
+			content: [...imageContent, prompt]
+		}];
 	}
 
 	function transformText(textArea, type, storageType)

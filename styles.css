@@ -128,7 +128,6 @@ height: 2rem;
 top: 0.25rem;
 right: 0.25rem;
 }
-
 @media print {
 * {
 margin: 0 !important;
