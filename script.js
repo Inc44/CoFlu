@@ -291,11 +291,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		} = await import("@google/generative-ai");
 		const genAI = new GoogleGenerativeAI(apiKey);
 		const model = genAI.getGenerativeModel({
-			model: "gemini-1.5-flash-8b"
+			model: "gemini-exp-1121"
 		});
+		const generationConfig = {
+			temperature: 0,
+			topP: 1,
+			maxOutputTokens: 8192
+		};
 		try {
 			if (elements.streamingToggle.checked) {
-				const response = await model.generateContentStream(fullPrompt);
+				const response = await model.generateContentStream(fullPrompt, [generationConfig]);
 				let accumulatedText = '';
 				for await (const chunk of response.stream) {
 					const chunkText = chunk.text();
@@ -306,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					elements.targetText.scrollTop = elements.targetText.scrollHeight;
 				}
 			} else {
-				const response = await model.generateContent(fullPrompt);
+				const response = await model.generateContent(fullPrompt, [generationConfig]);
 				const text = response.response.text();
 				elements.targetText.value = text;
 				updateStats(elements.targetText, 'target');
