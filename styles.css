@@ -106,6 +106,29 @@ display: inline-block;
 background-color: rgb(140, 84, 208);
 color: white;
 }
+#imageList {
+display: flex;
+flex-wrap: wrap;
+}
+.image-container {
+margin: 0.5rem;
+position: relative;
+width: 10rem;
+height: 10rem;
+}
+.image-container img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+.remove-image {
+position: absolute;
+width: 2rem;
+height: 2rem;
+top: 0.25rem;
+right: 0.25rem;
+}
+
 @media print {
 * {
 margin: 0 !important;

@@ -24,8 +24,21 @@ document.addEventListener('DOMContentLoaded', () =>
 		gemini: 'gemini_api_key',
 		groq: 'groq_api_key'
 	};
+	const MAX_IMAGE_UPLOADS = {
+		chatgpt: 3000,
+		claude: 100,
+		gemini: 3000,
+		groq: 1
+	};
+	const MAX_IMAGE_SIZE_MB = {
+		chatgpt: 20,
+		claude: 5,
+		gemini: 20,
+		groq: 3
+	};
 	let abortController = null;
 	let transcribeAbortController = null;
+	let uploadedImages = {};
 	const apiConfig = {
 		chatgpt:
 		{
@@ -87,6 +100,8 @@ document.addEventListener('DOMContentLoaded', () =>
 		elements.apiKeyInput.addEventListener('input', handleApiKeyChange);
 		elements.streamingToggle.addEventListener('change', handleStreamingToggleChange);
 		elements.transcribeBtn.addEventListener('click', handleTranscribeButton);
+		elements.imageUploadInput = document.getElementById('imageUploadInput');
+		elements.imageUploadInput.addEventListener('change', handleImageUpload);
 	}
 
 	function setupTextareaEvents(type, textArea)
@@ -140,6 +155,8 @@ document.addEventListener('DOMContentLoaded', () =>
 		saveToLocalStorage('selected_api_model', selectedModel);
 		updateApiKeyLabel();
 		loadApiKey(selectedModel);
+		uploadedImages = {};
+		updateImageDisplay();
 	}
 
 	function handleApiKeyChange()
@@ -167,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		updateStats(elements.targetText, 'target');
 		updateApiKeyLabel();
 		loadPrompts();
+		updateImageDisplay();
 	}
 
 	function saveToLocalStorage(key, value)
@@ -238,6 +256,15 @@ document.addEventListener('DOMContentLoaded', () =>
 			alert("Please enter your API key.");
 			return;
 		}
+		const imageContent = Object.values(uploadedImages)
+			.map(dataURL => (
+			{
+				type: 'image_url',
+				image_url:
+				{
+					url: dataURL
+				}
+			}));
 		const selectedPrompt = elements.promptSelect.value;
 		const customPrompt = elements.customPromptInput.value;
 		const prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
@@ -265,6 +292,7 @@ document.addEventListener('DOMContentLoaded', () =>
 					max_tokens: apiModel === 'claude' || apiModel === 'groq' ? 8192 : 16383,
 					stream: elements.streamingToggle.checked
 				};
+				requestBody.messages[0].content = [...imageContent, ...requestBody.messages[0].content];
 				const headers = {
 					'Content-Type': 'application/json',
 					[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
@@ -522,6 +550,71 @@ document.addEventListener('DOMContentLoaded', () =>
 			};
 			reader.readAsText(file);
 		}
+	}
+	async function handleImageUpload()
+	{
+		const apiModel = elements.apiModelSelect.value;
+		const files = elements.imageUploadInput.files;
+		if (files.length + Object.keys(uploadedImages)
+			.length > MAX_IMAGE_UPLOADS[apiModel])
+		{
+			alert(`You can upload a maximum of ${MAX_IMAGE_UPLOADS[apiModel]} images for ${apiModel}.`);
+			return;
+		}
+		for (const file of files)
+		{
+			if (!file.type.startsWith('image/png') && !file.type.startsWith('image/jpeg'))
+			{
+				alert('Only PNG and JPG images are allowed.');
+				continue;
+			}
+			const fileSizeMB = file.size / (1024 * 1024);
+			if (fileSizeMB > MAX_IMAGE_SIZE_MB[apiModel])
+			{
+				alert(`Image ${file.name} exceeds the maximum size of ${MAX_IMAGE_SIZE_MB[apiModel]}MB.`);
+				continue;
+			}
+			const reader = new FileReader();
+			reader.onload = (e) =>
+			{
+				const dataURL = e.target.result;
+				uploadedImages[file.name] = dataURL;
+				updateImageDisplay();
+			};
+			reader.readAsDataURL(file);
+		}
+		elements.imageUploadInput.value = '';
+	}
+
+	function updateImageDisplay()
+	{
+		const imageList = document.getElementById('imageList');
+		imageList.innerHTML = '';
+		for (const filename in uploadedImages)
+		{
+			const dataURL = uploadedImages[filename];
+			const imageContainer = document.createElement('div');
+			imageContainer.className = 'image-container';
+			const img = document.createElement('img');
+			img.src = dataURL;
+			img.alt = filename;
+			img.title = filename;
+			imageContainer.appendChild(img);
+			const removeButton = document.createElement('button');
+			removeButton.className = "btn btn-sm btn-danger remove-image";
+			removeButton.textContent = 'X';
+			removeButton.dataset.filename = filename;
+			removeButton.addEventListener('click', removeImage);
+			imageContainer.appendChild(removeButton);
+			imageList.appendChild(imageContainer);
+		}
+	}
+
+	function removeImage(event)
+	{
+		const filename = event.target.dataset.filename;
+		delete uploadedImages[filename];
+		updateImageDisplay();
 	}
 
 	function clearText(textArea, type)
