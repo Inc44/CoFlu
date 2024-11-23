@@ -13,7 +13,10 @@ document.addEventListener('DOMContentLoaded', () =>
 		customPromptContainer: document.getElementById('customPromptContainer'),
 		customPromptInput: document.getElementById('customPrompt'),
 		savePromptBtn: document.getElementById('savePrompt'),
-		streamingToggle: document.getElementById('streamingToggle')
+		streamingToggle: document.getElementById('streamingToggle'),
+		transcribeLanguage: document.getElementById('transcribeLanguage'),
+		audioFile: document.getElementById('audioFile'),
+		transcribeBtn: document.getElementById('transcribeBtn'),
 	};
 	const API_KEYS = {
 		chatgpt: 'chatgpt_api_key',
@@ -22,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		groq: 'groq_api_key'
 	};
 	let abortController = null;
+	let transcribeAbortController = null;
 	const apiConfig = {
 		chatgpt:
 		{
@@ -73,15 +77,16 @@ document.addEventListener('DOMContentLoaded', () =>
 	{
 		['source', 'target'].forEach(type => setupTextareaEvents(type, elements[`${type}Text`]));
 		setupButtonClickEvents();
-		elements.apiModelSelect.addEventListener('change', handleApiModelChange);
-		elements.apiKeyInput.addEventListener('input', handleApiKeyChange);
-		elements.streamingToggle.addEventListener('change', handleStreamingToggleChange);
 		['loadSource', 'loadTarget'].forEach(id =>
 		{
 			const type = id === 'loadSource' ? 'source' : 'target';
 			document.getElementById(id)
 				.addEventListener('change', (e) => handleFileUpload(e, elements[`${type}Text`], type))
-		})
+		});
+		elements.apiModelSelect.addEventListener('change', handleApiModelChange);
+		elements.apiKeyInput.addEventListener('input', handleApiKeyChange);
+		elements.streamingToggle.addEventListener('change', handleStreamingToggleChange);
+		elements.transcribeBtn.addEventListener('click', handleTranscribeButton);
 	}
 
 	function setupTextareaEvents(type, textArea)
@@ -285,6 +290,89 @@ document.addEventListener('DOMContentLoaded', () =>
 			setGeneratingButtonState(false);
 			abortController = null;
 		}
+	}
+	async function handleTranscribeButton()
+	{
+		if (elements.transcribeBtn.dataset.transcribing === 'true')
+		{
+			stopTranscription();
+		}
+		else
+		{
+			startTranscription();
+		}
+	}
+	async function startTranscription()
+	{
+		const apiKey = getApiKey('groq');
+		if (!apiKey)
+		{
+			alert("Please enter your Groq API key.");
+			return;
+		}
+		const file = elements.audioFile.files[0];
+		if (!file)
+		{
+			alert("Please select an audio file.");
+			return;
+		}
+		const language = elements.transcribeLanguage.value;
+		try
+		{
+			setTranscribingButtonState(true);
+			transcribeAbortController = new AbortController();
+			const formData = new FormData();
+			formData.append('file', file);
+			formData.append('model', 'whisper-large-v3');
+			formData.append('temperature', '0');
+			formData.append('language', language);
+			formData.append('response_format', 'verbose_json');
+			const response = await fetch(apiConfig.groq.url.replace('chat/completions', 'audio/transcriptions'),
+			{
+				method: 'POST',
+				headers:
+				{
+					[apiConfig.groq.apiKeyHeader]: apiConfig.groq.apiKeyPrefix + apiKey,
+				},
+				body: formData,
+				signal: transcribeAbortController.signal,
+			});
+			if (!response.ok)
+			{
+				throw new Error(`Transcription failed with status ${response.status}`);
+			}
+			const data = await response.json();
+			elements.sourceText.value = data.text;
+			updateStats(elements.sourceText, 'source');
+			saveText('source', elements.sourceText.value);
+		}
+		catch (error)
+		{
+			if (error.name !== 'AbortError')
+			{
+				handleApiError(error, 'groq');
+			}
+		}
+		finally
+		{
+			setTranscribingButtonState(false);
+			transcribeAbortController = null;
+		}
+	}
+
+	function stopTranscription()
+	{
+		if (transcribeAbortController)
+		{
+			transcribeAbortController.abort();
+		}
+	}
+
+	function setTranscribingButtonState(isTranscribing)
+	{
+		elements.transcribeBtn.style.backgroundColor = isTranscribing ? 'red' : 'blue';
+		elements.transcribeBtn.textContent = isTranscribing ? 'Stop Transcribe' : 'Start Transcribe';
+		elements.transcribeBtn.dataset.transcribing = isTranscribing;
 	}
 
 	function setGeneratingButtonState(isGenerating)

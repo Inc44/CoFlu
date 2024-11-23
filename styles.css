@@ -59,7 +59,9 @@ color: white;
 background-color: rgb(250, 157, 1);
 color: white;
 }
-#compareBtn {
+#compareBtn,
+#htmlSource,
+#htmlTarget {
 background-color: rgb(46, 218, 119);
 color: white;
 }
@@ -71,7 +73,8 @@ color: white;
 }
 #savePrompt,
 #unboldSource,
-#unboldTarget {
+#unboldTarget,
+#transcribeBtn {
 background-color: rgb(1, 111, 255);
 color: white;
 }
