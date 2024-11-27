@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () =>
 		transcribeLanguage: document.getElementById('transcribeLanguage'),
 		audioFile: document.getElementById('audioFile'),
 		transcribeBtn: document.getElementById('transcribeBtn'),
+		translationToggle: document.getElementById('translationToggle'),
+		languageSelect: document.getElementById('language'),
 	};
 	const API_KEYS = {
 		chatgpt: 'chatgpt_api_key',
@@ -99,6 +101,8 @@ document.addEventListener('DOMContentLoaded', () =>
 		elements.apiModelSelect.addEventListener('change', handleApiModelChange);
 		elements.apiKeyInput.addEventListener('input', handleApiKeyChange);
 		elements.streamingToggle.addEventListener('change', handleStreamingToggleChange);
+		elements.translationToggle.addEventListener('change', handleTranslationToggleChange);
+		elements.languageSelect.addEventListener('change', handleLanguageChange);
 		elements.transcribeBtn.addEventListener('click', handleTranscribeButton);
 		elements.imageUploadInput = document.getElementById('imageUploadInput');
 		elements.imageUploadInput.addEventListener('change', handleImageUpload);
@@ -173,6 +177,16 @@ document.addEventListener('DOMContentLoaded', () =>
 		saveToLocalStorage('streaming_enabled', elements.streamingToggle.checked);
 	}
 
+	function handleTranslationToggleChange()
+	{
+		saveToLocalStorage('translation_enabled', elements.translationToggle.checked);
+	}
+
+	function handleLanguageChange()
+	{
+		saveToLocalStorage('selected_language', elements.languageSelect.value);
+	}
+
 	function loadInitialState()
 	{
 		elements.sourceText.value = getFromLocalStorage('sourceText') || '';
@@ -181,6 +195,8 @@ document.addEventListener('DOMContentLoaded', () =>
 		elements.apiModelSelect.value = savedModel;
 		loadApiKey(savedModel);
 		elements.streamingToggle.checked = getFromLocalStorage('streaming_enabled') !== 'false';
+		elements.languageSelect.value = getFromLocalStorage('selected_language') || 'en';
+		elements.translationToggle.checked = getFromLocalStorage('translation_enabled') === 'true';
 		updateStats(elements.sourceText, 'source');
 		updateStats(elements.targetText, 'target');
 		updateApiKeyLabel();
@@ -270,7 +286,12 @@ document.addEventListener('DOMContentLoaded', () =>
 		const selectedPrompt = elements.promptSelect.value;
 		const customPrompt = elements.customPromptInput.value;
 		const prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
-		const fullPrompt = prompt + "\n\n" + elements.sourceText.value;
+		let fullPrompt = prompt + "\n\n" + elements.sourceText.value;
+		if (elements.translationToggle.checked)
+		{
+			const targetLanguage = elements.languageSelect.value;
+			fullPrompt = `Your response must be in ${targetLanguage}.\n\n${fullPrompt}`;
+		}
 		elements.targetText.value = '';
 		try
 		{
