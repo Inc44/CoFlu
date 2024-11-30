@@ -193,12 +193,17 @@ document.addEventListener('DOMContentLoaded', () =>
 
 	function handleDarkToggleChange()
 	{
-		saveToLocalStorage('dark_enabled', elements.darkToggle.checked);
+		const isDarkMode = elements.darkToggle.checked;
+		document.body.setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
+		saveToLocalStorage('dark_enabled', isDarkMode);
 	}
 
 	function handleWideToggleChange()
 	{
-		saveToLocalStorage('wide_enabled', elements.wideToggle.checked);
+		const isWideMode = elements.wideToggle.checked;
+		document.getElementById('content')
+			.classList.toggle('wide', isWideMode);
+		saveToLocalStorage('wide_enabled', isWideMode);
 	}
 
 	function loadInitialState()
@@ -213,6 +218,15 @@ document.addEventListener('DOMContentLoaded', () =>
 		elements.translationToggle.checked = getFromLocalStorage('translation_enabled') === 'true';
 		elements.darkToggle.checked = getFromLocalStorage('dark_enabled') === 'true';
 		elements.wideToggle.checked = getFromLocalStorage('wide_enabled') === 'true';
+		if (elements.darkToggle.checked)
+		{
+			document.body.dataset.bsTheme = elements.darkToggle.checked ? 'dark' : 'light';
+		}
+		if (elements.wideToggle.checked)
+		{
+			document.getElementById('content')
+				.classList.add('wide');
+		}
 		updateStats(elements.sourceText, 'source');
 		updateStats(elements.targetText, 'target');
 		updateApiKeyLabel();
