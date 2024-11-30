@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () =>
 		transcribeBtn: document.getElementById('transcribeBtn'),
 		translationToggle: document.getElementById('translationToggle'),
 		languageSelect: document.getElementById('language'),
+		darkToggle: document.getElementById('darkToggle'),
+		wideToggle: document.getElementById('wideToggle'),
 	};
 	const API_KEYS = {
 		chatgpt: 'chatgpt_api_key',
@@ -102,6 +104,8 @@ document.addEventListener('DOMContentLoaded', () =>
 		elements.apiKeyInput.addEventListener('input', handleApiKeyChange);
 		elements.streamingToggle.addEventListener('change', handleStreamingToggleChange);
 		elements.translationToggle.addEventListener('change', handleTranslationToggleChange);
+		elements.darkToggle.addEventListener('change', handleDarkToggleChange);
+		elements.wideToggle.addEventListener('change', handleWideToggleChange);
 		elements.languageSelect.addEventListener('change', handleLanguageChange);
 		elements.transcribeBtn.addEventListener('click', handleTranscribeButton);
 		elements.imageUploadInput = document.getElementById('imageUploadInput');
@@ -187,6 +191,16 @@ document.addEventListener('DOMContentLoaded', () =>
 		saveToLocalStorage('selected_language', elements.languageSelect.value);
 	}
 
+	function handleDarkToggleChange()
+	{
+		saveToLocalStorage('dark_enabled', elements.darkToggle.checked);
+	}
+
+	function handleWideToggleChange()
+	{
+		saveToLocalStorage('wide_enabled', elements.wideToggle.checked);
+	}
+
 	function loadInitialState()
 	{
 		elements.sourceText.value = getFromLocalStorage('sourceText') || '';
@@ -197,6 +211,8 @@ document.addEventListener('DOMContentLoaded', () =>
 		elements.streamingToggle.checked = getFromLocalStorage('streaming_enabled') !== 'false';
 		elements.languageSelect.value = getFromLocalStorage('selected_language') || 'en';
 		elements.translationToggle.checked = getFromLocalStorage('translation_enabled') === 'true';
+		elements.darkToggle.checked = getFromLocalStorage('dark_enabled') === 'true';
+		elements.wideToggle.checked = getFromLocalStorage('wide_enabled') === 'true';
 		updateStats(elements.sourceText, 'source');
 		updateStats(elements.targetText, 'target');
 		updateApiKeyLabel();
