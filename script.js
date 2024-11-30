@@ -150,6 +150,13 @@ document.addEventListener('DOMContentLoaded', () =>
 				document.getElementById(id)
 					.addEventListener('click', buttonActions[id])
 			});
+		['dedupeSource', 'dedupeTarget', 'sortSource', 'sortTarget'].forEach(id =>
+		{
+			const type = id.includes('Source') ? 'source' : 'target';
+			const action = id.includes('dedupe') ? dedupeText : sortText;
+			document.getElementById(id)
+				.addEventListener('click', () => action(elements[`${type}Text`], type));
+		});
 		elements.compareBtn.addEventListener('click', compareTexts);
 		elements.switchBtn.addEventListener('click', switchTexts);
 		elements.generateTargetBtn.addEventListener('click', handleGenerateButton);
@@ -710,6 +717,22 @@ document.addEventListener('DOMContentLoaded', () =>
 		textArea.value = type === 'uppercase' ? textArea.value.toUpperCase() : textArea.value.toLowerCase();
 		updateStats(textArea, storageType);
 		saveText(storageType, textArea.value);
+	}
+
+	function dedupeText(textArea, type)
+	{
+		const lines = textArea.value.split('\n');
+		const uniqueLines = [...new Set(lines)];
+		textArea.value = uniqueLines.join('\n');
+		handleTextareaInput(textArea, type);
+	}
+
+	function sortText(textArea, type)
+	{
+		const lines = textArea.value.split('\n');
+		lines.sort();
+		textArea.value = lines.join('\n');
+		handleTextareaInput(textArea, type);
 	}
 
 	function unboldText(textArea, type)

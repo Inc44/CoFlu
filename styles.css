@@ -75,21 +75,25 @@ color: white;
 background-color: rgb(250, 157, 1);
 color: white;
 }
-#compareBtn,
-#htmlSource,
-#htmlTarget {
+#compareBtn {
 background-color: rgb(46, 218, 119);
 color: white;
 }
 #generateTarget,
+#unboldSource,
+#unboldTarget,
 #latexSource,
-#latexTarget {
+#latexTarget,
+#htmlSource,
+#htmlTarget {
 background-color: rgb(20, 199, 222);
 color: white;
 }
 #savePrompt,
-#unboldSource,
-#unboldTarget,
+#dedupeSource,
+#dedupeTarget,
+#sortSource,
+#sortTarget,
 #transcribeBtn {
 background-color: rgb(1, 111, 255);
 color: white;
