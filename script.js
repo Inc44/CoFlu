@@ -61,7 +61,9 @@ document.addEventListener('DOMContentLoaded', () =>
 			apiKeyPrefix: '',
 			additionalHeaders:
 			{
-				'anthropic-version': '2023-06-01'
+				'anthropic-version': '2023-06-01',
+				'content-type': 'application/json',
+				'anthropic-dangerous-direct-browser-access': 'true'
 			},
 			extractContent: data => data.content[0]?.text,
 			extractStreamContent: data => data.delta?.text
