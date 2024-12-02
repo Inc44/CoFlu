@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		loadApiKey(savedModel);
 		elements.streamingToggle.checked = getFromLocalStorage('streaming_enabled') !== 'false';
 		elements.languageSelect.value = getFromLocalStorage('selected_language') || 'en';
-		elements.rendererSelect.value = getFromLocalStorage('selected_renderer') || 'mathjax3';
+		elements.rendererSelect.value = getFromLocalStorage('selected_renderer') || 'katex';
 		elements.translationToggle.checked = getFromLocalStorage('translation_enabled') === 'true';
 		elements.cleanupToggle.checked = getFromLocalStorage('cleanup_enabled') === 'true';
 		elements.darkToggle.checked = getFromLocalStorage('dark_enabled') === 'true';
