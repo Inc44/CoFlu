@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		transcribeBtn: document.getElementById('transcribeBtn'),
 		translationToggle: document.getElementById('translationToggle'),
 		languageSelect: document.getElementById('language'),
+		rendererSelect: document.getElementById('renderer'),
 		cleanupToggle: document.getElementById('cleanupToggle'),
 		darkToggle: document.getElementById('darkToggle'),
 		wideToggle: document.getElementById('wideToggle'),
@@ -111,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		elements.darkToggle.addEventListener('change', handleDarkToggleChange);
 		elements.wideToggle.addEventListener('change', handleWideToggleChange);
 		elements.languageSelect.addEventListener('change', handleLanguageChange);
+		elements.rendererSelect.addEventListener('change', handleRendererChange);
 		elements.transcribeBtn.addEventListener('click', handleTranscribeButton);
 		elements.imageUploadInput = document.getElementById('imageUploadInput');
 		elements.imageUploadInput.addEventListener('change', handleImageUpload);
@@ -143,6 +145,8 @@ document.addEventListener('DOMContentLoaded', () =>
 			'lowercaseTarget': () => transformText(elements.targetText, 'lowercase', 'target'),
 			'unboldSource': () => unboldText(elements.sourceText, 'source'),
 			'unboldTarget': () => unboldText(elements.targetText, 'target'),
+			'unspaceSource': () => unspaceText(elements.sourceText, 'source'),
+			'unspaceTarget': () => unspaceText(elements.targetText, 'target'),
 			'latexSource': () => fixLatex(elements.sourceText, 'source'),
 			'latexTarget': () => fixLatex(elements.targetText, 'target'),
 			'htmlSource': () => fixHtml(elements.sourceText, 'source'),
@@ -202,6 +206,11 @@ document.addEventListener('DOMContentLoaded', () =>
 		saveToLocalStorage('selected_language', elements.languageSelect.value);
 	}
 
+	function handleRendererChange()
+	{
+		saveToLocalStorage('selected_renderer', elements.rendererSelect.value);
+	}
+
 	function handleCleanupToggleChange()
 	{
 		const isCleanupMode = elements.cleanupToggle.checked;
@@ -232,6 +241,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		loadApiKey(savedModel);
 		elements.streamingToggle.checked = getFromLocalStorage('streaming_enabled') !== 'false';
 		elements.languageSelect.value = getFromLocalStorage('selected_language') || 'en';
+		elements.rendererSelect.value = getFromLocalStorage('selected_renderer') || 'mathjax3';
 		elements.translationToggle.checked = getFromLocalStorage('translation_enabled') === 'true';
 		elements.cleanupToggle.checked = getFromLocalStorage('cleanup_enabled') === 'true';
 		elements.darkToggle.checked = getFromLocalStorage('dark_enabled') === 'true';
@@ -749,6 +759,12 @@ document.addEventListener('DOMContentLoaded', () =>
 	function unboldText(textArea, type)
 	{
 		textArea.value = textArea.value.replace(/\*\*/g, '');
+		handleTextareaInput(textArea, type);
+	}
+
+	function unspaceText(textArea, type)
+	{
+		textArea.value = textArea.value.replace(/ +$/gm, '');
 		handleTextareaInput(textArea, type);
 	}
 
