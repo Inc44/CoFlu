@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		transcribeBtn: document.getElementById('transcribeBtn'),
 		translationToggle: document.getElementById('translationToggle'),
 		languageSelect: document.getElementById('language'),
+		cleanupToggle: document.getElementById('cleanupToggle'),
 		darkToggle: document.getElementById('darkToggle'),
 		wideToggle: document.getElementById('wideToggle'),
 	};
@@ -106,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		elements.apiKeyInput.addEventListener('input', handleApiKeyChange);
 		elements.streamingToggle.addEventListener('change', handleStreamingToggleChange);
 		elements.translationToggle.addEventListener('change', handleTranslationToggleChange);
+		elements.cleanupToggle.addEventListener('change', handleCleanupToggleChange);
 		elements.darkToggle.addEventListener('change', handleDarkToggleChange);
 		elements.wideToggle.addEventListener('change', handleWideToggleChange);
 		elements.languageSelect.addEventListener('change', handleLanguageChange);
@@ -200,6 +202,12 @@ document.addEventListener('DOMContentLoaded', () =>
 		saveToLocalStorage('selected_language', elements.languageSelect.value);
 	}
 
+	function handleCleanupToggleChange()
+	{
+		const isCleanupMode = elements.cleanupToggle.checked;
+		saveToLocalStorage('cleanup_enabled', isCleanupMode);
+	}
+
 	function handleDarkToggleChange()
 	{
 		const isDarkMode = elements.darkToggle.checked;
@@ -225,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		elements.streamingToggle.checked = getFromLocalStorage('streaming_enabled') !== 'false';
 		elements.languageSelect.value = getFromLocalStorage('selected_language') || 'en';
 		elements.translationToggle.checked = getFromLocalStorage('translation_enabled') === 'true';
+		elements.cleanupToggle.checked = getFromLocalStorage('cleanup_enabled') === 'true';
 		elements.darkToggle.checked = getFromLocalStorage('dark_enabled') === 'true';
 		elements.wideToggle.checked = getFromLocalStorage('wide_enabled') === 'true';
 		if (elements.darkToggle.checked)
@@ -787,7 +796,10 @@ document.addEventListener('DOMContentLoaded', () =>
 		const target = elements.targetText.value;
 		const dmp = new diff_match_patch();
 		const diffs = dmp.diff_main(source, target);
-		dmp.diff_cleanupSemantic(diffs);
+		if (cleanupToggle.checked)
+		{
+			dmp.diff_cleanupSemantic(diffs);
+		}
 		document.getElementById('singleColumnDiff')
 			.innerHTML = generateSingleColumnDiffView(diffs);
 		const [leftColumn, rightColumn] = generateDoubleColumnDiffView(diffs);
