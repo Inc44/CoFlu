@@ -907,7 +907,7 @@ document.addEventListener('DOMContentLoaded', () =>
 			.innerHTML = marked.parse(sourceMarkdown);
 		document.getElementById('rightColumn')
 			.innerHTML = marked.parse(targetMarkdown);
-		const selectedRenderer = getFromLocalStorage('selected_renderer') || 'mathjax3';
+		const selectedRenderer = getFromLocalStorage('selected_renderer') || 'katex';
 		if (selectedRenderer === 'katex')
 		{
 			const columns = [
