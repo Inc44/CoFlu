@@ -208,7 +208,8 @@ document.addEventListener('DOMContentLoaded', () =>
 
 	function handleRendererChange()
 	{
-		saveToLocalStorage('selected_renderer', elements.rendererSelect.value);
+		const selectedRenderer = elements.rendererSelect.value;
+		saveToLocalStorage('selected_renderer', selectedRenderer);
 	}
 
 	function handleCleanupToggleChange()
@@ -906,7 +907,48 @@ document.addEventListener('DOMContentLoaded', () =>
 			.innerHTML = marked.parse(sourceMarkdown);
 		document.getElementById('rightColumn')
 			.innerHTML = marked.parse(targetMarkdown);
-		MathJax.typesetPromise();
+		const selectedRenderer = getFromLocalStorage('selected_renderer') || 'mathjax3';
+		if (selectedRenderer === 'katex')
+		{
+			const columns = [
+				document.getElementById('leftColumn'),
+				document.getElementById('rightColumn')
+			];
+			columns.forEach(column =>
+			{
+				renderMathInElement(column,
+				{
+					delimiters: [
+					{
+						left: '$$',
+						right: '$$',
+						display: true
+					},
+					{
+						left: '$',
+						right: '$',
+						display: false
+					},
+					{
+						left: '\\[',
+						right: '\\]',
+						display: true
+					},
+					{
+						left: '\\(',
+						right: '\\)',
+						display: false
+					}],
+					throwOnError: false,
+					trust: true,
+					strict: false
+				});
+			});
+		}
+		else
+		{
+			MathJax.typesetPromise();
+		}
 	}
 
 	function loadPrompts()
