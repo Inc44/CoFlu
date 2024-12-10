@@ -569,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		const genAI = new GoogleGenerativeAI(apiKey);
 		const model = genAI.getGenerativeModel(
 		{
-			model: "gemini-exp-1121"
+			model: "gemini-exp-1206"
 		});
 		const generationConfig = {
 			temperature: 0,
