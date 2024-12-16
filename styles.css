@@ -19,9 +19,6 @@ max-width: 100rem;
 .container.wide {
 max-width: 420rem;
 }
-.mt-5 {
-margin-top: 0rem;
-}
 .card {
 box-shadow: 0.15rem 0.15rem 0.15rem black;
 margin: 0.5rem;
