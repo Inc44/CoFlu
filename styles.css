@@ -154,13 +154,13 @@ top: 0.25rem;
 right: 0.25rem;
 }
 #homePage {
-color: inherit;
+color: inherit !important;
 display: flex;
 font-size: 2rem;
 font-weight: bold;
 margin: 1rem;
 max-width: 9rem;
-text-decoration: none;
+text-decoration: none !important;
 }
 @media print {
 * {
