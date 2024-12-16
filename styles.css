@@ -162,6 +162,9 @@ margin: 1rem;
 max-width: 9rem;
 text-decoration: none !important;
 }
+#printContainer {
+display: none;
+}
 @media print {
 * {
 margin: 0 !important;
@@ -169,17 +172,14 @@ padding: 0 !important;
 box-shadow: none !important;
 border: none !important;
 }
-h5,
-#leftColumn,
-#homePage,
-.container > .row:not(:last-child) {
+.container {
 display: none !important;
 }
-#doubleColumnDiff,
-#rightColumn {
+#printContainer {
 display: block;
 box-shadow: none;
 height: 100%;
 width: 100%;
+color:black;
 }
 }

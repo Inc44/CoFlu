@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		cleanupToggle: document.getElementById('cleanupToggle'),
 		darkToggle: document.getElementById('darkToggle'),
 		wideToggle: document.getElementById('wideToggle'),
+		printContainer: document.getElementById('printContainer')
 	};
 	const API_KEYS = {
 		chatgpt: 'chatgpt_api_key',
@@ -907,12 +908,14 @@ document.addEventListener('DOMContentLoaded', () =>
 			.innerHTML = marked.parse(sourceMarkdown);
 		document.getElementById('rightColumn')
 			.innerHTML = marked.parse(targetMarkdown);
+		elements.printContainer.innerHTML = marked.parse(targetMarkdown);
 		const selectedRenderer = getFromLocalStorage('selected_renderer') || 'katex';
 		if (selectedRenderer === 'katex')
 		{
 			const columns = [
 				document.getElementById('leftColumn'),
-				document.getElementById('rightColumn')
+				document.getElementById('rightColumn'),
+				document.getElementById('printContainer')
 			];
 			columns.forEach(column =>
 			{
@@ -945,7 +948,7 @@ document.addEventListener('DOMContentLoaded', () =>
 				});
 			});
 		}
-		else
+		else if (selectedRenderer === 'mathjax3')
 		{
 			MathJax.typesetPromise();
 		}
