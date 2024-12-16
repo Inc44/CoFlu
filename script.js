@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () =>
 		if (elements.translationToggle.checked)
 		{
 			const targetLanguage = elements.languageSelect.value;
-			fullPrompt = `Provide your answer in ${targetLanguage}, even if I type in English.\n\n${fullPrompt}`;
+			fullPrompt = `Translate the following text to ${targetLanguage}\n\n${fullPrompt}`;
 		}
 		elements.targetText.value = '';
 		try

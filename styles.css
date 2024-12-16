@@ -18,6 +18,9 @@ max-width: 100rem;
 .container.wide {
 max-width: 420rem;
 }
+.mt-5 {
+margin-top: 0rem !important;
+}
 .card {
 box-shadow: 0.15rem 0.15rem 0.15rem black;
 margin: 0.5rem;
@@ -150,6 +153,15 @@ height: 2rem;
 top: 0.25rem;
 right: 0.25rem;
 }
+#homePage {
+color: inherit;
+display: flex;
+font-size: 2rem;
+font-weight: bold;
+margin: 1rem;
+max-width: 9rem;
+text-decoration: none;
+}
 @media print {
 * {
 margin: 0 !important;
@@ -159,6 +171,7 @@ border: none !important;
 }
 h5,
 #leftColumn,
+#homePage,
 .container > .row:not(:last-child) {
 display: none !important;
 }
