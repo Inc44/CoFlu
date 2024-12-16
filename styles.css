@@ -13,6 +13,9 @@ background-color: rgb(94, 15, 8);
 body[data-bs-theme="dark"] .diff-insertion {
 background-color: rgb(15, 87, 46);
 }
+body[data-bs-theme="light"] #homePage {
+color: rgb(30, 35, 40);
+}
 .container {
 max-width: 100rem;
 }
