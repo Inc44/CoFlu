@@ -63,11 +63,13 @@ margin: 0.5rem;
 }
 .button-group {
 display: flex;
-justify-content: center;
+flex-wrap: wrap;
 gap: 2rem;
+justify-content: center;
 }
 .btn-lg {
 flex: 1;
+margin: 0.1rem;
 max-width: 16rem;
 }
 #clearSource,
