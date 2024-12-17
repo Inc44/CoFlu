@@ -69,8 +69,11 @@ justify-content: center;
 }
 .btn-lg {
 flex: 1;
-margin: 0.1rem;
 max-width: 16rem;
+}
+.btn-lg,
+.btn-sm {
+margin: 0.1rem;
 }
 #clearSource,
 #clearTarget {
