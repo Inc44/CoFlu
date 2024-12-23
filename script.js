@@ -140,6 +140,8 @@ document.addEventListener('DOMContentLoaded', () =>
 		const buttonActions = {
 			'clearSource': () => clearText(elements.sourceText, 'source'),
 			'clearTarget': () => clearText(elements.targetText, 'target'),
+			'copySource': () => copyText(elements.sourceText),
+			'copyTarget': () => copyText(elements.targetText),
 			'uppercaseSource': () => transformText(elements.sourceText, 'uppercase', 'source'),
 			'lowercaseSource': () => transformText(elements.sourceText, 'lowercase', 'source'),
 			'uppercaseTarget': () => transformText(elements.targetText, 'uppercase', 'target'),
@@ -708,6 +710,8 @@ document.addEventListener('DOMContentLoaded', () =>
 		updateStats(textArea, type);
 		saveText(type, '');
 	}
+
+	const copyText = textArea => navigator.clipboard.writeText(textArea.value);
 
 	function formatMessagesWithImages(prompt, imageContent)
 	{

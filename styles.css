@@ -86,6 +86,8 @@ color: white;
 background-color: rgb(250, 157, 1);
 color: white;
 }
+#copySource,
+#copyTarget,
 #compareBtn {
 background-color: rgb(46, 218, 119);
 color: white;
