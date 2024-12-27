@@ -757,8 +757,17 @@ document.addEventListener('DOMContentLoaded', () =>
 	function sortText(textArea, type)
 	{
 		const lines = textArea.value.split('\n');
-		lines.sort();
-		textArea.value = lines.join('\n');
+		if (lines.length === 1)
+		{
+			const words = lines[0].split(/\s+/);
+			words.sort();
+			textArea.value = words.join(' ');
+		}
+		else
+		{
+			lines.sort();
+			textArea.value = lines.join('\n');
+		}
 		handleTextareaInput(textArea, type);
 	}
 
