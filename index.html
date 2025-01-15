@@ -20,12 +20,35 @@
 		<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js"></script>
 		<script type="importmap"> {"imports": {"@google/generative-ai": "https://esm.run/@google/generative-ai"}}</script>
-		<script src="script.js"></script>
+		<script src="config.js"></script>
+		<script src="services/storage.service.js"></script>
+		<script src="services/text.service.js"></script>
+		<script src="services/comparison.service.js"></script>
+		<script src="services/ai.service.js"></script>
+		<script src="ui/components.js"></script>
+		<script src="ui/handlers.js"></script>
+		<script src="ui/state.js"></script>
+		<script src="app.js"></script>
 	</head>
 	<body data-bs-theme="light">
 		<div id="printContainer"></div>
 		<div class="container" id="content">
-			<a id="homePage" href="https://inc44.github.io/CoFlu/">📝 CoFlu</a>
+			<nav class="navbar">
+				<a id="homePage" href="index.html">📝 CoFlu</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav">
+						<li class="nav-item">
+							<a class="nav-link active" href="index.html">Main</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="settings.html">Settings</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
 			<div class="row">
 				<div class="col-md-6">
 					<div class="card mb-3">
@@ -92,7 +115,7 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-body">
-							<h5>AI Settings</h5>
+							<h5>AI</h5>
 							<div class="mb-3">
 								<label for="apiModel" class="form-label">API Model:</label>
 								<select class="form-select" id="apiModel">
@@ -103,10 +126,6 @@
 								</select>
 							</div>
 							<div class="mb-3">
-								<label for="apiKey" class="form-label">API Key:</label>
-								<input type="password" class="form-control" id="apiKey" placeholder="Type / Paste API Key">
-							</div>
-							<div class="mb-3">
 								<label for="promptSelect" class="form-label">Select Prompt:</label>
 								<select class="form-select" id="promptSelect"></select>
 							</div>
@@ -114,10 +133,6 @@
 								<label for="customPrompt" class="form-label">Custom Prompt:</label>
 								<input type="text" class="form-control" id="customPrompt" placeholder="Type / Paste Custom Prompt">
 								<button class="btn" id="savePrompt">Save Prompt</button>
-							</div>
-							<div class="mb-3 form-check">
-								<input type="checkbox" class="form-check-input" id="streamingToggle" checked>
-								<label class="form-check-label" for="streamingToggle">Enable Streaming Response</label>
 							</div>
 						</div>
 					</div>
@@ -141,7 +156,7 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-body">
-							<h5>Transcribe Settings</h5>
+							<h5>Transcribe</h5>
 							<div class="mb-3">
 								<label for="transcribeLanguage" class="form-label">Language:</label>
 								<select class="form-select" id="transcribeLanguage">
@@ -168,7 +183,7 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-body">
-							<h5>Translate Settings</h5>
+							<h5>Translate</h5>
 							<div class="mb-3">
 								<select class="form-select" id="language">
 									<option value="zh">Chinese</option>
@@ -184,51 +199,6 @@
 							<div class="mb-3 form-check">
 								<input type="checkbox" class="form-check-input" id="translationToggle" checked>
 								<label class="form-check-label" for="translationToggle">Enable Translation</label>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Comparison Settings</h5>
-							<div class="mb-3 form-check">
-								<input type="checkbox" class="form-check-input" id="cleanupToggle" checked>
-								<label class="form-check-label" for="cleanupToggle">Enable Semantic Cleanup</label>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Rendering Settings</h5>
-							<div class="mb-3">
-								<select class="form-select" id="renderer">
-									<option value="katex">KaTeX</option>
-									<option value="mathjax3">MathJax3</option>
-								</select>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Appearance Settings</h5>
-							<div class="mb-3 form-check">
-								<input type="checkbox" class="form-check-input" id="darkToggle" checked>
-								<label class="form-check-label" for="darkToggle">Enable Dark Mode</label>
-							</div>
-							<div class="mb-3 form-check">
-								<input type="checkbox" class="form-check-input" id="wideToggle" checked>
-								<label class="form-check-label" for="wideToggle">Enable Wide Mode</label>
 							</div>
 						</div>
 					</div>

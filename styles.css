@@ -172,8 +172,15 @@ margin: 1rem;
 max-width: 9rem;
 text-decoration: none;
 }
+#homePage:hover {
+color: rgb(1, 111, 255);
+}
 #printContainer {
 display: none;
+}
+.nav-link {
+margin-right: 1rem;
+text-align: right;
 }
 @media print {
 * {
