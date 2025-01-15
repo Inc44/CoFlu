@@ -18,10 +18,26 @@ window.CONFIG = {
 		},
 		MODELS:
 		{
-			chatgpt: "chatgpt-4o-latest",
-			claude: "claude-3-5-sonnet-20241022",
-			gemini: "gemini-exp-1206",
-			groq: "llama-3.2-90b-vision-preview"
+			chatgpt:
+			{
+				default: "chatgpt-4o-latest",
+				options: ["chatgpt-4o-latest", "gpt-4o-2024-11-20", "gpt-4o-2024-08-06", "gpt-4o", "gpt-4o-mini-2024-07-18", "gpt-4o-mini"]
+			},
+			claude:
+			{
+				default: "claude-3-5-sonnet-20241022",
+				options: ["claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022"]
+			},
+			gemini:
+			{
+				default: "gemini-exp-1206",
+				options: ["gemini-exp-1206", "gemini-2.0-flash-thinking-exp-1219", "gemini-2.0-flash-exp"]
+			},
+			groq:
+			{
+				default: "llama-3.2-90b-vision-preview",
+				options: ["llama-3.2-90b-vision-preview", "llama-3.2-11b-vision-preview"]
+			}
 		},
 		CONFIG:
 		{

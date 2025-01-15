@@ -14,13 +14,28 @@ class SettingsApp
 			cleanupToggle: document.getElementById('cleanupToggle'),
 			rendererSelect: document.getElementById('renderer'),
 			darkToggle: document.getElementById('darkToggle'),
-			wideToggle: document.getElementById('wideToggle')
+			wideToggle: document.getElementById('wideToggle'),
+			modelContainers:
+			{
+				chatgpt: document.getElementById('chatgptModelContainer'),
+				claude: document.getElementById('claudeModelContainer'),
+				gemini: document.getElementById('geminiModelContainer'),
+				groq: document.getElementById('groqModelContainer')
+			},
+			modelSelects:
+			{
+				chatgpt: document.getElementById('chatgptModel'),
+				claude: document.getElementById('claudeModel'),
+				gemini: document.getElementById('geminiModel'),
+				groq: document.getElementById('groqModel')
+			}
 		};
 	}
 	init()
 	{
 		this.loadSettings();
 		this.setupEventListeners();
+		this.updateModelVisibility(this.elements.apiModelSelect.value);
 	}
 	loadSettings()
 	{
@@ -32,9 +47,43 @@ class SettingsApp
 		this.elements.darkToggle.checked = StorageService.load('dark_enabled', false);
 		this.elements.wideToggle.checked = StorageService.load('wide_enabled', false);
 		this.elements.rendererSelect.value = StorageService.load('selected_renderer', 'katex');
+		Object.entries(CONFIG.API.MODELS)
+			.forEach(([provider, modelConfig]) =>
+			{
+				const modelSelect = this.elements.modelSelects[provider];
+				if (modelSelect)
+				{
+					modelSelect.innerHTML = '';
+					modelConfig.options.forEach(model =>
+					{
+						const option = document.createElement('option');
+						option.value = model;
+						option.textContent = model;
+						modelSelect.appendChild(option);
+					});
+					const savedModelValue = StorageService.load(`${provider}_model`, modelConfig.default);
+					modelSelect.value = savedModelValue;
+				}
+			});
 		this.updateApiKeyLabel(savedModel);
 		UIState.updateTheme(this.elements.darkToggle.checked);
 		UIState.updateLayout(this.elements.wideToggle.checked);
+	}
+	updateModelVisibility(selectedProvider)
+	{
+		Object.values(this.elements.modelContainers)
+			.forEach(container =>
+			{
+				if (container)
+				{
+					container.classList.remove('active');
+				}
+			});
+		const selectedContainer = this.elements.modelContainers[selectedProvider];
+		if (selectedContainer)
+		{
+			selectedContainer.classList.add('active');
+		}
 	}
 	setupEventListeners()
 	{
@@ -44,18 +93,13 @@ class SettingsApp
 			StorageService.save('selected_api_model', selectedModel);
 			this.updateApiKeyLabel(selectedModel);
 			this.elements.apiKeyInput.value = StorageService.load(CONFIG.API.KEYS[selectedModel], '');
+			this.updateModelVisibility(selectedModel);
 		});
 		this.elements.apiKeyInput.addEventListener('change', () =>
 		{
 			const apiType = this.elements.apiModelSelect.value;
 			const apiKey = this.elements.apiKeyInput.value.trim();
 			StorageService.save(CONFIG.API.KEYS[apiType], apiKey);
-			const isValid = ApiService.validateKey(apiKey, apiType);
-			this.elements.apiKeyInput.classList.toggle('invalid', !isValid);
-			if (!isValid && apiKey)
-			{
-				console.warn('API key format may be invalid');
-			}
 		});
 		this.elements.streamingToggle.addEventListener('change', () =>
 		{
@@ -68,15 +112,25 @@ class SettingsApp
 		this.elements.darkToggle.addEventListener('change', () =>
 		{
 			UIState.updateTheme(this.elements.darkToggle.checked);
+			StorageService.save('dark_enabled', this.elements.darkToggle.checked);
 		});
 		this.elements.wideToggle.addEventListener('change', () =>
 		{
 			UIState.updateLayout(this.elements.wideToggle.checked);
+			StorageService.save('wide_enabled', this.elements.wideToggle.checked);
 		});
 		this.elements.rendererSelect.addEventListener('change', () =>
 		{
 			StorageService.save('selected_renderer', this.elements.rendererSelect.value);
 		});
+		Object.entries(this.elements.modelSelects)
+			.forEach(([provider, select]) =>
+			{
+				select?.addEventListener('change', () =>
+				{
+					StorageService.save(`${provider}_model`, select.value);
+				});
+			});
 	}
 	updateApiKeyLabel(model)
 	{

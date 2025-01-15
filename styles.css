@@ -182,6 +182,12 @@ display: none;
 margin-right: 1rem;
 text-align: right;
 }
+.model-select {
+display: none;
+}
+.model-select.active {
+display: block;
+}
 @media print {
 * {
 margin: 0;

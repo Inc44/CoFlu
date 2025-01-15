@@ -16,8 +16,9 @@ const AiService = {
 			else
 			{
 				const config = CONFIG.API.CONFIG[model];
+				const selectedModel = StorageService.load(`${model}_model`, CONFIG.API.MODELS[model].default);
 				const requestBody = {
-					model: config.model,
+					model: selectedModel,
 					messages: this.formatMessagesWithImages(prompt, options.images, model),
 					temperature: 0,
 					max_tokens: model === 'claude' || model === 'groq' ? 8192 : 16383,
@@ -67,9 +68,10 @@ const AiService = {
 			GoogleGenerativeAI
 		} = await import("@google/generative-ai");
 		const genAI = new GoogleGenerativeAI(apiKey);
+		const selectedModel = StorageService.load('gemini_model', CONFIG.API.MODELS.gemini.default);
 		const model = genAI.getGenerativeModel(
 		{
-			model: "gemini-exp-1206"
+			model: selectedModel
 		});
 		try
 		{

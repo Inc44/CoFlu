@@ -57,9 +57,27 @@
 								<label for="apiKey" class="form-label">API Key:</label>
 								<input type="password" class="form-control" id="apiKey" placeholder="Type / Paste API Key">
 							</div>
-							<div class="mb-3 form-check">
-								<input type="checkbox" class="form-check-input" id="streamingToggle" checked>
-								<label class="form-check-label" for="streamingToggle">Enable Streaming Response</label>
+							<div id="modelSelectionContainer">
+								<div class="mb-3 model-select" id="chatgptModelContainer">
+									<label for="chatgptModel" class="form-label">ChatGPT Model:</label>
+									<select class="form-select" id="chatgptModel"></select>
+								</div>
+								<div class="mb-3 model-select" id="claudeModelContainer">
+									<label for="claudeModel" class="form-label">Claude Model:</label>
+									<select class="form-select" id="claudeModel"></select>
+								</div>
+								<div class="mb-3 model-select" id="geminiModelContainer">
+									<label for="geminiModel" class="form-label">Gemini Model:</label>
+									<select class="form-select" id="geminiModel"></select>
+								</div>
+								<div class="mb-3 model-select" id="groqModelContainer">
+									<label for="groqModel" class="form-label">Groq Model:</label>
+									<select class="form-select" id="groqModel"></select>
+								</div>
+								<div class="mb-3 form-check">
+									<input type="checkbox" class="form-check-input" id="streamingToggle" checked>
+									<label class="form-check-label" for="streamingToggle">Enable Streaming Response</label>
+								</div>
 							</div>
 						</div>
 					</div>
