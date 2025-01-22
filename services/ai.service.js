@@ -17,13 +17,31 @@ const AiService = {
 			{
 				const config = CONFIG.API.CONFIG[model];
 				const selectedModel = StorageService.load(`${model}_model`, CONFIG.API.MODELS[model].default);
-				const requestBody = {
-					model: selectedModel,
-					messages: this.formatMessagesWithImages(prompt, options.images, model),
-					temperature: 0,
-					max_tokens: model === 'claude' || model === 'groq' ? 8192 : 16383,
-					stream: options.streaming
-				};
+				let requestBody = {};
+				if (model === 'deepseek')
+				{
+					requestBody = {
+						model: selectedModel,
+						messages: [
+						{
+							role: "user",
+							content: prompt
+						}],
+						temperature: 0,
+						max_tokens: 8192,
+						stream: options.streaming
+					};
+				}
+				else
+				{
+					requestBody = {
+						model: selectedModel,
+						messages: this.formatMessagesWithImages(prompt, options.images, model),
+						temperature: 0,
+						max_tokens: model === 'claude' || model === 'groq' ? 8192 : 16383,
+						stream: options.streaming
+					};
+				}
 				const headers = {
 					'Content-Type': 'application/json',
 					[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
