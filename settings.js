@@ -19,6 +19,7 @@ class SettingsApp
 			{
 				chatgpt: document.getElementById('chatgptModelContainer'),
 				claude: document.getElementById('claudeModelContainer'),
+				deepseek: document.getElementById('deepseekModelContainer'),
 				gemini: document.getElementById('geminiModelContainer'),
 				groq: document.getElementById('groqModelContainer')
 			},
@@ -26,6 +27,7 @@ class SettingsApp
 			{
 				chatgpt: document.getElementById('chatgptModel'),
 				claude: document.getElementById('claudeModel'),
+				deepseek: document.getElementById('deepseekModel'),
 				gemini: document.getElementById('geminiModel'),
 				groq: document.getElementById('groqModel')
 			}

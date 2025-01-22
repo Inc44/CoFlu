@@ -6,6 +6,7 @@ window.CONFIG = {
 		{
 			chatgpt: 'chatgpt_api_key',
 			claude: 'claude_api_key',
+			deepseek: 'deepseek_api_key',
 			gemini: 'gemini_api_key',
 			groq: 'groq_api_key'
 		},
@@ -13,6 +14,7 @@ window.CONFIG = {
 		{
 			chatgpt: 'https://api.openai.com/v1/chat/completions',
 			claude: 'https://api.anthropic.com/v1/messages',
+			deepseek: 'https://api.deepseek.com/chat/completions',
 			gemini: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
 			groq: 'https://api.groq.com/openai/v1/chat/completions'
 		},
@@ -37,6 +39,11 @@ window.CONFIG = {
 			{
 				default: "llama-3.2-90b-vision-preview",
 				options: ["llama-3.2-90b-vision-preview", "llama-3.2-11b-vision-preview"]
+			},
+			deepseek:
+			{
+				default: "deepseek-chat",
+				options: ["deepseek-chat", "deepseek-reasoner"]
 			}
 		},
 		CONFIG:
@@ -64,6 +71,15 @@ window.CONFIG = {
 				},
 				extractContent: data => data.content[0]?.text,
 				extractStreamContent: data => data.delta?.text
+			},
+			deepseek:
+			{
+				url: 'https://api.deepseek.com/chat/completions',
+				model: "deepseek-chat",
+				apiKeyHeader: 'Authorization',
+				apiKeyPrefix: 'Bearer ',
+				extractContent: data => data.choices[0]?.message?.content,
+				extractStreamContent: data => data.choices[0]?.delta?.content
 			},
 			gemini:
 			{
@@ -105,6 +121,11 @@ window.CONFIG = {
 			{
 				max: 1,
 				size: 3
+			},
+			deepseek:
+			{
+				max: 0,
+				size: 0
 			}
 		}
 	},
@@ -114,6 +135,7 @@ window.CONFIG = {
 		{
 			chatgpt: 'OpenAI API Key:',
 			claude: 'Anthropic API Key:',
+			deepseek: 'DeepSeek API Key:',
 			gemini: 'Google API Key:',
 			groq: 'Groq API Key:'
 		},
@@ -125,6 +147,7 @@ window.CONFIG = {
 		{
 			chatgpt: /^sk-[A-Za-z0-9]{32,}$/,
 			claude: /^sk-ant-[A-Za-z0-9]{32,}$/,
+			deepseek: /^sk-[A-Za-z0-9]{32,}$/,
 			gemini: /^AI[A-Za-z0-9-_]{32,}$/,
 			groq: /^gsk_[A-Za-z0-9]{32,}$/
 		}

@@ -39,7 +39,7 @@ const UIState = {
 		const imageUploadCard = document.querySelector('.card:has(#imageList)');
 		if (imageUploadCard)
 		{
-			imageUploadCard.style.display = ['claude', 'gemini'].includes(apiModel) ? 'none' : 'block';
+			imageUploadCard.style.display = ['claude', 'deepseek', 'gemini'].includes(apiModel) ? 'none' : 'block';
 		}
 	}
 };
