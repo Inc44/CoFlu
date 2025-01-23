@@ -14,6 +14,7 @@ class SettingsApp
 			cleanupToggle: document.getElementById('cleanupToggle'),
 			rendererSelect: document.getElementById('renderer'),
 			darkToggle: document.getElementById('darkToggle'),
+			numberedLinesToggle: document.getElementById('numberedLinesToggle'),
 			wideToggle: document.getElementById('wideToggle'),
 			modelContainers:
 			{
@@ -47,6 +48,7 @@ class SettingsApp
 		this.elements.streamingToggle.checked = StorageService.load('streaming_enabled', true);
 		this.elements.cleanupToggle.checked = StorageService.load('cleanup_enabled', true);
 		this.elements.darkToggle.checked = StorageService.load('dark_enabled', false);
+		this.elements.numberedLinesToggle.checked = StorageService.load('numbered_lines_enabled', false);
 		this.elements.wideToggle.checked = StorageService.load('wide_enabled', false);
 		this.elements.rendererSelect.value = StorageService.load('selected_renderer', 'katex');
 		Object.entries(CONFIG.API.MODELS)
@@ -115,6 +117,10 @@ class SettingsApp
 		{
 			UIState.updateTheme(this.elements.darkToggle.checked);
 			StorageService.save('dark_enabled', this.elements.darkToggle.checked);
+		});
+		this.elements.numberedLinesToggle.addEventListener('change', () =>
+		{
+			StorageService.save('numbered_lines_enabled', this.elements.numberedLinesToggle.checked);
 		});
 		this.elements.wideToggle.addEventListener('change', () =>
 		{
