@@ -1,132 +1,122 @@
 // services/ai.service.js
 const AiService = {
-	async generate(prompt, model, options = {})
-	{
+	async generate(prompt, model, options = {}) {
 		const apiKey = StorageService.load(CONFIG.API.KEYS[model]);
-		if (!apiKey)
-		{
-			throw new Error("Please enter your API key.");
+		if (!apiKey) {
+		  throw new Error("Please enter your API key.");
 		}
-		try
-		{
-			if (model === 'gemini')
-			{
-				await this.generateWithGemini(apiKey, prompt, options);
+		try {
+		  if (model === 'gemini') {
+			await this.generateWithGemini(apiKey, prompt, options);
+		  } else {
+			const config = CONFIG.API.CONFIG[model];
+			const selectedModelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS[model].default);
+			const selectedModel = CONFIG.API.MODELS[model].options.find(m => m.name === selectedModelName);
+	
+			if (!selectedModel) {
+			  throw new Error(`Model ${selectedModelName} not found in configuration.`);
 			}
-			else
-			{
-				const config = CONFIG.API.CONFIG[model];
-				const selectedModel = StorageService.load(`${model}_model`, CONFIG.API.MODELS[model].default);
-				let requestBody = {};
-				if (model === 'deepseek')
-				{
-					requestBody = {
-						model: selectedModel,
-						messages: [
-						{
-							role: "user",
-							content: prompt
-						}],
-						temperature: 0,
-						max_tokens: 8192,
-						stream: options.streaming
-					};
-				}
-				else
-				{
-					requestBody = {
-						model: selectedModel,
-						messages: this.formatMessagesWithImages(prompt, options.images, model),
-						temperature: 0,
-						max_tokens: model === 'claude' || model === 'groq' ? 8192 : 16383,
-						stream: options.streaming
-					};
-				}
-				const headers = {
-					'Content-Type': 'application/json',
-					[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
-					...config.additionalHeaders
-				};
-				const response = await fetch(config.url,
-				{
-					method: 'POST',
-					headers,
-					body: JSON.stringify(requestBody),
-					signal: options.abortSignal
-				});
-				if (!response.ok)
-				{
-					throw new Error(`API request failed: ${response.status}`);
-				}
-				if (options.streaming)
-				{
-					await this.handleStreamingResponse(response, model, options.onProgress);
-				}
-				else
-				{
-					const data = await response.json();
-					const content = config.extractContent(data);
-					if (content && options.onProgress)
-					{
-						options.onProgress(content);
-					}
-				}
+	
+			let requestBody = {
+			  model: selectedModel.name,
+			  messages: this.formatMessagesWithImages(prompt, options.images, model),
+			  temperature: 0,
+			  max_tokens: selectedModel.max_completion_tokens,
+			  stream: options.streaming
+			};
+	
+			const headers = {
+			  'Content-Type': 'application/json',
+			  [config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
+			  ...config.additionalHeaders
+			};
+	
+			const response = await fetch(config.url, {
+			  method: 'POST',
+			  headers,
+			  body: JSON.stringify(requestBody),
+			  signal: options.abortSignal
+			});
+	
+			if (!response.ok) {
+			  throw new Error(`API request failed: ${response.status}`);
 			}
+	
+			if (options.streaming) {
+			  await this.handleStreamingResponse(response, model, options.onProgress);
+			} else {
+			  const data = await response.json();
+			  const content = config.extractContent(data);
+			  if (content && options.onProgress) {
+				options.onProgress(content);
+			  }
+			}
+		  }
+		} catch (error) {
+		  console.error('Generation error:', error);
+		  throw error;
 		}
-		catch (error)
-		{
-			console.error('Generation error:', error);
-			throw error;
-		}
-	},
-	async generateWithGemini(apiKey, prompt, options)
-	{
-		const
-		{
-			GoogleGenerativeAI
-		} = await import("@google/generative-ai");
+	  },
+	async generateWithGemini(apiKey, prompt, options) {
+		const { GoogleGenerativeAI } = await import("@google/generative-ai");
 		const genAI = new GoogleGenerativeAI(apiKey);
 		const selectedModel = StorageService.load('gemini_model', CONFIG.API.MODELS.gemini.default);
-		const model = genAI.getGenerativeModel(
-		{
-			model: selectedModel
-		});
-		try
-		{
-			if (options.streaming)
-			{
-				const response = await model.generateContentStream(prompt);
-				let accumulatedText = '';
-				for await (const chunk of response.stream)
-				{
-					if (options.abortSignal?.aborted)
-					{
-						throw new DOMException('Aborted', 'AbortError');
-					}
-					const content = chunk.text();
-					accumulatedText += content;
-					if (options.onProgress)
-					{
-						options.onProgress(accumulatedText);
-					}
-				}
-			}
-			else
-			{
-				const response = await model.generateContent(prompt);
-				const content = response.response.text();
-				if (options.onProgress)
-				{
-					options.onProgress(content);
-				}
-			}
+		const model = genAI.getGenerativeModel({ model: selectedModel });
+	  
+		let imageParts = [];
+		if (options.images && options.images.length > 0) {
+		  imageParts = options.images.map(imageDataUrl => {
+			const base64Data = imageDataUrl.split(',')[1];
+			const mimeType = imageDataUrl.match(/^data:(.*?);base64,/)?.[1];
+			return {
+			  inlineData: {
+				data: base64Data,
+				mimeType: mimeType || 'image/png'
+			  }
+			};
+		  });
 		}
-		catch (error)
-		{
-			if (error.name === 'AbortError') throw error;
-			throw new Error(`Gemini API error: ${error.message}`);
+	  
+		const textPrompt = {
+		  contents: [{
+			role: "user",
+			parts: [
+			  { text: prompt },
+			  ...imageParts
+			]
+		  }],
+		};
+	  
+		try {
+		  if (options.streaming) {
+			const result = await model.generateContentStream(textPrompt);
+			let accumulatedText = '';
+			for await (const chunk of result.stream) {
+			  if (options.abortSignal?.aborted) {
+				throw new DOMException('Aborted', 'AbortError');
+			  }
+			  const content = CONFIG.API.CONFIG.gemini.extractStreamContent(chunk);
+			  if (content) {
+				accumulatedText += content;
+				if (options.onProgress) {
+				  options.onProgress(accumulatedText);
+				}
+			  }
+			}
+		  } else {
+			const result = await model.generateContent(textPrompt);
+			const response = result.response;
+			const content = CONFIG.API.CONFIG.gemini.extractContent(response);
+			if (content && options.onProgress) {
+			  options.onProgress(content);
+			}
+		  }
+		} catch (error) {
+		  if (error.name === 'AbortError') throw error;
+		  throw new Error(`Gemini API error: ${error.message}`);
 		}
-	},
+	  },
+		
 	formatMessagesWithImages(prompt, images = [], model)
 	{
 		const imageContent = images.map(dataURL => (

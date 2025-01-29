@@ -23,27 +23,112 @@ window.CONFIG = {
 			chatgpt:
 			{
 				default: "chatgpt-4o-latest",
-				options: ["chatgpt-4o-latest", "gpt-4o-2024-11-20", "gpt-4o-2024-08-06", "gpt-4o", "gpt-4o-mini-2024-07-18", "gpt-4o-mini"]
+				options: [
+				{
+					name: "chatgpt-4o-latest",
+					max_completion_tokens: 16383,
+					vision: true
+				},
+				{
+					name: "gpt-4o-2024-11-20",
+					max_completion_tokens: 16383,
+					vision: true
+				},
+				{
+					name: "gpt-4o-2024-08-06",
+					max_completion_tokens: 16383,
+					vision: true
+				},
+				{
+					name: "gpt-4o",
+					max_completion_tokens: 16383,
+					vision: true
+				},
+				{
+					name: "gpt-4o-mini-2024-07-18",
+					max_completion_tokens: 16383,
+					vision: true
+				},
+				{
+					name: "gpt-4o-mini",
+					max_completion_tokens: 16383,
+					vision: true
+				}]
 			},
 			claude:
 			{
 				default: "claude-3-5-sonnet-20241022",
-				options: ["claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022"]
+				options: [
+				{
+					name: "claude-3-5-sonnet-20241022",
+					max_completion_tokens: 8192,
+					vision: true
+				},
+				{
+					name: "claude-3-5-haiku-20241022",
+					max_completion_tokens: 8192,
+					vision: false
+				}]
 			},
 			gemini:
 			{
 				default: "gemini-exp-1206",
-				options: ["gemini-exp-1206", "gemini-2.0-flash-thinking-exp-1219", "gemini-2.0-flash-exp"]
+				options: [
+				{
+					name: "gemini-exp-1206",
+					max_completion_tokens: 8192,
+					vision: true
+				},
+				{
+					name: "gemini-2.0-flash-thinking-exp-01-21",
+					max_completion_tokens: 65536,
+					vision: true
+				},
+				{
+					name: "gemini-2.0-flash-exp",
+					max_completion_tokens: 8192,
+					vision: true
+				}]
 			},
 			groq:
 			{
 				default: "llama-3.2-90b-vision-preview",
-				options: ["llama-3.2-90b-vision-preview", "llama-3.2-11b-vision-preview"]
+				options: [
+				{
+					name: "llama-3.2-90b-vision-preview",
+					max_completion_tokens: 8192,
+					vision: true
+				},
+				{
+					name: "llama-3.2-11b-vision-preview",
+					max_completion_tokens: 8192,
+					vision: true
+				},
+				{
+					name: "llama-3.3-70b-versatile",
+					max_completion_tokens: 32768,
+					vision: false
+				},
+				{
+					name: "deepseek-r1-distill-llama-70b",
+					max_completion_tokens: 131072,
+					vision: false
+				}]
 			},
 			deepseek:
 			{
 				default: "deepseek-chat",
-				options: ["deepseek-chat", "deepseek-reasoner"]
+				options: [
+				{
+					name: "deepseek-chat",
+					max_completion_tokens: 8192,
+					vision: false
+				},
+				{
+					name: "deepseek-reasoner",
+					max_completion_tokens: 8192,
+					vision: false
+				}]
 			}
 		},
 		CONFIG:
