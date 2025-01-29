@@ -209,7 +209,7 @@ class SettingsApp
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.href = url;
-		a.download = 'cofluent_settings.json';
+		a.download = 'CoFlu.json';
 		a.click();
 		URL.revokeObjectURL(url);
 	}
