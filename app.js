@@ -58,6 +58,14 @@ class App
 	{
 		UIHandlers.setupTextAreaHandlers(this.elements);
 		UIHandlers.setupFileUploaders(this.elements);
+		if (window.location.pathname.endsWith('settings.html'))
+		{
+			UIHandlers.setupSettingsHandlers(this.elements);
+		}
+		else
+		{
+			UIHandlers.setupModelSelectionHandler(this.elements);
+		}
 		this.state.imageUploader = new UIComponents.ImageUploader(this.elements.imageUploadInput,
 		{
 			displayElement: document.getElementById('imageList'),
@@ -159,7 +167,6 @@ class App
 		UIHandlers.setupCompareButton(this.elements);
 		UIHandlers.setupSwitchButton(this.elements);
 		UIHandlers.setupGenerateButton(this.elements, this.state);
-		UIHandlers.setupSettingsHandlers(this.elements);
 		this.setupPromptHandlers();
 		this.setupMarkdownHandler();
 		this.setupTranscribeHandler();
@@ -333,7 +340,11 @@ class App
 		if (this.elements.apiModelSelect)
 		{
 			const currentModel = this.elements.apiModelSelect.value;
-			UIState.updateImageUploadVisibility(currentModel);
+			const currentModelDetails = CONFIG.API.MODELS[currentModel]?.options.find(m => m.name === StorageService.load(`${currentModel}_model`, CONFIG.API.MODELS[currentModel].default));
+			if (currentModelDetails)
+			{
+				UIState.updateImageUploadVisibility(currentModelDetails);
+			}
 		}
 		const isDarkMode = StorageService.load('dark_enabled') === true;
 		UIState.updateTheme(isDarkMode);

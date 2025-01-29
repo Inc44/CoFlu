@@ -34,12 +34,12 @@ const UIState = {
 			wideToggle.checked = isWide;
 		}
 	},
-	updateImageUploadVisibility(apiModel)
+	updateImageUploadVisibility(modelDetails)
 	{
 		const imageUploadCard = document.querySelector('.card:has(#imageList)');
 		if (imageUploadCard)
 		{
-			imageUploadCard.style.display = ['claude', 'deepseek', 'gemini'].includes(apiModel) ? 'none' : 'block';
+			imageUploadCard.style.display = modelDetails && modelDetails.vision ? 'block' : 'none';
 		}
 	}
 };

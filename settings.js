@@ -67,8 +67,11 @@ class SettingsApp
 					});
 					const savedModelValue = StorageService.load(`${provider}_model`, modelConfig.default);
 					modelSelect.value = savedModelValue;
+					const selectedModelDetails = modelConfig.options.find(m => m.name === savedModelValue);
+					UIState.updateImageUploadVisibility(selectedModelDetails);
 				}
 			});
+		this.updateModelVisibility(savedModel);
 		this.updateApiKeyLabel(savedModel);
 		UIState.updateTheme(this.elements.darkToggle.checked);
 		UIState.updateLayout(this.elements.wideToggle.checked);
@@ -94,11 +97,32 @@ class SettingsApp
 		this.elements.apiModelSelect.addEventListener('change', () =>
 		{
 			const selectedModel = this.elements.apiModelSelect.value;
+			const selectedSubModel = this.elements.modelSelects[selectedModel].value;
 			StorageService.save('selected_api_model', selectedModel);
 			this.updateApiKeyLabel(selectedModel);
 			this.elements.apiKeyInput.value = StorageService.load(CONFIG.API.KEYS[selectedModel], '');
 			this.updateModelVisibility(selectedModel);
+			const selectedModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === selectedSubModel);
+			UIState.updateImageUploadVisibility(selectedModelDetails);
 		});
+		if (this.elements.modelSelects)
+		{
+			Object.entries(this.elements.modelSelects)
+				.forEach(([provider, select]) =>
+				{
+					if (select)
+					{
+						select.addEventListener('change', () =>
+						{
+							const selectedModel = this.elements.apiModelSelect ? this.elements.apiModelSelect.value : null;
+							const selectedSubModel = select.value;
+							StorageService.save(`${provider}_model`, selectedSubModel);
+							const selectedModelDetails = selectedModel && CONFIG.API.MODELS[selectedModel] ? CONFIG.API.MODELS[selectedModel].options.find(m => m.name === selectedSubModel) : null;
+							UIState.updateImageUploadVisibility(selectedModelDetails);
+						});
+					}
+				});
+		}
 		this.elements.apiKeyInput.addEventListener('change', () =>
 		{
 			const apiType = this.elements.apiModelSelect.value;

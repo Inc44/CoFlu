@@ -146,7 +146,7 @@ const UIHandlers = {
 			{
 				UIState.setGenerating(true, elements);
 				state.abortController = new AbortController();
-				const model = elements.apiModelSelect.value;
+				const model = StorageService.load('selected_api_model', 'chatgpt');
 				const selectedPrompt = elements.promptSelect.value;
 				const customPrompt = elements.customPromptInput.value;
 				const prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
@@ -185,14 +185,46 @@ const UIHandlers = {
 			}
 		});
 	},
+	setupModelSelectionHandler(elements)
+	{
+		if (elements.apiModelSelect)
+		{
+			elements.apiModelSelect.addEventListener('change', () =>
+			{
+				const selectedModel = elements.apiModelSelect.value;
+				const currentModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === StorageService.load(`${selectedModel}_model`, CONFIG.API.MODELS[selectedModel].default));
+				StorageService.save('selected_api_model', selectedModel);
+				UIState.updateImageUploadVisibility(currentModelDetails);
+			});
+		}
+	},
 	setupSettingsHandlers(elements)
 	{
 		elements.apiModelSelect?.addEventListener('change', () =>
 		{
 			const selectedModel = elements.apiModelSelect.value;
+			const selectedModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === elements.modelSelects[selectedModel].value);
 			StorageService.save('selected_api_model', selectedModel);
-			UIState.updateImageUploadVisibility(selectedModel);
+			UIState.updateImageUploadVisibility(selectedModelDetails);
 		});
+		if (elements.modelSelects)
+		{
+			Object.entries(elements.modelSelects)
+				.forEach(([provider, select]) =>
+				{
+					if (select)
+					{
+						select.addEventListener('change', () =>
+						{
+							elements.apiModelSelect.value = provider;
+							const selectedModel = provider;
+							const selectedModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === select.value);
+							StorageService.save('selected_api_model', selectedModel);
+							UIState.updateImageUploadVisibility(selectedModelDetails);
+						});
+					}
+				});
+		}
 		elements.streamingToggle?.addEventListener('change', () =>
 		{
 			StorageService.save('streaming_enabled', elements.streamingToggle.checked);
