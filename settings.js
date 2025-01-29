@@ -16,6 +16,8 @@ class SettingsApp
 			darkToggle: document.getElementById('darkToggle'),
 			numberedLinesToggle: document.getElementById('numberedLinesToggle'),
 			wideToggle: document.getElementById('wideToggle'),
+			importSettingsBtn: document.getElementById('importSettings'),
+			exportSettingsBtn: document.getElementById('exportSettings'),
 			modelContainers:
 			{
 				chatgpt: document.getElementById('chatgptModelContainer'),
@@ -163,6 +165,8 @@ class SettingsApp
 					StorageService.save(`${provider}_model`, select.value);
 				});
 			});
+		this.elements.importSettingsBtn.addEventListener('click', () => this.importSettings());
+		this.elements.exportSettingsBtn.addEventListener('click', () => this.exportSettings());
 	}
 	updateApiKeyLabel(model)
 	{
@@ -171,6 +175,78 @@ class SettingsApp
 		{
 			apiKeyLabel.textContent = CONFIG.UI.API_KEY_LABELS[model] || 'API Key:';
 		}
+	}
+	exportSettings()
+	{
+		const settings = {
+			selected_api_model: StorageService.load('selected_api_model', 'chatgpt'),
+			streaming_enabled: StorageService.load('streaming_enabled', true),
+			cleanup_enabled: StorageService.load('cleanup_enabled', true),
+			dark_enabled: StorageService.load('dark_enabled', false),
+			numbered_lines_enabled: StorageService.load('numbered_lines_enabled', false),
+			wide_enabled: StorageService.load('wide_enabled', false),
+			selected_renderer: StorageService.load('selected_renderer', 'katex'),
+			prompts: StorageService.load('prompts', []),
+			selected_language: StorageService.load('selected_language', 'en'),
+			transcribe_language: StorageService.load('transcribe_language', 'en'),
+			translation_enabled: StorageService.load('translation_enabled', false)
+		};
+		Object.entries(CONFIG.API.KEYS)
+			.forEach(([provider, key]) =>
+			{
+				settings[key] = StorageService.load(key, '');
+			});
+		Object.entries(CONFIG.API.MODELS)
+			.forEach(([provider, modelConfig]) =>
+			{
+				settings[`${provider}_model`] = StorageService.load(`${provider}_model`, modelConfig.default);
+			});
+		const settingsJSON = JSON.stringify(settings, null, 2);
+		const blob = new Blob([settingsJSON],
+		{
+			type: 'application/json'
+		});
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = 'cofluent_settings.json';
+		a.click();
+		URL.revokeObjectURL(url);
+	}
+	importSettings()
+	{
+		const input = document.createElement('input');
+		input.type = 'file';
+		input.accept = '.json';
+		input.addEventListener('change', (event) =>
+		{
+			const file = event.target.files[0];
+			if (file)
+			{
+				const reader = new FileReader();
+				reader.onload = (e) =>
+				{
+					try
+					{
+						const settings = JSON.parse(e.target.result);
+						Object.entries(settings)
+							.forEach(([key, value]) =>
+							{
+								StorageService.save(key, value);
+							});
+						this.loadSettings();
+						alert('Settings imported successfully!');
+					}
+					catch (error)
+					{
+						console.error('Error importing settings:', error);
+						alert('Error importing settings. Please check the file format.');
+					}
+				};
+				reader.readAsText(file);
+			}
+		});
+		input.click();
 	}
 }
 document.addEventListener('DOMContentLoaded', () =>

@@ -88,7 +88,8 @@ color: white;
 }
 #copySource,
 #copyTarget,
-#compareBtn {
+#compareBtn,
+#exportSettings {
 background-color: rgb(46, 218, 119);
 color: white;
 }
@@ -120,7 +121,8 @@ color: white;
 background-color: rgb(68, 79, 173);
 color: white;
 }
-#renderMarkdownBtn {
+#renderMarkdownBtn,
+#importSettings {
 background-color: rgb(140, 84, 208);
 color: white;
 }
