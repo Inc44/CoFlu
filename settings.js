@@ -33,7 +33,9 @@ class SettingsApp
 				deepseek: document.getElementById('deepseekModel'),
 				gemini: document.getElementById('geminiModel'),
 				groq: document.getElementById('groqModel')
-			}
+			},
+			settingsTextArea: document.getElementById('settingsTextArea'),
+			saveSettingsBtn: document.getElementById('saveSettings')
 		};
 	}
 	init()
@@ -77,6 +79,7 @@ class SettingsApp
 		this.updateApiKeyLabel(savedModel);
 		UIState.updateTheme(this.elements.darkToggle.checked);
 		UIState.updateLayout(this.elements.wideToggle.checked);
+		this.displayCurrentSettings();
 	}
 	updateModelVisibility(selectedProvider)
 	{
@@ -167,6 +170,7 @@ class SettingsApp
 			});
 		this.elements.importSettingsBtn.addEventListener('click', () => this.importSettings());
 		this.elements.exportSettingsBtn.addEventListener('click', () => this.exportSettings());
+		this.elements.saveSettingsBtn.addEventListener('click', () => this.saveSettings());
 	}
 	updateApiKeyLabel(model)
 	{
@@ -176,7 +180,7 @@ class SettingsApp
 			apiKeyLabel.textContent = CONFIG.UI.API_KEY_LABELS[model] || 'API Key:';
 		}
 	}
-	exportSettings()
+	getCurrentSettings()
 	{
 		const settings = {
 			selected_api_model: StorageService.load('selected_api_model', 'chatgpt'),
@@ -201,7 +205,18 @@ class SettingsApp
 			{
 				settings[`${provider}_model`] = StorageService.load(`${provider}_model`, modelConfig.default);
 			});
+		return settings;
+	}
+	displayCurrentSettings()
+	{
+		const settings = this.getCurrentSettings();
+		this.elements.settingsTextArea.value = JSON.stringify(settings, null, 2);
+	}
+	exportSettings()
+	{
+		const settings = this.getCurrentSettings();
 		const settingsJSON = JSON.stringify(settings, null, 2);
+		this.elements.settingsTextArea.value = settingsJSON;
 		const blob = new Blob([settingsJSON],
 		{
 			type: 'application/json'
@@ -229,6 +244,7 @@ class SettingsApp
 					try
 					{
 						const settings = JSON.parse(e.target.result);
+						this.elements.settingsTextArea.value = JSON.stringify(settings, null, 2);
 						Object.entries(settings)
 							.forEach(([key, value]) =>
 							{
@@ -247,6 +263,25 @@ class SettingsApp
 			}
 		});
 		input.click();
+	}
+	saveSettings()
+	{
+		try
+		{
+			const settings = JSON.parse(this.elements.settingsTextArea.value);
+			Object.entries(settings)
+				.forEach(([key, value]) =>
+				{
+					StorageService.save(key, value);
+				});
+			this.loadSettings();
+			alert('Settings saved successfully!');
+		}
+		catch (error)
+		{
+			console.error('Error saving settings:', error);
+			alert('Error saving settings. Please check the JSON format.');
+		}
 	}
 }
 document.addEventListener('DOMContentLoaded', () =>

@@ -110,7 +110,8 @@ color: white;
 #dedupeTarget,
 #sortSource,
 #sortTarget,
-#transcribeBtn {
+#transcribeBtn,
+#saveSettings {
 background-color: rgb(1, 111, 255);
 color: white;
 }
