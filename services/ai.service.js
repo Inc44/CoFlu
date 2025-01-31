@@ -26,7 +26,7 @@ const AiService = {
 					model: selectedModel.name,
 					messages: this.formatMessagesWithImages(prompt, options.images, model),
 					temperature: 0,
-					max_tokens: selectedModel.max_completion_tokens,
+					max_tokens: model !== 'sambanova' ? selectedModel.max_completion_tokens : undefined,
 					stream: options.streaming
 				};
 				const headers = {
