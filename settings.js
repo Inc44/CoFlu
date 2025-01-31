@@ -24,7 +24,8 @@ class SettingsApp
 				claude: document.getElementById('claudeModelContainer'),
 				deepseek: document.getElementById('deepseekModelContainer'),
 				gemini: document.getElementById('geminiModelContainer'),
-				groq: document.getElementById('groqModelContainer')
+				groq: document.getElementById('groqModelContainer'),
+				sambanova: document.getElementById('sambanovaModelContainer')
 			},
 			modelSelects:
 			{
@@ -32,7 +33,8 @@ class SettingsApp
 				claude: document.getElementById('claudeModel'),
 				deepseek: document.getElementById('deepseekModel'),
 				gemini: document.getElementById('geminiModel'),
-				groq: document.getElementById('groqModel')
+				groq: document.getElementById('groqModel'),
+				sambanova: document.getElementById('sambanovaModel')
 			},
 			settingsTextArea: document.getElementById('settingsTextArea'),
 			saveSettingsBtn: document.getElementById('saveSettings')

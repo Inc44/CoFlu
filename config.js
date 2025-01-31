@@ -8,7 +8,8 @@ window.CONFIG = {
 			claude: 'claude_api_key',
 			deepseek: 'deepseek_api_key',
 			gemini: 'gemini_api_key',
-			groq: 'groq_api_key'
+			groq: 'groq_api_key',
+			sambanova: 'sambanova_api_key'
 		},
 		ENDPOINTS:
 		{
@@ -16,7 +17,8 @@ window.CONFIG = {
 			claude: 'https://api.anthropic.com/v1/messages',
 			deepseek: 'https://api.deepseek.com/chat/completions',
 			gemini: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
-			groq: 'https://api.groq.com/openai/v1/chat/completions'
+			groq: 'https://api.groq.com/openai/v1/chat/completions',
+			sambanova: 'https://api.sambanova.ai/v1/chat/completions'
 		},
 		MODELS:
 		{
@@ -70,6 +72,21 @@ window.CONFIG = {
 					vision: false
 				}]
 			},
+			deepseek:
+			{
+				default: "deepseek-chat",
+				options: [
+				{
+					name: "deepseek-chat",
+					max_completion_tokens: 8192,
+					vision: false
+				},
+				{
+					name: "deepseek-reasoner",
+					max_completion_tokens: 8192,
+					vision: false
+				}]
+			},
 			gemini:
 			{
 				default: "gemini-exp-1206",
@@ -115,18 +132,48 @@ window.CONFIG = {
 					vision: false
 				}]
 			},
-			deepseek:
+			sambanova:
 			{
-				default: "deepseek-chat",
+				default: "Llama-3.2-90B-Vision-Instruct",
 				options: [
 				{
-					name: "deepseek-chat",
+					name: "Llama-3.2-90B-Vision-Instruct",
+					max_completion_tokens: 4096,
+					vision: true
+				},
+				{
+					name: "Llama-3.2-11B-Vision-Instruct",
+					max_completion_tokens: 4096,
+					vision: true
+				},
+				{
+					name: "Meta-Llama-3.3-70B-Instruct",
+					max_completion_tokens: 4096,
+					vision: false
+				},
+				{
+					name: "Meta-Llama-3.1-70B-Instruct",
+					max_completion_tokens: 16384,
+					vision: false
+				},
+				{
+					name: "Meta-Llama-3.1-405B-Instruct",
+					max_completion_tokens: 16384,
+					vision: false
+				},
+				{
+					name: "QwQ-32B-Preview",
 					max_completion_tokens: 8192,
 					vision: false
 				},
 				{
-					name: "deepseek-reasoner",
+					name: "Qwen2.5-72B-Instruct",
 					max_completion_tokens: 8192,
+					vision: false
+				},
+				{
+					name: "DeepSeek-R1-Distill-Llama-70B",
+					max_completion_tokens: 16384,
 					vision: false
 				}]
 			}
@@ -180,6 +227,15 @@ window.CONFIG = {
 				apiKeyPrefix: 'Bearer ',
 				extractContent: data => data.choices[0]?.message?.content,
 				extractStreamContent: data => data.choices[0]?.delta?.content
+			},
+			sambanova:
+			{
+				url: 'https://api.sambanova.ai/v1/chat/completions',
+				model: "Llama-3.2-90B-Vision-Instruct",
+				apiKeyHeader: 'Authorization',
+				apiKeyPrefix: 'Bearer ',
+				extractContent: data => data.choices[0]?.message?.content,
+				extractStreamContent: data => data.choices[0]?.delta?.content
 			}
 		}
 	},
@@ -197,6 +253,11 @@ window.CONFIG = {
 				max: 100,
 				size: 5
 			},
+			deepseek:
+			{
+				max: 0,
+				size: 0
+			},
 			gemini:
 			{
 				max: 100,
@@ -207,10 +268,10 @@ window.CONFIG = {
 				max: 1,
 				size: 3
 			},
-			deepseek:
+			sambanova:
 			{
-				max: 0,
-				size: 0
+				max: 1,
+				size: 20
 			}
 		}
 	},
@@ -222,9 +283,10 @@ window.CONFIG = {
 			claude: 'Anthropic API Key:',
 			deepseek: 'DeepSeek API Key:',
 			gemini: 'Google API Key:',
-			groq: 'Groq API Key:'
+			groq: 'Groq API Key:',
+			sambanova: 'SambaNova API Key:'
 		},
-		STANDARD_PROMPTS: ["Proofread this text but only fix grammar", "Proofread this text but only fix grammar and Markdown style", "Proofread this text improving clarity and flow", "Proofread this text, fixing only awkward parts", "Proofread this text", "Markdown OCR"]
+		STANDARD_PROMPTS: ["Proofread this text but only fix grammar", "Proofread this text but only fix grammar and Markdown style", "Proofread this text improving clarity and flow", "Proofread this text fixing only awkward parts", "Proofread this text", "Markdown OCR"]
 	},
 	VALIDATION:
 	{
@@ -234,7 +296,8 @@ window.CONFIG = {
 			claude: /^sk-ant-[A-Za-z0-9]{32,}$/,
 			deepseek: /^sk-[A-Za-z0-9]{32,}$/,
 			gemini: /^AI[A-Za-z0-9-_]{32,}$/,
-			groq: /^gsk_[A-Za-z0-9]{32,}$/
+			groq: /^gsk_[A-Za-z0-9]{32,}$/,
+			sambanova: /^[a-z0-9-]{32,}$/
 		}
 	}
 };
