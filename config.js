@@ -297,7 +297,7 @@ window.CONFIG = {
 			deepseek: /^sk-[A-Za-z0-9]{32,}$/,
 			gemini: /^AI[A-Za-z0-9-_]{32,}$/,
 			groq: /^gsk_[A-Za-z0-9]{32,}$/,
-			sambanova: /^[a-z0-9-]{32,}$/
+			sambanova: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 		}
 	}
 };
