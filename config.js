@@ -160,21 +160,6 @@ window.CONFIG = {
 					name: "Meta-Llama-3.1-405B-Instruct",
 					max_completion_tokens: 16384,
 					vision: false
-				},
-				{
-					name: "QwQ-32B-Preview",
-					max_completion_tokens: 8192,
-					vision: false
-				},
-				{
-					name: "Qwen2.5-72B-Instruct",
-					max_completion_tokens: 8192,
-					vision: false
-				},
-				{
-					name: "DeepSeek-R1-Distill-Llama-70B",
-					max_completion_tokens: 16384,
-					vision: false
 				}]
 			}
 		},
