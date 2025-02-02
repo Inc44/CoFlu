@@ -55,6 +55,16 @@ window.CONFIG = {
 					name: "gpt-4o-mini",
 					max_completion_tokens: 16383,
 					vision: true
+				},
+				{
+					name: "o3-mini-2025-01-31",
+					max_completion_tokens: 200000,
+					vision: false
+				},
+				{
+					name: "o3-mini",
+					max_completion_tokens: 200000,
+					vision: false
 				}]
 			},
 			claude:
