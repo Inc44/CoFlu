@@ -25,8 +25,9 @@ const AiService = {
 				let requestBody = {
 					model: selectedModel.name,
 					messages: this.formatMessagesWithImages(prompt, options.images, model),
-					temperature: 0,
-					max_tokens: model !== 'sambanova' ? selectedModel.max_completion_tokens : undefined,
+					...((selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31') ? { temperature: 0 } : {}),
+					...((selectedModel.name === 'o3-mini' || selectedModel.name === 'o3-mini-2025-01-31') ? { reasoning_effort: selectedModel.reasoning_effort } : {}),
+					...((model !== 'sambanova' && selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31') ? { max_tokens: selectedModel.max_completion_tokens } : {}),
 					stream: options.streaming
 				};
 				const headers = {
@@ -174,7 +175,11 @@ const AiService = {
 		return [
 		{
 			role: "user",
-			content: [...imageContent, prompt]
+			content: [...imageContent,
+			{
+				type: "text",
+				text: prompt
+			}]
 		}];
 	},
 	async handleStreamingResponse(response, model, onProgress)
