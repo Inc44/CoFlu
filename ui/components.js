@@ -98,6 +98,33 @@ const UIComponents = {
 			this.uploadedImages = {};
 			this.updateImageDisplay();
 		}
+	},
+	VideoUploader: class
+	{
+		constructor(element, options = {})
+		{
+			this.element = element;
+			this.options = options;
+			this.uploadedImages = {};
+			this.setupEventListeners();
+		}
+		setupEventListeners()
+		{
+			this.element.addEventListener('change', (e) =>
+			{
+				this.handleImageUpload(Array.from(e.target.files));
+				this.element.value = '';
+			});
+		}
+		getVideos()
+		{
+			return this.uploadedVideos;
+		}
+		clear()
+		{
+			this.uploadedVideos = {};
+			this.updateVideoDisplay();
+		}
 	}
 };
 window.UIComponents = UIComponents;

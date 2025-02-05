@@ -7,7 +7,8 @@ class App
 		this.state = {
 			abortController: null,
 			transcribeAbortController: null,
-			imageUploader: null
+			imageUploader: null,
+			videoUploader: null
 		};
 	}
 	getElements()
@@ -30,6 +31,7 @@ class App
 			translationToggle: document.getElementById('translationToggle'),
 			languageSelect: document.getElementById('language'),
 			imageUploadInput: document.getElementById('imageUploadInput'),
+			videoUploadInput: document.getElementById('videoUploadInput'),
 			printContainer: document.getElementById('printContainer'),
 			streamingToggle: document.getElementById('streamingToggle'),
 			cleanupToggle: document.getElementById('cleanupToggle'),
@@ -69,6 +71,11 @@ class App
 		this.state.imageUploader = new UIComponents.ImageUploader(this.elements.imageUploadInput,
 		{
 			displayElement: document.getElementById('imageList'),
+			getApiModel: () => this.elements.apiModelSelect.value
+		});
+		this.state.videoUploader = new UIComponents.VideoUploader(this.elements.videoUploadInput,
+		{
+			displayElement: document.getElementById('videoList'),
 			getApiModel: () => this.elements.apiModelSelect.value
 		});
 	}
@@ -344,6 +351,7 @@ class App
 			if (currentModelDetails)
 			{
 				UIState.updateImageUploadVisibility(currentModelDetails);
+				UIState.updateVideoUploadVisibility(currentModelDetails);
 			}
 		}
 		const isDarkMode = StorageService.load('dark_enabled') === true;

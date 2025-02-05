@@ -270,6 +270,39 @@ window.CONFIG = {
 				max: 1,
 				size: 20
 			}
+		},
+		VIDEO:
+		{
+			chatgpt:
+			{
+				max: 0,
+				size: 0
+			},
+			claude:
+			{
+				max: 0,
+				size: 0
+			},
+			deepseek:
+			{
+				max: 0,
+				size: 0
+			},
+			gemini:
+			{
+				max: 1,
+				size: 15
+			},
+			groq:
+			{
+				max: 0,
+				size: 0
+			},
+			sambanova:
+			{
+				max: 0,
+				size: 0
+			}
 		}
 	},
 	UI:

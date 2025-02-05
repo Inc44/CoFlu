@@ -25,9 +25,21 @@ const AiService = {
 				let requestBody = {
 					model: selectedModel.name,
 					messages: this.formatMessagesWithImages(prompt, options.images, model),
-					...((selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31') ? { temperature: 0 } : {}),
-					...((selectedModel.name === 'o3-mini' || selectedModel.name === 'o3-mini-2025-01-31') ? { reasoning_effort: selectedModel.reasoning_effort } : {}),
-					...((model !== 'sambanova' && selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31') ? { max_tokens: selectedModel.max_completion_tokens } : {}),
+					...((selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31') ?
+					{
+						temperature: 0
+					} :
+					{}),
+					...((selectedModel.name === 'o3-mini' || selectedModel.name === 'o3-mini-2025-01-31') ?
+					{
+						reasoning_effort: selectedModel.reasoning_effort
+					} :
+					{}),
+					...((model !== 'sambanova' && selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31') ?
+					{
+						max_tokens: selectedModel.max_completion_tokens
+					} :
+					{}),
 					stream: options.streaming
 				};
 				const headers = {
@@ -74,10 +86,10 @@ const AiService = {
 			GoogleGenerativeAI
 		} = await import("@google/generative-ai");
 		const genAI = new GoogleGenerativeAI(apiKey);
-		const selectedModel = StorageService.load('gemini_model', CONFIG.API.MODELS.gemini.default);
+		const selectedModelName = StorageService.load('gemini_model', CONFIG.API.MODELS.gemini.default);
 		const model = genAI.getGenerativeModel(
 		{
-			model: selectedModel
+			model: selectedModelName
 		});
 		let imageParts = [];
 		if (options.images && options.images.length > 0)
@@ -96,6 +108,9 @@ const AiService = {
 				};
 			});
 		}
+		let videoParts = [];
+		if (selectedModelName.includes("gemini-2.0"))
+		{}
 		const textPrompt = {
 			contents: [
 			{

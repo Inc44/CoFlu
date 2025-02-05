@@ -148,18 +148,21 @@ color: white;
 display: flex;
 flex-wrap: wrap;
 }
-.image-container {
+.image-container,
+.video-container {
 margin: 0.5rem;
 position: relative;
 width: 10rem;
 height: 10rem;
 }
-.image-container img {
+.image-container img,
+.video-container img {
 width: 100%;
 height: 100%;
 object-fit: cover;
 }
-.remove-image {
+.remove-image,
+.remove-video {
 position: absolute;
 width: 2rem;
 height: 2rem;

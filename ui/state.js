@@ -41,6 +41,14 @@ const UIState = {
 		{
 			imageUploadCard.style.display = modelDetails && modelDetails.vision ? 'block' : 'none';
 		}
+	},
+	updateVideoUploadVisibility(modelDetails)
+	{
+		const videoUploadCard = document.querySelector('.card:has(#videoList)');
+		if (videoUploadCard)
+		{
+			videoUploadCard.style.display = modelDetails && modelDetails.vision && modelDetails.name.includes("gemini-2.0") ? 'block' : 'none';
+		}
 	}
 };
 window.UIState = UIState;

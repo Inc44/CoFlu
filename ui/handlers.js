@@ -161,6 +161,7 @@ const UIHandlers = {
 				{
 					streaming: StorageService.load('streaming_enabled', true),
 					images: Object.values(state.imageUploader.getImages()),
+					videos: Object.values(state.videoUploader.getVIdeos()),
 					abortSignal: state.abortController.signal,
 					onProgress: (text) =>
 					{
@@ -195,6 +196,7 @@ const UIHandlers = {
 				const currentModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === StorageService.load(`${selectedModel}_model`, CONFIG.API.MODELS[selectedModel].default));
 				StorageService.save('selected_api_model', selectedModel);
 				UIState.updateImageUploadVisibility(currentModelDetails);
+				UIState.updateVideoUploadVisibility(currentModelDetails);
 			});
 		}
 	},
@@ -206,6 +208,7 @@ const UIHandlers = {
 			const selectedModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === elements.modelSelects[selectedModel].value);
 			StorageService.save('selected_api_model', selectedModel);
 			UIState.updateImageUploadVisibility(selectedModelDetails);
+			UIState.updateVideoUploadVisibility(selectedModelDetails);
 		});
 		if (elements.modelSelects)
 		{
@@ -221,6 +224,7 @@ const UIHandlers = {
 							const selectedModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === select.value);
 							StorageService.save('selected_api_model', selectedModel);
 							UIState.updateImageUploadVisibility(selectedModelDetails);
+							UIState.updateVideoUploadVisibility(selectedModelDetails);
 						});
 					}
 				});
