@@ -17,6 +17,18 @@ const UIComponents = {
 				this.element.value = '';
 			});
 		}
+		getTotalSize()
+		{
+			let totalSize = 0;
+			for (const filename in this.uploadedImages)
+			{
+				const dataURL = this.uploadedImages[filename];
+				const byteString = atob(dataURL.split(',')[1]);
+				const sizeInBytes = byteString.length;
+				totalSize += sizeInBytes / (1024 * 1024);
+			}
+			return totalSize;
+		}
 		async handleImageUpload(files)
 		{
 			const apiModel = this.options.getApiModel?.() || 'chatgpt';
@@ -39,6 +51,16 @@ const UIComponents = {
 				{
 					alert(`Image ${file.name} exceeds the maximum size of ${limits.size}MB.`);
 					continue;
+				}
+				if (apiModel === 'gemini')
+				{
+					const currentTotalSize = this.getTotalSize();
+					const potentialTotalSize = currentTotalSize + fileSizeMB;
+					if (potentialTotalSize > 20)
+					{
+						alert(`Adding this image would exceed the 20MB total size limit for Gemini requests.`);
+						continue;
+					}
 				}
 				try
 				{
@@ -116,6 +138,18 @@ const UIComponents = {
 				this.element.value = '';
 			});
 		}
+		getTotalSize()
+		{
+			let totalSize = 0;
+			for (const filename in this.uploadedVideos)
+			{
+				const dataURL = this.uploadedVideos[filename];
+				const byteString = atob(dataURL.split(',')[1]);
+				const sizeInBytes = byteString.length;
+				totalSize += sizeInBytes / (1024 * 1024);
+			}
+			return totalSize;
+		}
 		async handleVideoUpload(files)
 		{
 			const apiModel = this.options.getApiModel?.() || 'gemini';
@@ -138,6 +172,16 @@ const UIComponents = {
 				{
 					alert(`Video ${file.name} exceeds the maximum size of ${limits.size}MB.`);
 					continue;
+				}
+				if (apiModel === 'gemini')
+				{
+					const currentTotalSize = this.getTotalSize();
+					const potentialTotalSize = currentTotalSize + fileSizeMB;
+					if (potentialTotalSize > 20)
+					{
+						alert(`Adding this video would exceed the 20MB total size limit for Gemini requests.`);
+						continue;
+					}
 				}
 				try
 				{

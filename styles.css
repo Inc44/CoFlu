@@ -144,7 +144,8 @@ display: inline-block;
 background-color: rgb(140, 84, 208);
 color: white;
 }
-#imageList {
+#imageList,
+#videoList {
 display: flex;
 flex-wrap: wrap;
 }
