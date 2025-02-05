@@ -161,7 +161,7 @@ const UIHandlers = {
 				{
 					streaming: StorageService.load('streaming_enabled', true),
 					images: Object.values(state.imageUploader.getImages()),
-					videos: Object.values(state.videoUploader.getVIdeos()),
+					videos: Object.values(state.videoUploader.getVideos()),
 					abortSignal: state.abortController.signal,
 					onProgress: (text) =>
 					{

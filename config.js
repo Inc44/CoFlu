@@ -290,7 +290,7 @@ window.CONFIG = {
 			},
 			gemini:
 			{
-				max: 1,
+				max: 10,
 				size: 15
 			},
 			groq:

@@ -109,8 +109,22 @@ const AiService = {
 			});
 		}
 		let videoParts = [];
-		if (selectedModelName.includes("gemini-2.0"))
-		{}
+		if (options.videos && options.videos.length > 0)
+		{
+			videoParts = options.videos.map(videoDataUrl =>
+			{
+				const base64Data = videoDataUrl.split(',')[1];
+				const mimeType = videoDataUrl.match(/^data:(.*?);base64,/)
+					?.[1];
+				return {
+					inlineData:
+					{
+						data: base64Data,
+						mimeType: mimeType || 'video/mp4'
+					}
+				};
+			});
+		}
 		const textPrompt = {
 			contents: [
 			{
@@ -118,7 +132,7 @@ const AiService = {
 				parts: [
 				{
 					text: prompt
-				}, ...imageParts]
+				}, ...imageParts, ...videoParts]
 			}],
 		};
 		try

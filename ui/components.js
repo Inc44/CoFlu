@@ -105,16 +105,90 @@ const UIComponents = {
 		{
 			this.element = element;
 			this.options = options;
-			this.uploadedImages = {};
+			this.uploadedVideos = {};
 			this.setupEventListeners();
 		}
 		setupEventListeners()
 		{
 			this.element.addEventListener('change', (e) =>
 			{
-				this.handleImageUpload(Array.from(e.target.files));
+				this.handleVideoUpload(Array.from(e.target.files));
 				this.element.value = '';
 			});
+		}
+		async handleVideoUpload(files)
+		{
+			const apiModel = this.options.getApiModel?.() || 'gemini';
+			const limits = CONFIG.LIMITS.VIDEO[apiModel];
+			if (files.length + Object.keys(this.uploadedVideos)
+				.length > limits.max)
+			{
+				alert(`Maximum ${limits.max} videos allowed for ${apiModel}`);
+				return;
+			}
+			for (const file of files)
+			{
+				if (!file.type.startsWith('video/'))
+				{
+					alert('Only video files are allowed.');
+					continue;
+				}
+				const fileSizeMB = file.size / (1024 * 1024);
+				if (fileSizeMB > limits.size)
+				{
+					alert(`Video ${file.name} exceeds the maximum size of ${limits.size}MB.`);
+					continue;
+				}
+				try
+				{
+					const dataUrl = await this.readFileAsDataURL(file);
+					this.uploadedVideos[file.name] = dataUrl;
+					this.updateVideoDisplay();
+				}
+				catch (error)
+				{
+					console.error('Error loading video:', error);
+				}
+			}
+		}
+		readFileAsDataURL(file)
+		{
+			return new Promise((resolve, reject) =>
+			{
+				const reader = new FileReader();
+				reader.onload = e => resolve(e.target.result);
+				reader.onerror = e => reject(e);
+				reader.readAsDataURL(file);
+			});
+		}
+		updateVideoDisplay()
+		{
+			if (!this.options.displayElement) return;
+			const container = this.options.displayElement;
+			container.innerHTML = '';
+			Object.entries(this.uploadedVideos)
+				.forEach(([filename, dataURL]) =>
+				{
+					const videoContainer = document.createElement('div');
+					videoContainer.className = 'video-container';
+					const video = document.createElement('video');
+					video.src = dataURL;
+					video.controls = false;
+					video.muted = true;
+					video.loop = true;
+					video.pause();
+					const removeButton = document.createElement('button');
+					removeButton.className = 'btn btn-sm btn-danger remove-video';
+					removeButton.textContent = 'X';
+					removeButton.onclick = () =>
+					{
+						delete this.uploadedVideos[filename];
+						this.updateVideoDisplay();
+					};
+					videoContainer.appendChild(video);
+					videoContainer.appendChild(removeButton);
+					container.appendChild(videoContainer);
+				});
 		}
 		getVideos()
 		{
