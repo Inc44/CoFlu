@@ -32,7 +32,7 @@ const AiService = {
 					{}),
 					...((selectedModel.name === 'o3-mini' || selectedModel.name === 'o3-mini-2025-01-31') ?
 					{
-						reasoning_effort: selectedModel.reasoning_effort
+						reasoning_effort: StorageService.load('reasoning_effort', 'low')
 					} :
 					{}),
 					...((model !== 'sambanova' && selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31') ?

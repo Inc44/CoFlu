@@ -37,7 +37,9 @@ class SettingsApp
 				sambanova: document.getElementById('sambanovaModel')
 			},
 			settingsTextArea: document.getElementById('settingsTextArea'),
-			saveSettingsBtn: document.getElementById('saveSettings')
+			saveSettingsBtn: document.getElementById('saveSettings'),
+			reasoningEffortContainer: document.getElementById('reasoningEffortContainer'),
+			reasoningEffortSelect: document.getElementById('reasoningEffort')
 		};
 	}
 	init()
@@ -57,6 +59,10 @@ class SettingsApp
 		this.elements.numberedLinesToggle.checked = StorageService.load('numbered_lines_enabled', false);
 		this.elements.wideToggle.checked = StorageService.load('wide_enabled', false);
 		this.elements.rendererSelect.value = StorageService.load('selected_renderer', 'katex');
+		if (this.elements.reasoningEffortSelect)
+		{
+			this.elements.reasoningEffortSelect.value = StorageService.load('reasoning_effort', 'low');
+		}
 		Object.entries(CONFIG.API.MODELS)
 			.forEach(([provider, modelConfig]) =>
 			{
@@ -75,6 +81,7 @@ class SettingsApp
 					modelSelect.value = savedModelValue;
 					const selectedModelDetails = modelConfig.options.find(m => m.name === savedModelValue);
 					UIState.updateImageUploadVisibility(selectedModelDetails);
+					UIState.updateVideoUploadVisibility(selectedModelDetails);
 				}
 			});
 		this.updateModelVisibility(savedModel);
@@ -97,6 +104,17 @@ class SettingsApp
 		if (selectedContainer)
 		{
 			selectedContainer.classList.add('active');
+			const modelSelect = this.elements.modelSelects[selectedProvider];
+			const selectedModelName = modelSelect ? modelSelect.value : null;
+			const selectedModelDetails = CONFIG.API.MODELS[selectedProvider]?.options.find(m => m.name === selectedModelName);
+			if (selectedModelDetails && selectedModelDetails.reasoning_effort)
+			{
+				this.elements.reasoningEffortContainer.style.display = 'block';
+			}
+			else
+			{
+				this.elements.reasoningEffortContainer.style.display = 'none';
+			}
 		}
 	}
 	setupEventListeners()
@@ -111,6 +129,15 @@ class SettingsApp
 			this.updateModelVisibility(selectedModel);
 			const selectedModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === selectedSubModel);
 			UIState.updateImageUploadVisibility(selectedModelDetails);
+			UIState.updateVideoUploadVisibility(selectedModelDetails);
+			if (selectedModelDetails && selectedModelDetails.reasoning_effort)
+			{
+				this.elements.reasoningEffortContainer.style.display = 'block';
+			}
+			else
+			{
+				this.elements.reasoningEffortContainer.style.display = 'none';
+			}
 		});
 		if (this.elements.modelSelects)
 		{
@@ -124,8 +151,19 @@ class SettingsApp
 							const selectedModel = this.elements.apiModelSelect ? this.elements.apiModelSelect.value : null;
 							const selectedSubModel = select.value;
 							StorageService.save(`${provider}_model`, selectedSubModel);
-							const selectedModelDetails = selectedModel && CONFIG.API.MODELS[selectedModel] ? CONFIG.API.MODELS[selectedModel].options.find(m => m.name === selectedSubModel) : null;
+							let selectedModelDetails = selectedModel && CONFIG.API.MODELS[selectedModel] ? CONFIG.API.MODELS[selectedModel].options.find(m => m.name === selectedSubModel) : null;
 							UIState.updateImageUploadVisibility(selectedModelDetails);
+							UIState.updateVideoUploadVisibility(selectedModelDetails);
+							const apiType = this.elements.apiModelSelect.value;
+							selectedModelDetails = CONFIG.API.MODELS[apiType].options.find(m => m.name === select.value);
+							if (selectedModelDetails && selectedModelDetails.reasoning_effort)
+							{
+								this.elements.reasoningEffortContainer.style.display = 'block';
+							}
+							else
+							{
+								this.elements.reasoningEffortContainer.style.display = 'none';
+							}
 						});
 					}
 				});
@@ -170,6 +208,13 @@ class SettingsApp
 					StorageService.save(`${provider}_model`, select.value);
 				});
 			});
+		if (this.elements.reasoningEffortSelect)
+		{
+			this.elements.reasoningEffortSelect.addEventListener('change', () =>
+			{
+				StorageService.save('reasoning_effort', this.elements.reasoningEffortSelect.value);
+			});
+		}
 		this.elements.importSettingsBtn.addEventListener('click', () => this.importSettings());
 		this.elements.exportSettingsBtn.addEventListener('click', () => this.exportSettings());
 		this.elements.saveSettingsBtn.addEventListener('click', () => this.saveSettings());
@@ -197,6 +242,10 @@ class SettingsApp
 			transcribe_language: StorageService.load('transcribe_language', 'en'),
 			translation_enabled: StorageService.load('translation_enabled', false)
 		};
+		if (this.elements.reasoningEffortSelect)
+		{
+			settings.reasoning_effort = StorageService.load('reasoning_effort', 'low');
+		}
 		Object.entries(CONFIG.API.KEYS)
 			.forEach(([provider, key]) =>
 			{
