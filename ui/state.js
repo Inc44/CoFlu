@@ -49,6 +49,10 @@ const UIState = {
 		{
 			videoUploadCard.style.display = modelDetails && modelDetails.vision && modelDetails.name.includes("gemini-2.0") ? 'block' : 'none';
 		}
+	},
+	showWPM(elements)
+	{
+		elements.wpmContainer.style.display = 'inline';
 	}
 };
 window.UIState = UIState;

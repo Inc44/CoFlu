@@ -13,6 +13,7 @@ const UIHandlers = {
 			const actions = {
 				[`clear${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
 				{
+					elements.wpmContainer.style.display = 'none';
 					textArea.value = '';
 					TextService.updateStats(textArea, type);
 					StorageService.save(`${type}Text`, '');
@@ -136,8 +137,18 @@ const UIHandlers = {
 			StorageService.save('targetText', elements.targetText.value);
 		});
 	},
+	calculateWPM(text, timeInSeconds)
+	{
+		const wordCount = text.trim()
+			.split(/\s+/)
+			.length;
+		const minutes = timeInSeconds / 60;
+		return minutes > 0 ? Math.round(wordCount / minutes) : 0;
+	},
 	setupGenerateButton(elements, state)
 	{
+		let startTime = null;
+		let accumulatedText = '';
 		elements.generateTargetBtn.addEventListener('click', async () =>
 		{
 			if (elements.generateTargetBtn.dataset.generating === 'true')
@@ -163,6 +174,9 @@ const UIHandlers = {
 					fullPrompt = `Translate the following text to ${targetLanguage}\n\n${fullPrompt}`;
 				}
 				elements.targetText.value = '';
+				UIState.showWPM(elements);
+				startTime = Date.now();
+				accumulatedText = '';
 				await AiService.generate(fullPrompt, model,
 				{
 					streaming: StorageService.load('streaming_enabled', true),
@@ -175,6 +189,10 @@ const UIHandlers = {
 						TextService.updateStats(elements.targetText, 'target');
 						StorageService.save('targetText', text);
 						elements.targetText.scrollTop = elements.targetText.scrollHeight;
+						accumulatedText = text;
+						const elapsedTimeInSeconds = (Date.now() - startTime) / 1000;
+						const wpm = this.calculateWPM(accumulatedText, elapsedTimeInSeconds);
+						elements.wpmDisplay.textContent = wpm;
 					}
 				});
 			}
@@ -189,6 +207,8 @@ const UIHandlers = {
 			{
 				UIState.setGenerating(false, elements);
 				state.abortController = null;
+				startTime = null;
+				accumulatedText = '';
 			}
 		});
 	},

@@ -36,7 +36,9 @@ class App
 			streamingToggle: document.getElementById('streamingToggle'),
 			cleanupToggle: document.getElementById('cleanupToggle'),
 			darkToggle: document.getElementById('darkToggle'),
-			wideToggle: document.getElementById('wideToggle')
+			wideToggle: document.getElementById('wideToggle'),
+			wpmContainer: document.getElementById('wpm-container'),
+			wpmDisplay: document.getElementById('wpm')
 		};
 	}
 	async init()
