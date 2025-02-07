@@ -49,6 +49,10 @@ const TextService = {
 	},
 	format:
 	{
+		retab(text)
+		{
+			return text;
+		},
 		latex(text)
 		{
 			text = text.replace(/\\[\s\n]*\[([\s\S]*?)\\[\s\n]*\]/g,

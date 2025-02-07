@@ -54,6 +54,12 @@ const UIHandlers = {
 					TextService.updateStats(textArea, type);
 					StorageService.save(`${type}Text`, textArea.value);
 				},
+				[`retab${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
+				{
+					textArea.value = TextService.format.retab(textArea.value);
+					TextService.updateStats(textArea, type);
+					StorageService.save(`${type}Text`, textArea.value);
+				},
 				[`latex${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
 				{
 					textArea.value = TextService.format.latex(textArea.value);
