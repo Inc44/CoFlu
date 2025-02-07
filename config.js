@@ -29,7 +29,29 @@ window.CONFIG = {
 				default: "chatgpt-4o-latest",
 				options: [
 				{
-					name: "chatgpt-4o-latest",
+					name: "o3-mini",
+					max_completion_tokens: 200000,
+					reasoning_effort: "low",
+					vision: false
+				},
+				{
+					name: "o3-mini-2025-01-31",
+					max_completion_tokens: 200000,
+					reasoning_effort: "low",
+					vision: false
+				},
+				{
+					name: "gpt-4o",
+					max_completion_tokens: 16383,
+					vision: true
+				},
+				{
+					name: "gpt-4o-mini",
+					max_completion_tokens: 16383,
+					vision: true
+				},
+				{
+					name: "gpt-4o-mini-2024-07-18",
 					max_completion_tokens: 16383,
 					vision: true
 				},
@@ -44,31 +66,14 @@ window.CONFIG = {
 					vision: true
 				},
 				{
-					name: "gpt-4o",
-					max_completion_tokens: 16383,
+					name: "gpt-4-1106-preview",
+					max_completion_tokens: 4095,
 					vision: true
 				},
 				{
-					name: "gpt-4o-mini-2024-07-18",
+					name: "chatgpt-4o-latest",
 					max_completion_tokens: 16383,
 					vision: true
-				},
-				{
-					name: "gpt-4o-mini",
-					max_completion_tokens: 16383,
-					vision: true
-				},
-				{
-					name: "o3-mini-2025-01-31",
-					max_completion_tokens: 200000,
-					reasoning_effort: "low",
-					vision: false
-				},
-				{
-					name: "o3-mini",
-					max_completion_tokens: 200000,
-					reasoning_effort: "low",
-					vision: false
 				}]
 			},
 			claude:
