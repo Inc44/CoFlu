@@ -111,6 +111,21 @@ window.CONFIG = {
 					vision: true
 				},
 				{
+					name: "gemini-2.0-flash-001",
+					max_completion_tokens: 8192,
+					vision: true
+				},
+				{
+					name: "gemini-2.0-flash-lite-preview-02-05",
+					max_completion_tokens: 8192,
+					vision: true
+				},
+				{
+					name: "gemini-2.0-pro-exp-02-05",
+					max_completion_tokens: 8192,
+					vision: true
+				},
+				{
 					name: "gemini-2.0-flash-thinking-exp-01-21",
 					max_completion_tokens: 65536,
 					vision: true
