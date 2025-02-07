@@ -177,6 +177,33 @@ const AiService = {
 	},
 	formatMessagesWithImages(prompt, images = [], model)
 	{
+		if (model === 'claude')
+		{
+			const imageContent = images.map(dataURL =>
+			{
+				const base64Data = dataURL.split(',')[1];
+				const mimeType = dataURL.match(/^data:(.*?);base64,/)
+					?.[1];
+				return {
+					type: 'image',
+					source:
+					{
+						type: "base64",
+						media_type: mimeType || 'image/png',
+						data: base64Data,
+					}
+				};
+			});
+			return [
+			{
+				role: "user",
+				content: [
+				{
+					type: "text",
+					text: prompt
+				}, ...imageContent]
+			}];
+		}
 		const imageContent = images.map(dataURL => (
 		{
 			type: 'image_url',
@@ -185,22 +212,6 @@ const AiService = {
 				url: dataURL
 			}
 		}));
-		if (model === 'groq' || model === 'sambanova')
-		{
-			return [
-			{
-				role: "user",
-				content: [
-				{
-					type: "text",
-					text: prompt
-				}, ...imageContent.map(img => (
-				{
-					type: "image_url",
-					image_url: img.image_url
-				}))]
-			}];
-		}
 		return [
 		{
 			role: "user",
