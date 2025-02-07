@@ -25,7 +25,8 @@ class SettingsApp
 				deepseek: document.getElementById('deepseekModelContainer'),
 				gemini: document.getElementById('geminiModelContainer'),
 				groq: document.getElementById('groqModelContainer'),
-				sambanova: document.getElementById('sambanovaModelContainer')
+				sambanova: document.getElementById('sambanovaModelContainer'),
+				qwen: document.getElementById('qwenModelContainer')
 			},
 			modelSelects:
 			{
@@ -34,7 +35,8 @@ class SettingsApp
 				deepseek: document.getElementById('deepseekModel'),
 				gemini: document.getElementById('geminiModel'),
 				groq: document.getElementById('groqModel'),
-				sambanova: document.getElementById('sambanovaModel')
+				sambanova: document.getElementById('sambanovaModel'),
+				qwen: document.getElementById('qwenModel')
 			},
 			settingsTextArea: document.getElementById('settingsTextArea'),
 			saveSettingsBtn: document.getElementById('saveSettings'),
