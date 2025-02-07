@@ -35,6 +35,16 @@ window.CONFIG = {
 					vision: false
 				},
 				{
+					name: "o1-mini",
+					max_completion_tokens: 128000,
+					vision: false
+				},
+				{
+					name: "o1-mini-2024-09-12",
+					max_completion_tokens: 128000,
+					vision: false
+				},
+				{
 					name: "o3-mini-2025-01-31",
 					max_completion_tokens: 200000,
 					reasoning_effort: "low",
