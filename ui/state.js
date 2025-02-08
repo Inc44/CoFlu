@@ -8,9 +8,15 @@ const UIState = {
 	},
 	setTranscribing(isTranscribing, elements)
 	{
-		elements.transcribeBtn.style.backgroundColor = isTranscribing ? 'red' : 'blue';
+		elements.transcribeBtn.style.backgroundColor = isTranscribing ? 'red' : '';
 		elements.transcribeBtn.textContent = isTranscribing ? 'Stop Transcribe' : 'Start Transcribe';
 		elements.transcribeBtn.dataset.transcribing = isTranscribing;
+	},
+	setTranslating(isTranslating, elements)
+	{
+		elements.translateBtn.style.backgroundColor = isTranslating ? 'red' : '';
+		elements.translateBtn.textContent = isTranslating ? 'Stop Translation' : 'Start Translation';
+		elements.translateBtn.dataset.translating = isTranslating;
 	},
 	updateTheme(isDark)
 	{
