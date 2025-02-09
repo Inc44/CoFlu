@@ -230,7 +230,7 @@ class TranslateApp
 			const originalFileName = file.name;
 			const baseName = originalFileName.substring(0, originalFileName.lastIndexOf('.'));
 			const ext = originalFileName.substring(originalFileName.lastIndexOf('.'));
-			this.state.translatedFileName = `${baseName}_translated_${targetLanguage}${ext}`;
+			this.state.translatedFileName = `${baseName} ${targetLanguage}${ext}`;
 			this.state.translatedBlob = await docxData.generateAsync(
 			{
 				type: "blob"
