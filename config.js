@@ -338,8 +338,8 @@ window.CONFIG = {
 			gemini:
 			{
 				model: "gemini-exp-1206",
-				extractContent: data => data.response.text() || data.response.candidates[0]?.output,
-				extractStreamContent: chunk => chunk.text()
+				extractContent: data => data.candidates[0]?.content?.parts[0]?.text,
+				extractStreamContent: data => data.candidates[0]?.content?.parts[0]?.text,
 			},
 			groq:
 			{
