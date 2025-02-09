@@ -241,7 +241,12 @@ class TranslateApp
 		const translatedFileName = `${baseName} ${this.elements.languageSelect.value}${ext}`;
 		const translatedBlob = await docxData.generateAsync(
 		{
-			type: "blob"
+			type: "blob",
+			compression: "DEFLATE",
+			compressionOptions:
+			{
+				level: 9
+			}
 		});
 		return {
 			blob: translatedBlob,

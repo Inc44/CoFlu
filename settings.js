@@ -77,8 +77,8 @@ class SettingsApp
 		this.loadModelOptions();
 		this.loadInputSetting('languageSelect', 'selected_language', 'English');
 		this.loadInputSetting('batchSizeInput', 'translation_batch_size', 10, 'number');
-		this.loadInputSetting('batchRPMInput', 'translation_batch_rpm', 0, 'number');
-		this.loadInputSetting('exponentialRetryInput', 'exponential_retry', 4, 'number');
+		this.loadInputSetting('batchRPMInput', 'translation_batch_rpm', 10, 'number');
+		this.loadInputSetting('exponentialRetryInput', 'exponential_retry', 10, 'number');
 		this.updateModelVisibility(this.elements.apiModelSelect.value);
 		this.updateApiKeyLabel(this.elements.apiModelSelect.value);
 		this.displayCurrentSettings();
