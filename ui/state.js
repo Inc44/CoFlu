@@ -18,13 +18,13 @@ const UIState = {
 		elements.translateBtn.textContent = isTranslating ? 'Stop Translation' : 'Start Translation';
 		elements.translateBtn.dataset.translating = isTranslating;
 	},
-	updateTheme(isDark)
+	updateTheme(isDarkMode)
 	{
-		document.body.dataset.bsTheme = isDark ? 'dark' : 'light';
+		document.documentElement.setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
 		const darkToggle = document.getElementById('darkToggle');
 		if (darkToggle)
 		{
-			darkToggle.checked = isDark;
+			darkToggle.checked = isDarkMode;
 		}
 	},
 	updateLayout(isWide)

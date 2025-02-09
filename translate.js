@@ -32,7 +32,8 @@ class TranslateApp
 	{
 		this.loadSettings();
 		this.setupEventListeners();
-		this.updateThemeAndLayout();
+		const isWideMode = StorageService.load('wide_enabled') === true;
+		UIState.updateLayout(isWideMode);
 	}
 	loadSettings()
 	{
@@ -75,13 +76,6 @@ class TranslateApp
 		{
 			this.startTranslation();
 		}
-	}
-	updateThemeAndLayout()
-	{
-		const isDarkMode = StorageService.load('dark_enabled') === true;
-		const isWideMode = StorageService.load('wide_enabled') === true;
-		UIState.updateTheme(isDarkMode);
-		UIState.updateLayout(isWideMode);
 	}
 	updateProgress(current, total)
 	{

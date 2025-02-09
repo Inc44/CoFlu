@@ -1,19 +1,19 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css");
-body[data-bs-theme="light"] {
+html[data-bs-theme="light"] body {
 background-color: rgb(199, 195, 189);
 color: black;
 }
-body[data-bs-theme="dark"] {
+html[data-bs-theme="dark"] body {
 background-color: rgb(56, 60, 66);
 color: white;
 }
-body[data-bs-theme="dark"] .diff-deletion {
+html[data-bs-theme="dark"] body .diff-deletion {
 background-color: rgb(94, 15, 8);
 }
-body[data-bs-theme="dark"] .diff-insertion {
+html[data-bs-theme="dark"] body .diff-insertion {
 background-color: rgb(15, 87, 46);
 }
-body[data-bs-theme="light"] #homePage {
+html[data-bs-theme="light"] body #homePage {
 color: rgb(30, 35, 40);
 }
 .container {

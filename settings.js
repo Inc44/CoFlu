@@ -210,9 +210,9 @@ class SettingsApp
 	}
 	handleDarkToggleChange()
 	{
-		const isDark = this.elements.darkToggle.checked;
-		UIState.updateTheme(isDark);
-		StorageService.save('dark_enabled', isDark);
+		const isDarkMode = this.elements.darkToggle.checked;
+		UIState.updateTheme(isDarkMode);
+		StorageService.save('dark_enabled', isDarkMode);
 	}
 	handleWideToggleChange()
 	{

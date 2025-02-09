@@ -35,7 +35,6 @@ class App
 			printContainer: document.getElementById('printContainer'),
 			streamingToggle: document.getElementById('streamingToggle'),
 			cleanupToggle: document.getElementById('cleanupToggle'),
-			darkToggle: document.getElementById('darkToggle'),
 			wideToggle: document.getElementById('wideToggle'),
 			wpmContainer: document.getElementById('wpm-container'),
 			wpmDisplay: document.getElementById('wpm')
@@ -92,7 +91,6 @@ class App
 			'translationToggle': ['translation_enabled', false],
 			'streamingToggle': ['streaming_enabled', true],
 			'cleanupToggle': ['cleanup_enabled', true],
-			'darkToggle': ['dark_enabled', true],
 			'wideToggle': ['wide_enabled', false]
 		};
 		Object.entries(toggleSettings)
@@ -112,13 +110,7 @@ class App
 		{
 			this.elements.transcribeLanguage.value = StorageService.load('transcribe_language', 'en');
 		}
-		const isDarkMode = StorageService.load('dark_enabled') === true;
 		const isWideMode = StorageService.load('wide_enabled') === true;
-		document.body.dataset.bsTheme = isDarkMode ? 'dark' : 'light';
-		if (this.elements.darkToggle)
-		{
-			this.elements.darkToggle.checked = isDarkMode;
-		}
 		const contentElement = document.getElementById('content');
 		if (contentElement)
 		{
@@ -179,15 +171,6 @@ class App
 		this.setupPromptHandlers();
 		this.setupMarkdownHandler();
 		this.setupTranscribeHandler();
-		if (this.elements.darkToggle)
-		{
-			this.elements.darkToggle.addEventListener('change', (e) =>
-			{
-				const isDark = e.target.checked;
-				UIState.updateTheme(isDark);
-				StorageService.save('dark_enabled', isDark);
-			});
-		}
 		if (this.elements.wideToggle)
 		{
 			this.elements.wideToggle.addEventListener('change', (e) =>
@@ -363,8 +346,6 @@ class App
 				UIState.updateVideoUploadVisibility(currentModelDetails);
 			}
 		}
-		const isDarkMode = StorageService.load('dark_enabled') === true;
-		UIState.updateTheme(isDarkMode);
 		const isWideMode = StorageService.load('wide_enabled') === true;
 		UIState.updateLayout(isWideMode);
 		if (this.elements.customPromptContainer && this.elements.promptSelect)

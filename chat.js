@@ -3,9 +3,7 @@ class ChatApp
 {
 	init()
 	{
-		const isDarkMode = StorageService.load('dark_enabled') === true;
 		const isWideMode = StorageService.load('wide_enabled') === true;
-		UIState.updateTheme(isDarkMode);
 		UIState.updateLayout(isWideMode);
 	}
 }
