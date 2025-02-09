@@ -96,7 +96,7 @@ class TranslateApp
 			const docxData = await zip.loadAsync(file);
 			if (!docxData.file("word/document.xml"))
 			{
-				throw new Error("word/document.xml not found in DOCX.  Invalid DOCX file.");
+				throw new Error("word/document.xml not found in DOCX. Invalid DOCX file.");
 			}
 			const documentXmlContent = await docxData.file("word/document.xml")
 				.async("string");
@@ -109,47 +109,66 @@ class TranslateApp
 				UIState.setTranslating(false, this.elements);
 				return;
 			}
-			for (let i = 0; i < textElements.length; i++)
+			const elements = Array.from(textElements);
+			const batchSize = 10;
+			const batches = [];
+			for (let i = 0; i < elements.length; i += batchSize)
 			{
-				const element = textElements[i];
-				let original_text = element.textContent;
-				if (original_text && original_text.trim())
+				batches.push(elements.slice(i, i + batchSize));
+			}
+			for (const batch of batches)
+			{
+				if (this.state.abortController.signal.aborted)
 				{
-					const prompt = `Translate the following text to ${targetLanguage}. Provide the translation ONLY, without any introductory phrases or additional commentary.\n\n${original_text}`;
-					try
-					{
-						const response = await AiService.generate(prompt, apiModel,
-						{
-							abortSignal: this.state.abortController.signal
-						});
-						const translated_text = CONFIG.API.CONFIG[apiModel].extractContent(response);
-						while (element.firstChild)
-						{
-							element.removeChild(element.firstChild);
-						}
-						element.appendChild(xmlDoc.createTextNode(translated_text));
-					}
-					catch (translationError)
-					{
-						if (translationError.name === 'AbortError')
-						{
-							console.log('Translation aborted by user.');
-							if (this.state.abortController)
-							{
-								this.state.abortController = null;
-							}
-							UIState.setTranslating(false, this.elements);
-							return;
-						}
-						console.error('Translation error:', translationError);
-						alert(`Translation error: ${translationError.message}`);
-						while (element.firstChild)
-						{
-							element.removeChild(element.firstChild);
-						}
-						element.appendChild(xmlDoc.createTextNode("[Translation Failed]"));
-					}
+					throw new DOMException('Aborted', 'AbortError');
 				}
+				const translationPromises = batch.map(async element =>
+				{
+					const original_text = element.textContent;
+					if (original_text && original_text.trim())
+					{
+						try
+						{
+							const prompt = `Translate the following text to ${targetLanguage}. Provide the translation ONLY, without any introductory phrases or additional commentary.\n\n${original_text}`;
+							const response = await AiService.generate(prompt, apiModel,
+							{
+								abortSignal: this.state.abortController.signal
+							});
+							let translated_text;
+							if (isGemini)
+							{
+								translated_text = response.response?.text?.() || response.candidates?.[0]?.content?.parts?.[0]?.text || "[Translation Failed]";
+							}
+							else
+							{
+								translated_text = CONFIG.API.CONFIG[apiModel].extractContent(response);
+							}
+							if (isGemini)
+							{
+								await new Promise(resolve => setTimeout(resolve, 1000));
+							}
+							while (element.firstChild)
+							{
+								element.removeChild(element.firstChild);
+							}
+							element.appendChild(xmlDoc.createTextNode(translated_text));
+						}
+						catch (translationError)
+						{
+							if (translationError.name === 'AbortError')
+							{
+								throw translationError;
+							}
+							console.error('Translation error:', translationError);
+							while (element.firstChild)
+							{
+								element.removeChild(element.firstChild);
+							}
+							element.appendChild(xmlDoc.createTextNode("[Translation Failed]"));
+						}
+					}
+				});
+				await Promise.all(translationPromises);
 			}
 			const serializer = new XMLSerializer();
 			const modifiedDocumentXml = serializer.serializeToString(xmlDoc);
@@ -173,8 +192,11 @@ class TranslateApp
 		}
 		catch (error)
 		{
-			console.error('DOCX processing error:', error);
-			alert(`Error processing DOCX file: ${error.message}`);
+			if (error.name !== 'AbortError')
+			{
+				console.error('DOCX processing error:', error);
+				alert(`Error processing DOCX file: ${error.message}`);
+			}
 		}
 		finally
 		{
