@@ -127,6 +127,19 @@
 						<div class="card-body">
 							<h5>Translation Settings</h5>
 							<div class="mb-3">
+								<label for="transcribeLanguage" class="form-label">Language:</label>
+								<select class="form-select" id="language">
+									<option value="Chinese">Chinese</option>
+									<option value="English">English</option>
+									<option value="French">French</option>
+									<option value="German">German</option>
+									<option value="Japanese">Japanese</option>
+									<option value="Polish">Polish</option>
+									<option value="Russian">Russian</option>
+									<option value="Ukrainian">Ukrainian</option>
+								</select>
+							</div>
+							<div class="mb-3">
 								<label for="batchSize" class="form-label">Translation Batch Size (Speed Multiplier):</label>
 								<input type="number" id="batchSize" class="form-control" value="10" min="1" max="60000" step="1">
 								<small class="form-text text-muted">Faster but more prone to failure (changing is recommended for top-tier API keys only)</small>

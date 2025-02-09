@@ -106,7 +106,7 @@ class App
 			});
 		if (this.elements.languageSelect)
 		{
-			this.elements.languageSelect.value = StorageService.load('selected_language', 'en');
+			this.elements.languageSelect.value = StorageService.load('selected_language', 'English');
 		}
 		if (this.elements.transcribeLanguage)
 		{

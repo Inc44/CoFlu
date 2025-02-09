@@ -42,6 +42,7 @@ class SettingsApp
 			saveSettingsBtn: document.getElementById('saveSettings'),
 			reasoningEffortContainer: document.getElementById('reasoningEffortContainer'),
 			reasoningEffortSelect: document.getElementById('reasoningEffort'),
+			languageSelect: document.getElementById('language'),
 			batchSizeInput: document.getElementById('batchSize'),
 			batchRPMInput: document.getElementById('batchRPM'),
 			exponentialRetryInput: document.getElementById('exponentialRetry')
@@ -52,22 +53,68 @@ class SettingsApp
 		this.loadSettings();
 		this.setupEventListeners();
 		this.updateModelVisibility(this.elements.apiModelSelect.value);
+		this.updateThemeAndLayout();
+	}
+	updateThemeAndLayout()
+	{
+		UIState.updateTheme(this.elements.darkToggle.checked);
+		UIState.updateLayout(this.elements.wideToggle.checked);
 	}
 	loadSettings()
 	{
-		const savedModel = StorageService.load('selected_api_model', 'chatgpt');
-		this.elements.apiModelSelect.value = savedModel;
-		this.elements.apiKeyInput.value = StorageService.load(CONFIG.API.KEYS[savedModel], '');
-		this.elements.streamingToggle.checked = StorageService.load('streaming_enabled', true);
-		this.elements.cleanupToggle.checked = StorageService.load('cleanup_enabled', true);
-		this.elements.darkToggle.checked = StorageService.load('dark_enabled', false);
-		this.elements.numberedLinesToggle.checked = StorageService.load('numbered_lines_enabled', false);
-		this.elements.wideToggle.checked = StorageService.load('wide_enabled', false);
-		this.elements.rendererSelect.value = StorageService.load('selected_renderer', 'katex');
+		this.loadSelectSetting('apiModelSelect', 'selected_api_model', 'chatgpt');
+		this.loadInputSetting('apiKeyInput', CONFIG.API.KEYS[this.elements.apiModelSelect.value] || '', this.elements.apiModelSelect.value);
+		this.loadCheckboxSetting('streamingToggle', 'streaming_enabled', true);
+		this.loadCheckboxSetting('cleanupToggle', 'cleanup_enabled', true);
+		this.loadCheckboxSetting('darkToggle', 'dark_enabled', false);
+		this.loadCheckboxSetting('numberedLinesToggle', 'numbered_lines_enabled', false);
+		this.loadCheckboxSetting('wideToggle', 'wide_enabled', false);
+		this.loadSelectSetting('rendererSelect', 'selected_renderer', 'katex');
 		if (this.elements.reasoningEffortSelect)
 		{
-			this.elements.reasoningEffortSelect.value = StorageService.load('reasoning_effort', 'low');
+			this.loadSelectSetting('reasoningEffortSelect', 'reasoning_effort', 'low');
 		}
+		this.loadModelOptions();
+		this.loadInputSetting('languageSelect', 'selected_language', 'English');
+		this.loadInputSetting('batchSizeInput', 'translation_batch_size', 10, 'number');
+		this.loadInputSetting('batchRPMInput', 'translation_batch_rpm', 0, 'number');
+		this.loadInputSetting('exponentialRetryInput', 'exponential_retry', 4, 'number');
+		this.updateModelVisibility(this.elements.apiModelSelect.value);
+		this.updateApiKeyLabel(this.elements.apiModelSelect.value);
+		this.displayCurrentSettings();
+	}
+	loadSelectSetting(elementKey, storageKey, defaultValue)
+	{
+		if (this.elements[elementKey])
+		{
+			this.elements[elementKey].value = StorageService.load(storageKey, defaultValue);
+		}
+	}
+	loadInputSetting(elementKey, storageKey, defaultValue, type = 'text')
+	{
+		if (this.elements[elementKey])
+		{
+			let value = StorageService.load(storageKey, defaultValue);
+			if (type === 'number')
+			{
+				value = parseInt(value, 10);
+				if (isNaN(value))
+				{
+					value = defaultValue
+				}
+			}
+			this.elements[elementKey].value = value;
+		}
+	}
+	loadCheckboxSetting(elementKey, storageKey, defaultValue)
+	{
+		if (this.elements[elementKey])
+		{
+			this.elements[elementKey].checked = StorageService.load(storageKey, defaultValue);
+		}
+	}
+	loadModelOptions()
+	{
 		Object.entries(CONFIG.API.MODELS)
 			.forEach(([provider, modelConfig]) =>
 			{
@@ -82,188 +129,126 @@ class SettingsApp
 						option.textContent = model.name;
 						modelSelect.appendChild(option);
 					});
-					const savedModelValue = StorageService.load(`${provider}_model`, modelConfig.default);
-					modelSelect.value = savedModelValue;
-					const selectedModelDetails = modelConfig.options.find(m => m.name === savedModelValue);
-					UIState.updateImageUploadVisibility(selectedModelDetails);
-					UIState.updateVideoUploadVisibility(selectedModelDetails);
+					modelSelect.value = StorageService.load(`${provider}_model`, modelConfig.default);
 				}
 			});
-		this.elements.batchSizeInput.value = StorageService.load('translation_batch_size', 10);
-		this.elements.batchRPMInput.value = StorageService.load('translation_batch_rpm', 0);
-		this.elements.exponentialRetryInput.value = StorageService.load('exponential_retry', 4);
-		this.updateModelVisibility(savedModel);
-		this.updateApiKeyLabel(savedModel);
-		UIState.updateTheme(this.elements.darkToggle.checked);
-		UIState.updateLayout(this.elements.wideToggle.checked);
-		this.displayCurrentSettings();
 	}
 	updateModelVisibility(selectedProvider)
 	{
 		Object.values(this.elements.modelContainers)
 			.forEach(container =>
 			{
-				if (container)
-				{
-					container.classList.remove('active');
-				}
+				container?.classList.remove('active');
 			});
 		const selectedContainer = this.elements.modelContainers[selectedProvider];
 		if (selectedContainer)
 		{
 			selectedContainer.classList.add('active');
-			const modelSelect = this.elements.modelSelects[selectedProvider];
-			const selectedModelName = modelSelect ? modelSelect.value : null;
-			const selectedModelDetails = CONFIG.API.MODELS[selectedProvider]?.options.find(m => m.name === selectedModelName);
-			if (selectedModelDetails && selectedModelDetails.reasoning_effort)
-			{
-				this.elements.reasoningEffortContainer.style.display = 'block';
-			}
-			else
-			{
-				this.elements.reasoningEffortContainer.style.display = 'none';
-			}
+			this.updateReasoningEffortVisibility(selectedProvider);
+		}
+	}
+	updateReasoningEffortVisibility(selectedProvider)
+	{
+		const modelSelect = this.elements.modelSelects[selectedProvider];
+		const selectedModelName = modelSelect ? modelSelect.value : null;
+		const selectedModelDetails = CONFIG.API.MODELS[selectedProvider]?.options.find(m => m.name === selectedModelName);
+		if (selectedModelDetails && selectedModelDetails.reasoning_effort)
+		{
+			this.elements.reasoningEffortContainer.style.display = 'block';
+		}
+		else
+		{
+			this.elements.reasoningEffortContainer.style.display = 'none';
 		}
 	}
 	setupEventListeners()
 	{
-		this.elements.apiModelSelect.addEventListener('change', () =>
-		{
-			const selectedModel = this.elements.apiModelSelect.value;
-			const selectedSubModel = this.elements.modelSelects[selectedModel].value;
-			StorageService.save('selected_api_model', selectedModel);
-			this.updateApiKeyLabel(selectedModel);
-			this.elements.apiKeyInput.value = StorageService.load(CONFIG.API.KEYS[selectedModel], '');
-			this.updateModelVisibility(selectedModel);
-			const selectedModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === selectedSubModel);
-			UIState.updateImageUploadVisibility(selectedModelDetails);
-			UIState.updateVideoUploadVisibility(selectedModelDetails);
-			if (selectedModelDetails && selectedModelDetails.reasoning_effort)
-			{
-				this.elements.reasoningEffortContainer.style.display = 'block';
-			}
-			else
-			{
-				this.elements.reasoningEffortContainer.style.display = 'none';
-			}
-		});
-		if (this.elements.modelSelects)
-		{
-			Object.entries(this.elements.modelSelects)
-				.forEach(([provider, select]) =>
-				{
-					if (select)
-					{
-						select.addEventListener('change', () =>
-						{
-							const selectedModel = this.elements.apiModelSelect ? this.elements.apiModelSelect.value : null;
-							const selectedSubModel = select.value;
-							StorageService.save(`${provider}_model`, selectedSubModel);
-							let selectedModelDetails = selectedModel && CONFIG.API.MODELS[selectedModel] ? CONFIG.API.MODELS[selectedModel].options.find(m => m.name === selectedSubModel) : null;
-							UIState.updateImageUploadVisibility(selectedModelDetails);
-							UIState.updateVideoUploadVisibility(selectedModelDetails);
-							const apiType = this.elements.apiModelSelect.value;
-							selectedModelDetails = CONFIG.API.MODELS[apiType].options.find(m => m.name === select.value);
-							if (selectedModelDetails && selectedModelDetails.reasoning_effort)
-							{
-								this.elements.reasoningEffortContainer.style.display = 'block';
-							}
-							else
-							{
-								this.elements.reasoningEffortContainer.style.display = 'none';
-							}
-						});
-					}
-				});
-		}
-		this.elements.apiKeyInput.addEventListener('change', () =>
-		{
-			const apiType = this.elements.apiModelSelect.value;
-			const apiKey = this.elements.apiKeyInput.value.trim();
-			StorageService.save(CONFIG.API.KEYS[apiType], apiKey);
-		});
-		this.elements.streamingToggle.addEventListener('change', () =>
-		{
-			StorageService.save('streaming_enabled', this.elements.streamingToggle.checked);
-		});
-		this.elements.cleanupToggle.addEventListener('change', () =>
-		{
-			StorageService.save('cleanup_enabled', this.elements.cleanupToggle.checked);
-		});
-		this.elements.darkToggle.addEventListener('change', () =>
-		{
-			UIState.updateTheme(this.elements.darkToggle.checked);
-			StorageService.save('dark_enabled', this.elements.darkToggle.checked);
-		});
-		this.elements.numberedLinesToggle.addEventListener('change', () =>
-		{
-			StorageService.save('numbered_lines_enabled', this.elements.numberedLinesToggle.checked);
-		});
-		this.elements.wideToggle.addEventListener('change', () =>
-		{
-			UIState.updateLayout(this.elements.wideToggle.checked);
-			StorageService.save('wide_enabled', this.elements.wideToggle.checked);
-		});
-		this.elements.rendererSelect.addEventListener('change', () =>
-		{
-			StorageService.save('selected_renderer', this.elements.rendererSelect.value);
-		});
+		this.elements.apiModelSelect?.addEventListener('change', this.handleApiModelChange.bind(this));
+		this.elements.apiKeyInput?.addEventListener('change', this.handleApiKeyChange.bind(this));
+		this.elements.streamingToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'streamingToggle', 'streaming_enabled'));
+		this.elements.cleanupToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'cleanupToggle', 'cleanup_enabled'));
+		this.elements.darkToggle?.addEventListener('change', this.handleDarkToggleChange.bind(this));
+		this.elements.numberedLinesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'numberedLinesToggle', 'numbered_lines_enabled'));
+		this.elements.wideToggle?.addEventListener('change', this.handleWideToggleChange.bind(this));
+		this.elements.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
+		this.elements.reasoningEffortSelect?.addEventListener('change', this.handleReasoningEffortChange.bind(this));
+		this.elements.importSettingsBtn?.addEventListener('click', this.importSettings.bind(this));
+		this.elements.exportSettingsBtn?.addEventListener('click', this.exportSettings.bind(this));
+		this.elements.saveSettingsBtn?.addEventListener('click', this.saveSettings.bind(this));
+		this.elements.languageSelect?.addEventListener('change', this.handleLanguageChange.bind(this));
+		this.elements.batchSizeInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'batchSizeInput', 'translation_batch_size', 1, 60000));
+		this.elements.batchRPMInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'batchRPMInput', 'translation_batch_rpm', 0, 60000));
+		this.elements.exponentialRetryInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'exponentialRetryInput', 'exponential_retry', 0));
 		Object.entries(this.elements.modelSelects)
 			.forEach(([provider, select]) =>
 			{
 				select?.addEventListener('change', () =>
 				{
-					StorageService.save(`${provider}_model`, select.value);
+					const selectedSubModel = select.value;
+					StorageService.save(`${provider}_model`, selectedSubModel);
+					this.updateReasoningEffortVisibility(provider);
 				});
 			});
-		if (this.elements.reasoningEffortSelect)
+	}
+	handleApiModelChange()
+	{
+		const selectedModel = this.elements.apiModelSelect.value;
+		StorageService.save('selected_api_model', selectedModel);
+		this.updateApiKeyLabel(selectedModel);
+		this.updateModelVisibility(selectedModel);
+		this.elements.apiKeyInput.value = StorageService.load(CONFIG.API.KEYS[selectedModel] || '', '');
+	}
+	handleApiKeyChange()
+	{
+		const apiType = this.elements.apiModelSelect.value;
+		const apiKey = this.elements.apiKeyInput.value.trim();
+		StorageService.save(CONFIG.API.KEYS[apiType], apiKey);
+	}
+	handleToggleChange(elementKey, storageKey)
+	{
+		StorageService.save(storageKey, this.elements[elementKey].checked);
+	}
+	handleDarkToggleChange()
+	{
+		const isDark = this.elements.darkToggle.checked;
+		UIState.updateTheme(isDark);
+		StorageService.save('dark_enabled', isDark);
+	}
+	handleWideToggleChange()
+	{
+		const isWide = this.elements.wideToggle.checked;
+		UIState.updateLayout(isWide);
+		StorageService.save('wide_enabled', isWide);
+	}
+	handleRendererChange()
+	{
+		StorageService.save('selected_renderer', this.elements.rendererSelect.value);
+	}
+	handleReasoningEffortChange()
+	{
+		StorageService.save('reasoning_effort', this.elements.reasoningEffortSelect.value);
+	}
+	handleLanguageChange()
+	{
+		StorageService.save('selected_language', this.elements.languageSelect.value);
+	}
+	handleNumericInputChange(elementKey, storageKey, min = null, max = null)
+	{
+		let value = parseInt(this.elements[elementKey].value, 10);
+		if (isNaN(value))
 		{
-			this.elements.reasoningEffortSelect.addEventListener('change', () =>
-			{
-				StorageService.save('reasoning_effort', this.elements.reasoningEffortSelect.value);
-			});
+			value = StorageService.load(storageKey, 0);
 		}
-		this.elements.importSettingsBtn.addEventListener('click', () => this.importSettings());
-		this.elements.exportSettingsBtn.addEventListener('click', () => this.exportSettings());
-		this.elements.saveSettingsBtn.addEventListener('click', () => this.saveSettings());
-		this.elements.batchSizeInput.addEventListener('change', () =>
+		if (min !== null && value < min)
 		{
-			let batchSize = parseInt(this.elements.batchSizeInput.value, 10);
-			if (isNaN(batchSize) || batchSize < 1)
-			{
-				batchSize = 1;
-			}
-			else if (batchSize > 60000)
-			{
-				batchSize = 60000;
-			}
-			this.elements.batchSizeInput.value = batchSize;
-			StorageService.save('translation_batch_size', batchSize);
-		});
-		this.elements.batchRPMInput.addEventListener('change', () =>
+			value = min;
+		}
+		if (max !== null && value > max)
 		{
-			let rateLimit = parseInt(this.elements.batchRPMInput.value, 10);
-			if (isNaN(rateLimit) || rateLimit < 0)
-			{
-				rateLimit = 0;
-			}
-			else if (rateLimit > 60000)
-			{
-				rateLimit = 60000;
-			}
-			this.elements.batchRPMInput.value = rateLimit;
-			StorageService.save('translation_batch_rpm', rateLimit);
-		});
-		this.elements.exponentialRetryInput.addEventListener('change', () =>
-		{
-			let rateLimit = parseInt(this.elements.exponentialRetryInput.value, 4);
-			if (isNaN(rateLimit) || rateLimit < 0)
-			{
-				rateLimit = 0;
-			}
-			this.elements.exponentialRetryInput.value = rateLimit;
-			StorageService.save('exponential_retry', rateLimit);
-		});
+			value = max;
+		}
+		this.elements[elementKey].value = value;
+		StorageService.save(storageKey, value);
 	}
 	updateApiKeyLabel(model)
 	{
@@ -276,24 +261,24 @@ class SettingsApp
 	getCurrentSettings()
 	{
 		const settings = {
-			selected_api_model: StorageService.load('selected_api_model', 'chatgpt'),
-			streaming_enabled: StorageService.load('streaming_enabled', true),
-			cleanup_enabled: StorageService.load('cleanup_enabled', true),
-			dark_enabled: StorageService.load('dark_enabled', false),
-			numbered_lines_enabled: StorageService.load('numbered_lines_enabled', false),
-			wide_enabled: StorageService.load('wide_enabled', false),
-			selected_renderer: StorageService.load('selected_renderer', 'katex'),
+			selected_api_model: this.elements.apiModelSelect.value,
+			streaming_enabled: this.elements.streamingToggle.checked,
+			cleanup_enabled: this.elements.cleanupToggle.checked,
+			dark_enabled: this.elements.darkToggle.checked,
+			numbered_lines_enabled: this.elements.numberedLinesToggle.checked,
+			wide_enabled: this.elements.wideToggle.checked,
+			selected_renderer: this.elements.rendererSelect.value,
 			prompts: StorageService.load('prompts', []),
-			selected_language: StorageService.load('selected_language', 'en'),
+			selected_language: this.elements.languageSelect.value,
 			transcribe_language: StorageService.load('transcribe_language', 'en'),
 			translation_enabled: StorageService.load('translation_enabled', false),
-			translation_batch_size: StorageService.load('translation_batch_size', 10),
-			translation_batch_rpm: StorageService.load('translation_batch_rpm', 0),
-			exponential_retry: StorageService.load('exponential_retry', 0),
+			translation_batch_size: parseInt(this.elements.batchSizeInput.value, 10),
+			translation_batch_rpm: parseInt(this.elements.batchRPMInput.value, 10),
+			exponential_retry: parseInt(this.elements.exponentialRetryInput.value, 10),
 		};
 		if (this.elements.reasoningEffortSelect)
 		{
-			settings.reasoning_effort = StorageService.load('reasoning_effort', 'low');
+			settings.reasoning_effort = this.elements.reasoningEffortSelect.value;
 		}
 		Object.entries(CONFIG.API.KEYS)
 			.forEach(([provider, key]) =>
@@ -303,7 +288,7 @@ class SettingsApp
 		Object.entries(CONFIG.API.MODELS)
 			.forEach(([provider, modelConfig]) =>
 			{
-				settings[`${provider}_model`] = StorageService.load(`${provider}_model`, modelConfig.default);
+				settings[`${provider}_model`] = this.elements.modelSelects[provider].value;
 			});
 		return settings;
 	}
@@ -316,7 +301,6 @@ class SettingsApp
 	{
 		const settings = this.getCurrentSettings();
 		const settingsJSON = JSON.stringify(settings, null, 2);
-		this.elements.settingsTextArea.value = settingsJSON;
 		const blob = new Blob([settingsJSON],
 		{
 			type: 'application/json'
@@ -325,7 +309,9 @@ class SettingsApp
 		const a = document.createElement('a');
 		a.href = url;
 		a.download = 'CoFlu.json';
+		document.body.appendChild(a);
 		a.click();
+		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
 	}
 	importSettings()
@@ -344,6 +330,10 @@ class SettingsApp
 					try
 					{
 						const settings = JSON.parse(e.target.result);
+						if (typeof settings !== 'object' || settings === null)
+						{
+							throw new Error('Invalid settings file: Not a JSON object.');
+						}
 						this.elements.settingsTextArea.value = JSON.stringify(settings, null, 2);
 						Object.entries(settings)
 							.forEach(([key, value]) =>
@@ -356,7 +346,7 @@ class SettingsApp
 					catch (error)
 					{
 						console.error('Error importing settings:', error);
-						alert('Error importing settings. Please check the file format.');
+						alert(`Error importing settings: ${error.message}`);
 					}
 				};
 				reader.readAsText(file);
@@ -369,6 +359,10 @@ class SettingsApp
 		try
 		{
 			const settings = JSON.parse(this.elements.settingsTextArea.value);
+			if (typeof settings !== 'object' || settings === null)
+			{
+				throw new Error('Invalid settings: Not a JSON object.');
+			}
 			Object.entries(settings)
 				.forEach(([key, value]) =>
 				{
@@ -380,7 +374,7 @@ class SettingsApp
 		catch (error)
 		{
 			console.error('Error saving settings:', error);
-			alert('Error saving settings. Please check the JSON format.');
+			alert(`Error saving settings: ${error.message}`);
 		}
 	}
 }
