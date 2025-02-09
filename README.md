@@ -2,6 +2,8 @@
 
 CoFlu is a comprehensive text manipulation, generation, and comparison tool designed to be your one-stop solution for a wide range of text-related tasks. It empowers users to compare texts, generate content using cutting-edge AI models, transform text in various ways, transcribe audio, and even translate documents with unprecedented accuracy and layout preservation. CoFlu is particularly useful for proofreading, editing, content creation, version control, and ensuring consistency across different text versions.
 
+![CoFlu](CoFlu.png)
+
 **As of February 2025, CoFlu is the *only* website in the world offering Microsoft Word (.docx) translation with full layout preservation while leveraging the power of Large Language Models (LLMs) for superior translation quality.** This feature alone sets CoFlu apart, providing a powerful and unique capability for users working with formatted documents.
 
 ## Features
@@ -127,6 +129,7 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 
 - [Count Words Free - Compare Texts](https://countwordsfree.com/comparetexts)
 - [EditGPT](https://editgpt.app)
+- [Notability](https://notability.com)
 
 ## Bugs
 
