@@ -5,7 +5,9 @@ class TranslateApp
 	{
 		this.elements = this.getElements();
 		this.state = {
-			abortController: null
+			abortController: null,
+			translatedBlob: null,
+			translatedFileName: null
 		};
 	}
 	getElements()
@@ -14,7 +16,10 @@ class TranslateApp
 			apiModelSelect: document.getElementById('apiModel'),
 			languageSelect: document.getElementById('language'),
 			documentFile: document.getElementById('documentFile'),
-			translateBtn: document.getElementById('translateBtn')
+			translateBtn: document.getElementById('translateBtn'),
+			progressBar: document.getElementById('translateProgress'),
+			progressBarInner: document.querySelector('#translateProgress .progress-bar'),
+			downloadBtn: document.getElementById('downloadTranslated'),
 		};
 	}
 	init()
@@ -62,6 +67,45 @@ class TranslateApp
 				this.translateDocument();
 			});
 		}
+		this.elements.downloadBtn.addEventListener('click', () =>
+		{
+			this.downloadTranslatedFile();
+		});
+	}
+	updateProgress(current, total)
+	{
+		const percentage = Math.round((current / total) * 100);
+		this.elements.progressBarInner.style.width = `${percentage}%`;
+		this.elements.progressBarInner.setAttribute('aria-valuenow', percentage);
+		this.elements.progressBarInner.textContent = `${percentage}%`;
+		this.elements.progressBarInner.classList.add('progress-bar-animated');
+	}
+	getBatchSize()
+	{
+		const batchSize = StorageService.load('translation_batch_size', 10);
+		if (isNaN(batchSize) || batchSize < 1)
+		{
+			return 1;
+		}
+		else if (batchSize > 100)
+		{
+			return 100;
+		}
+		return batchSize;
+	}
+	downloadTranslatedFile()
+	{
+		if (this.state.translatedBlob && this.state.translatedFileName)
+		{
+			const url = URL.createObjectURL(this.state.translatedBlob);
+			const downloadLink = document.createElement('a');
+			downloadLink.href = url;
+			downloadLink.download = this.state.translatedFileName;
+			document.body.appendChild(downloadLink);
+			downloadLink.click();
+			document.body.removeChild(downloadLink);
+			URL.revokeObjectURL(url);
+		}
 	}
 	async translateDocument()
 	{
@@ -79,16 +123,22 @@ class TranslateApp
 			alert('Please select a DOCX file.');
 			return;
 		}
+		this.elements.downloadBtn.style.display = 'none';
+		this.elements.progressBar.style.display = 'block';
+		this.updateProgress(0, 100);
+		this.elements.progressBarInner.classList.remove('progress-bar-animated');
 		const targetLanguage = this.elements.languageSelect.value;
 		const apiModel = StorageService.load('selected_api_model', 'chatgpt');
 		const apiKey = StorageService.load(CONFIG.API.KEYS[apiModel]);
 		if (!apiKey)
 		{
 			alert(`Please set your API key for ${apiModel} in settings.`);
+			UIState.setTranslating(false, this.elements);
 			return;
 		}
-		UIState.setTranslating(true, this.elements);
 		this.state.abortController = new AbortController();
+		const isGemini = apiModel === "gemini";
+		UIState.setTranslating(true, this.elements);
 		const wordNamespaceURI = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 		try
 		{
@@ -110,12 +160,14 @@ class TranslateApp
 				return;
 			}
 			const elements = Array.from(textElements);
-			const batchSize = 10;
+			const batchSize = this.getBatchSize();
 			const batches = [];
 			for (let i = 0; i < elements.length; i += batchSize)
 			{
 				batches.push(elements.slice(i, i + batchSize));
 			}
+			let processedElements = 0;
+			const totalElements = elements.length;
 			for (const batch of batches)
 			{
 				if (this.state.abortController.signal.aborted)
@@ -167,6 +219,8 @@ class TranslateApp
 							element.appendChild(xmlDoc.createTextNode("[Translation Failed]"));
 						}
 					}
+					processedElements += 1;
+					this.updateProgress(processedElements, totalElements);
 				});
 				await Promise.all(translationPromises);
 			}
@@ -176,19 +230,13 @@ class TranslateApp
 			const originalFileName = file.name;
 			const baseName = originalFileName.substring(0, originalFileName.lastIndexOf('.'));
 			const ext = originalFileName.substring(originalFileName.lastIndexOf('.'));
-			const translatedFileName = `${baseName}_translated_${targetLanguage}${ext}`;
-			const translatedBlob = await docxData.generateAsync(
+			this.state.translatedFileName = `${baseName}_translated_${targetLanguage}${ext}`;
+			this.state.translatedBlob = await docxData.generateAsync(
 			{
 				type: "blob"
 			});
-			const translatedFileUrl = URL.createObjectURL(translatedBlob);
-			const downloadLink = document.createElement('a');
-			downloadLink.href = translatedFileUrl;
-			downloadLink.download = translatedFileName;
-			document.body.appendChild(downloadLink);
-			downloadLink.click();
-			document.body.removeChild(downloadLink);
-			URL.revokeObjectURL(translatedFileUrl);
+			this.downloadTranslatedFile();
+			this.elements.downloadBtn.style.display = 'block';
 		}
 		catch (error)
 		{

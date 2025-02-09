@@ -89,6 +89,7 @@ color: white;
 #copySource,
 #copyTarget,
 #compareBtn,
+#downloadTranslated,
 #exportSettings {
 background-color: rgb(46, 218, 119);
 color: white;
@@ -197,6 +198,19 @@ display: none;
 }
 .model-select.active {
 display: block;
+}
+.progress {
+background-color: white;
+border-radius: 0.5rem;
+box-shadow: inset 0rem 0.15rem 0.3rem black;
+height: 1.5rem;
+}
+.progress-bar {
+background-color: rgb(140, 84, 208);
+color: white;
+line-height: 1.5rem;
+text-align: center;
+transition: width 1s ease;
 }
 @media print {
 * {

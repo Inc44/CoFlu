@@ -41,7 +41,8 @@ class SettingsApp
 			settingsTextArea: document.getElementById('settingsTextArea'),
 			saveSettingsBtn: document.getElementById('saveSettings'),
 			reasoningEffortContainer: document.getElementById('reasoningEffortContainer'),
-			reasoningEffortSelect: document.getElementById('reasoningEffort')
+			reasoningEffortSelect: document.getElementById('reasoningEffort'),
+			batchSizeInput: document.getElementById('batchSize')
 		};
 	}
 	init()
@@ -86,6 +87,7 @@ class SettingsApp
 					UIState.updateVideoUploadVisibility(selectedModelDetails);
 				}
 			});
+		this.elements.batchSizeInput.value = StorageService.load('translation_batch_size', 10);
 		this.updateModelVisibility(savedModel);
 		this.updateApiKeyLabel(savedModel);
 		UIState.updateTheme(this.elements.darkToggle.checked);
@@ -220,6 +222,20 @@ class SettingsApp
 		this.elements.importSettingsBtn.addEventListener('click', () => this.importSettings());
 		this.elements.exportSettingsBtn.addEventListener('click', () => this.exportSettings());
 		this.elements.saveSettingsBtn.addEventListener('click', () => this.saveSettings());
+		this.elements.batchSizeInput.addEventListener('change', () =>
+		{
+			let batchSize = parseInt(this.elements.batchSizeInput.value, 10);
+			if (isNaN(batchSize) || batchSize < 1)
+			{
+				batchSize = 1;
+			}
+			else if (batchSize > 60000)
+			{
+				batchSize = 60000;
+			}
+			this.elements.batchSizeInput.value = batchSize;
+			StorageService.save('translation_batch_size', batchSize);
+		});
 	}
 	updateApiKeyLabel(model)
 	{
@@ -242,7 +258,8 @@ class SettingsApp
 			prompts: StorageService.load('prompts', []),
 			selected_language: StorageService.load('selected_language', 'en'),
 			transcribe_language: StorageService.load('transcribe_language', 'en'),
-			translation_enabled: StorageService.load('translation_enabled', false)
+			translation_enabled: StorageService.load('translation_enabled', false),
+			translation_batch_size: StorageService.load('translation_batch_size', 10)
 		};
 		if (this.elements.reasoningEffortSelect)
 		{
