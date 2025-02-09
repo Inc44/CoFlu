@@ -15,11 +15,11 @@ const AiService = {
 			}
 			if (model === 'gemini')
 			{
-				return await this.generateWithGemini(apiKey, prompt, options);
+				return await this.generateWithGemini(apiKey, prompt, options, 0);
 			}
 			else
 			{
-				return await this.generateWithOtherModels(apiKey, prompt, model, options);
+				return await this.generateWithOtherModels(apiKey, prompt, model, options, 0);
 			}
 		}
 		catch (error)
@@ -28,8 +28,9 @@ const AiService = {
 			throw error;
 		}
 	},
-	async generateWithGemini(apiKey, prompt, options)
+	async generateWithGemini(apiKey, prompt, options, attempt)
 	{
+		const maxRetries = StorageService.load('exponential_retry', 4);
 		const
 		{
 			GoogleGenerativeAI
@@ -92,7 +93,14 @@ const AiService = {
 		catch (error)
 		{
 			if (error.name === 'AbortError') throw error;
-			throw new Error(`Gemini API error: ${error.message}`);
+			if (attempt < maxRetries)
+			{
+				const delay = Math.pow(2, attempt) * 1000;
+				console.warn(`Gemini API error (attempt ${attempt + 1}/${maxRetries}): ${error.message}. Retrying in ${delay / 1000}s...`);
+				await new Promise(resolve => setTimeout(resolve, delay));
+				return this.generateWithGemini(apiKey, prompt, options, attempt + 1);
+			}
+			throw new Error(`Gemini API error after ${maxRetries} attempts: ${error.message}`);
 		}
 	},
 	async handleGeminiStreaming(model, textPrompt, options)
@@ -119,8 +127,9 @@ const AiService = {
 			}
 		};
 	},
-	async generateWithOtherModels(apiKey, prompt, model, options)
+	async generateWithOtherModels(apiKey, prompt, model, options, attempt)
 	{
+		const maxRetries = StorageService.load('exponential_retry', 4);
 		const config = CONFIG.API.CONFIG[model];
 		if (!config)
 		{
@@ -134,25 +143,47 @@ const AiService = {
 		}
 		const requestBody = this.buildRequestBody(prompt, model, selectedModel, options);
 		const headers = this.buildRequestHeaders(apiKey, config);
-		const response = await fetch(config.url,
+		try
 		{
-			method: 'POST',
-			headers,
-			body: JSON.stringify(requestBody),
-			signal: options.abortSignal,
-		});
-		if (!response.ok)
-		{
-			const errorText = await response.text();
-			throw new Error(`API request failed: ${response.status} - ${errorText}`);
+			const response = await fetch(config.url,
+			{
+				method: 'POST',
+				headers,
+				body: JSON.stringify(requestBody),
+				signal: options.abortSignal,
+			});
+			if (!response.ok)
+			{
+				const errorText = await response.text();
+				if (attempt < maxRetries)
+				{
+					const delay = Math.pow(2, attempt) * 1000;
+					console.warn(`${model} API error (attempt ${attempt + 1}/${maxRetries}): ${response.status} - ${errorText}. Retrying in ${delay / 1000}s...`);
+					await new Promise(resolve => setTimeout(resolve, delay));
+					return this.generateWithOtherModels(apiKey, prompt, model, options, attempt + 1);
+				}
+				throw new Error(`API request failed after ${maxRetries} attempts: ${response.status} - ${errorText}`);
+			}
+			if (options.streaming)
+			{
+				return await this.handleStreamingResponse(response, model, options.onProgress);
+			}
+			else
+			{
+				return await response.json();
+			}
 		}
-		if (options.streaming)
+		catch (error)
 		{
-			return await this.handleStreamingResponse(response, model, options.onProgress);
-		}
-		else
-		{
-			return await response.json();
+			if (error.name === 'AbortError') throw error;
+			if (attempt < maxRetries)
+			{
+				const delay = Math.pow(2, attempt) * 1000;
+				console.warn(`Fetch error (attempt ${attempt + 1}/${maxRetries}): ${error.message}. Retrying in ${delay / 1000}s...`);
+				await new Promise(resolve => setTimeout(resolve, delay));
+				return this.generateWithOtherModels(apiKey, prompt, model, options, attempt + 1);
+			}
+			throw new Error(`API request failed after ${maxRetries} attempts: ${error.message}`);
 		}
 	},
 	buildRequestBody(prompt, model, selectedModel, options)

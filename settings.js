@@ -44,6 +44,7 @@ class SettingsApp
 			reasoningEffortSelect: document.getElementById('reasoningEffort'),
 			batchSizeInput: document.getElementById('batchSize'),
 			batchRPMInput: document.getElementById('batchRPM'),
+			exponentialRetryInput: document.getElementById('exponentialRetry')
 		};
 	}
 	init()
@@ -90,6 +91,7 @@ class SettingsApp
 			});
 		this.elements.batchSizeInput.value = StorageService.load('translation_batch_size', 10);
 		this.elements.batchRPMInput.value = StorageService.load('translation_batch_rpm', 0);
+		this.elements.exponentialRetryInput.value = StorageService.load('exponential_retry', 4);
 		this.updateModelVisibility(savedModel);
 		this.updateApiKeyLabel(savedModel);
 		UIState.updateTheme(this.elements.darkToggle.checked);
@@ -252,6 +254,16 @@ class SettingsApp
 			this.elements.batchRPMInput.value = rateLimit;
 			StorageService.save('translation_batch_rpm', rateLimit);
 		});
+		this.elements.exponentialRetryInput.addEventListener('change', () =>
+		{
+			let rateLimit = parseInt(this.elements.exponentialRetryInput.value, 4);
+			if (isNaN(rateLimit) || rateLimit < 0)
+			{
+				rateLimit = 0;
+			}
+			this.elements.exponentialRetryInput.value = rateLimit;
+			StorageService.save('exponential_retry', rateLimit);
+		});
 	}
 	updateApiKeyLabel(model)
 	{
@@ -277,6 +289,7 @@ class SettingsApp
 			translation_enabled: StorageService.load('translation_enabled', false),
 			translation_batch_size: StorageService.load('translation_batch_size', 10),
 			translation_batch_rpm: StorageService.load('translation_batch_rpm', 0),
+			exponential_retry: StorageService.load('exponential_retry', 0),
 		};
 		if (this.elements.reasoningEffortSelect)
 		{

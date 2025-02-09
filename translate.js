@@ -168,8 +168,9 @@ class TranslateApp
 			if (this.state.abortController)
 			{
 				this.state.abortController.abort();
+				this.state.requestQueue = [];
+				this.state.lastRequestTime = 0;
 			}
-			this.state.requestQueue = [];
 			return;
 		}
 		const file = this.elements.documentFile.files[0];
