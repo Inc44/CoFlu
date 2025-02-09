@@ -11,68 +11,17 @@ const UIHandlers = {
 				StorageService.save(`${type}Text`, textArea.value);
 			});
 			const actions = {
-				[`clear${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
-				{
-					elements.wpmContainer.style.display = 'none';
-					textArea.value = '';
-					TextService.updateStats(textArea, type);
-					StorageService.save(`${type}Text`, '');
-				},
-				[`copy${type.charAt(0).toUpperCase() + type.slice(1)}`]: () => navigator.clipboard.writeText(textArea.value),
-				[`uppercase${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
-				{
-					textArea.value = TextService.transform.toUpperCase(textArea.value);
-					TextService.updateStats(textArea, type);
-					StorageService.save(`${type}Text`, textArea.value);
-				},
-				[`lowercase${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
-				{
-					textArea.value = TextService.transform.toLowerCase(textArea.value);
-					TextService.updateStats(textArea, type);
-					StorageService.save(`${type}Text`, textArea.value);
-				},
-				[`dedupe${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
-				{
-					textArea.value = TextService.transform.dedupe(textArea.value);
-					TextService.updateStats(textArea, type);
-					StorageService.save(`${type}Text`, textArea.value);
-				},
-				[`sort${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
-				{
-					textArea.value = TextService.transform.sort(textArea.value);
-					TextService.updateStats(textArea, type);
-					StorageService.save(`${type}Text`, textArea.value);
-				},
-				[`unbold${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
-				{
-					textArea.value = TextService.transform.unbold(textArea.value);
-					TextService.updateStats(textArea, type);
-					StorageService.save(`${type}Text`, textArea.value);
-				},
-				[`unspace${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
-				{
-					textArea.value = TextService.transform.unspace(textArea.value);
-					TextService.updateStats(textArea, type);
-					StorageService.save(`${type}Text`, textArea.value);
-				},
-				[`retab${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
-				{
-					textArea.value = TextService.format.retab(textArea.value);
-					TextService.updateStats(textArea, type);
-					StorageService.save(`${type}Text`, textArea.value);
-				},
-				[`latex${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
-				{
-					textArea.value = TextService.format.latex(textArea.value);
-					TextService.updateStats(textArea, type);
-					StorageService.save(`${type}Text`, textArea.value);
-				},
-				[`html${type.charAt(0).toUpperCase() + type.slice(1)}`]: () =>
-				{
-					textArea.value = TextService.format.html(textArea.value);
-					TextService.updateStats(textArea, type);
-					StorageService.save(`${type}Text`, textArea.value);
-				}
+				[`clear${this.capitalize(type)}`]: () => this.clearTextArea(textArea, type),
+				[`copy${this.capitalize(type)}`]: () => navigator.clipboard.writeText(textArea.value),
+				[`uppercase${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.toUpperCase),
+				[`lowercase${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.toLowerCase),
+				[`dedupe${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.dedupe),
+				[`sort${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.sort),
+				[`unbold${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.unbold),
+				[`unspace${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.unspace),
+				[`retab${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.format.retab),
+				[`latex${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.format.latex),
+				[`html${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.format.html),
 			};
 			Object.entries(actions)
 				.forEach(([id, action]) =>
@@ -82,22 +31,44 @@ const UIHandlers = {
 				});
 		});
 	},
+	capitalize(str)
+	{
+		return str.charAt(0)
+			.toUpperCase() + str.slice(1);
+	},
+	clearTextArea(textArea, type)
+	{
+		textArea.value = '';
+		TextService.updateStats(textArea, type);
+		StorageService.save(`${type}Text`, '');
+		if (type === 'target')
+		{
+			document.getElementById('wpm-container')
+				.style.display = 'none';
+		}
+	},
+	transformText(textArea, type, transformFunction)
+	{
+		textArea.value = transformFunction(textArea.value);
+		TextService.updateStats(textArea, type);
+		StorageService.save(`${type}Text`, textArea.value);
+	},
 	setupFileUploaders(elements)
 	{
 		['source', 'target'].forEach(type =>
 		{
-			document.getElementById(`load${type.charAt(0).toUpperCase() + type.slice(1)}`)
-				?.addEventListener('change', async (e) =>
+			const fileInput = document.getElementById(`load${this.capitalize(type)}`);
+			fileInput?.addEventListener('change', async (e) =>
+			{
+				const file = e.target.files[0];
+				if (file)
 				{
-					const file = e.target.files[0];
-					if (file)
-					{
-						const content = await TextService.loadFile(file);
-						elements[`${type}Text`].value = content;
-						TextService.updateStats(elements[`${type}Text`], type);
-						StorageService.save(`${type}Text`, content);
-					}
-				});
+					const content = await TextService.loadFile(file);
+					elements[`${type}Text`].value = content;
+					TextService.updateStats(elements[`${type}Text`], type);
+					StorageService.save(`${type}Text`, content);
+				}
+			});
 		});
 	},
 	setupCompareButton(elements)
@@ -128,9 +99,7 @@ const UIHandlers = {
 	{
 		elements.switchBtn.addEventListener('click', () =>
 		{
-			const temp = elements.sourceText.value;
-			elements.sourceText.value = elements.targetText.value;
-			elements.targetText.value = temp;
+			[elements.sourceText.value, elements.targetText.value] = [elements.targetText.value, elements.sourceText.value];
 			TextService.updateStats(elements.sourceText, 'source');
 			TextService.updateStats(elements.targetText, 'target');
 			StorageService.save('sourceText', elements.sourceText.value);
@@ -148,15 +117,11 @@ const UIHandlers = {
 	setupGenerateButton(elements, state)
 	{
 		let startTime = null;
-		let accumulatedText = '';
 		elements.generateTargetBtn.addEventListener('click', async () =>
 		{
 			if (elements.generateTargetBtn.dataset.generating === 'true')
 			{
-				if (state.abortController)
-				{
-					state.abortController.abort();
-				}
+				state.abortController?.abort();
 				return;
 			}
 			try
@@ -166,19 +131,14 @@ const UIHandlers = {
 				const model = StorageService.load('selected_api_model', 'chatgpt');
 				const selectedPrompt = elements.promptSelect.value;
 				const customPrompt = elements.customPromptInput.value;
-				const prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
-				let fullPrompt = prompt + "\n\n" + elements.sourceText.value;
+				let prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
+				prompt += "\n\n" + elements.sourceText.value;
 				if (elements.translationToggle.checked)
 				{
 					const targetLanguage = elements.languageSelect.value;
-					fullPrompt = `Translate the following text to ${targetLanguage}\n\n${fullPrompt}`;
+					prompt = `Translate the following text to ${targetLanguage}\n\n${prompt}`;
 				}
-				elements.targetText.value = '';
-				UIState.showWPM(elements);
-				startTime = Date.now();
-				accumulatedText = '';
-				await AiService.generate(fullPrompt, model,
-				{
+				const generationOptions = {
 					streaming: StorageService.load('streaming_enabled', true),
 					images: Object.values(state.imageUploader.getImages()),
 					videos: Object.values(state.videoUploader.getVideos()),
@@ -189,12 +149,15 @@ const UIHandlers = {
 						TextService.updateStats(elements.targetText, 'target');
 						StorageService.save('targetText', text);
 						elements.targetText.scrollTop = elements.targetText.scrollHeight;
-						accumulatedText = text;
 						const elapsedTimeInSeconds = (Date.now() - startTime) / 1000;
-						const wpm = this.calculateWPM(accumulatedText, elapsedTimeInSeconds);
+						const wpm = this.calculateWPM(text, elapsedTimeInSeconds);
 						elements.wpmDisplay.textContent = wpm;
 					}
-				});
+				};
+				elements.targetText.value = '';
+				UIState.showWPM(elements);
+				startTime = Date.now();
+				await AiService.generate(prompt, model, generationOptions);
 			}
 			catch (error)
 			{
@@ -208,7 +171,6 @@ const UIHandlers = {
 				UIState.setGenerating(false, elements);
 				state.abortController = null;
 				startTime = null;
-				accumulatedText = '';
 			}
 		});
 	},
@@ -241,42 +203,41 @@ const UIHandlers = {
 			Object.entries(elements.modelSelects)
 				.forEach(([provider, select]) =>
 				{
-					if (select)
+					select?.addEventListener('change', () =>
 					{
-						select.addEventListener('change', () =>
-						{
-							elements.apiModelSelect.value = provider;
-							const selectedModel = provider;
-							const selectedModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === select.value);
-							StorageService.save('selected_api_model', selectedModel);
-							UIState.updateImageUploadVisibility(selectedModelDetails);
-							UIState.updateVideoUploadVisibility(selectedModelDetails);
-						});
-					}
+						elements.apiModelSelect.value = provider;
+						const selectedModel = provider;
+						const selectedModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === select.value);
+						StorageService.save('selected_api_model', selectedModel);
+						UIState.updateImageUploadVisibility(selectedModelDetails);
+						UIState.updateVideoUploadVisibility(selectedModelDetails);
+					});
 				});
 		}
-		elements.streamingToggle?.addEventListener('change', () =>
-		{
-			StorageService.save('streaming_enabled', elements.streamingToggle.checked);
-		});
-		elements.translationToggle?.addEventListener('change', () =>
-		{
-			StorageService.save('translation_enabled', elements.translationToggle.checked);
-		});
-		elements.cleanupToggle?.addEventListener('change', () =>
-		{
-			StorageService.save('cleanup_enabled', elements.cleanupToggle.checked);
-		});
-		elements.darkToggle?.addEventListener('change', () =>
-		{
-			UIState.updateTheme(elements.darkToggle.checked);
-			StorageService.save('dark_enabled', elements.darkToggle.checked);
-		});
-		elements.wideToggle?.addEventListener('change', () =>
-		{
-			UIState.updateLayout(elements.wideToggle.checked);
-			StorageService.save('wide_enabled', elements.wideToggle.checked);
-		});
+		const toggleSettings = {
+			streamingToggle: 'streaming_enabled',
+			translationToggle: 'translation_enabled',
+			cleanupToggle: 'cleanup_enabled',
+			darkToggle: 'dark_enabled',
+			wideToggle: 'wide_enabled',
+		};
+		Object.entries(toggleSettings)
+			.forEach(([elementId, storageKey]) =>
+			{
+				elements[elementId]?.addEventListener('change', () =>
+				{
+					const value = elements[elementId].checked;
+					if (elementId === 'darkToggle')
+					{
+						UIState.updateTheme(value);
+					}
+					else if (elementId === 'wideToggle')
+					{
+						UIState.updateLayout(value);
+					}
+					StorageService.save(storageKey, value);
+				});
+			});
 		elements.languageSelect?.addEventListener('change', () =>
 		{
 			StorageService.save('selected_language', elements.languageSelect.value);
@@ -285,6 +246,6 @@ const UIHandlers = {
 		{
 			StorageService.save('transcribe_language', elements.transcribeLanguage.value);
 		});
-	}
+	},
 };
 window.UIHandlers = UIHandlers;

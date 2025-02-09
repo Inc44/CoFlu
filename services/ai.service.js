@@ -5,69 +5,21 @@ const AiService = {
 		const apiKey = StorageService.load(CONFIG.API.KEYS[model]);
 		if (!apiKey)
 		{
-			throw new Error("Please enter your API key.");
+			throw new Error(`Please enter your ${model} API key.`);
 		}
 		try
 		{
+			if (options.task === 'transcribe')
+			{
+				return await this.transcribe(options.file, options.language, apiKey);
+			}
 			if (model === 'gemini')
 			{
 				return await this.generateWithGemini(apiKey, prompt, options);
 			}
 			else
 			{
-				const config = CONFIG.API.CONFIG[model];
-				const selectedModelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS[model].default);
-				const selectedModel = CONFIG.API.MODELS[model].options.find(m => m.name === selectedModelName);
-				if (!selectedModel)
-				{
-					throw new Error(`Model ${selectedModelName} not found in configuration.`);
-				}
-				let requestBody = {
-					model: selectedModel.name,
-					messages: this.formatMessagesWithImages(prompt, options.images, model),
-					...((selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31') ?
-					{
-						temperature: 0
-					} :
-					{}),
-					...((selectedModel.name === 'o3-mini' || selectedModel.name === 'o3-mini-2025-01-31') ?
-					{
-						reasoning_effort: StorageService.load('reasoning_effort', 'low')
-					} :
-					{}),
-					...((model !== 'sambanova' && selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31') ?
-					{
-						max_tokens: selectedModel.max_completion_tokens
-					} :
-					{}),
-					stream: options.streaming
-				};
-				const headers = {
-					'Content-Type': 'application/json',
-					[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
-					...config.additionalHeaders
-				};
-				const response = await fetch(config.url,
-				{
-					method: 'POST',
-					headers,
-					body: JSON.stringify(requestBody),
-					signal: options.abortSignal
-				});
-				if (!response.ok)
-				{
-					const errorText = await response.text();
-					throw new Error(`API request failed: ${response.status} - ${errorText}`);
-				}
-				if (options.streaming)
-				{
-					return await this.handleStreamingResponse(response, model, options.onProgress);
-				}
-				else
-				{
-					const data = await response.json();
-					return data;
-				}
+				return await this.generateWithOtherModels(apiKey, prompt, model, options);
 			}
 		}
 		catch (error)
@@ -88,40 +40,34 @@ const AiService = {
 		{
 			model: selectedModelName
 		});
-		let imageParts = [];
-		if (options.images && options.images.length > 0)
-		{
-			imageParts = options.images.map(imageDataUrl =>
+		const imageParts = (options.images || [])
+			.map(dataURL =>
 			{
-				const base64Data = imageDataUrl.split(',')[1];
-				const mimeType = imageDataUrl.match(/^data:(.*?);base64,/)
-					?.[1];
+				const base64Data = dataURL.split(',')[1];
+				const mimeType = dataURL.match(/^data:(.*?);base64,/)
+					?.[1] || 'image/png';
 				return {
 					inlineData:
 					{
 						data: base64Data,
-						mimeType: mimeType || 'image/png'
+						mimeType
 					}
 				};
 			});
-		}
-		let videoParts = [];
-		if (options.videos && options.videos.length > 0)
-		{
-			videoParts = options.videos.map(videoDataUrl =>
+		const videoParts = (options.videos || [])
+			.map(dataURL =>
 			{
-				const base64Data = videoDataUrl.split(',')[1];
-				const mimeType = videoDataUrl.match(/^data:(.*?);base64,/)
-					?.[1];
+				const base64Data = dataURL.split(',')[1];
+				const mimeType = dataURL.match(/^data:(.*?);base64,/)
+					?.[1] || 'video/mp4';
 				return {
 					inlineData:
 					{
 						data: base64Data,
-						mimeType: mimeType || 'video/mp4'
+						mimeType
 					}
 				};
 			});
-		}
 		const textPrompt = {
 			contents: [
 			{
@@ -136,36 +82,11 @@ const AiService = {
 		{
 			if (options.streaming)
 			{
-				const result = await model.generateContentStream(textPrompt);
-				let accumulatedText = '';
-				for await (const chunk of result.stream)
-				{
-					if (options.abortSignal?.aborted)
-					{
-						throw new DOMException('Aborted', 'AbortError');
-					}
-					const content = CONFIG.API.CONFIG.gemini.extractStreamContent(chunk);
-					if (content)
-					{
-						accumulatedText += content;
-						if (options.onProgress)
-						{
-							options.onProgress(accumulatedText);
-						}
-					}
-				}
-				return {
-					response:
-					{
-						text: () => accumulatedText
-					}
-				};
+				return await this.handleGeminiStreaming(model, textPrompt, options);
 			}
 			else
 			{
-				const result = await model.generateContent(textPrompt);
-				const response = result.response;
-				return result;
+				return await model.generateContent(textPrompt);
 			}
 		}
 		catch (error)
@@ -173,6 +94,96 @@ const AiService = {
 			if (error.name === 'AbortError') throw error;
 			throw new Error(`Gemini API error: ${error.message}`);
 		}
+	},
+	async handleGeminiStreaming(model, textPrompt, options)
+	{
+		const result = await model.generateContentStream(textPrompt);
+		let accumulatedText = '';
+		for await (const chunk of result.stream)
+		{
+			if (options.abortSignal?.aborted)
+			{
+				throw new DOMException('Aborted', 'AbortError');
+			}
+			const content = CONFIG.API.CONFIG.gemini.extractStreamContent(chunk);
+			if (content)
+			{
+				accumulatedText += content;
+				options.onProgress?.(accumulatedText);
+			}
+		}
+		return {
+			response:
+			{
+				text: () => accumulatedText
+			}
+		};
+	},
+	async generateWithOtherModels(apiKey, prompt, model, options)
+	{
+		const config = CONFIG.API.CONFIG[model];
+		if (!config)
+		{
+			throw new Error(`Configuration not found for model: ${model}`);
+		}
+		const selectedModelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS[model].default);
+		const selectedModel = CONFIG.API.MODELS[model].options.find(m => m.name === selectedModelName);
+		if (!selectedModel)
+		{
+			throw new Error(`Model ${selectedModelName} not found in configuration.`);
+		}
+		const requestBody = this.buildRequestBody(prompt, model, selectedModel, options);
+		const headers = this.buildRequestHeaders(apiKey, config);
+		const response = await fetch(config.url,
+		{
+			method: 'POST',
+			headers,
+			body: JSON.stringify(requestBody),
+			signal: options.abortSignal,
+		});
+		if (!response.ok)
+		{
+			const errorText = await response.text();
+			throw new Error(`API request failed: ${response.status} - ${errorText}`);
+		}
+		if (options.streaming)
+		{
+			return await this.handleStreamingResponse(response, model, options.onProgress);
+		}
+		else
+		{
+			return await response.json();
+		}
+	},
+	buildRequestBody(prompt, model, selectedModel, options)
+	{
+		let messages = this.formatMessagesWithImages(prompt, options.images, model);
+		let requestBody = {
+			model: selectedModel.name,
+			messages,
+			stream: options.streaming
+		};
+		if (selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31')
+		{
+			requestBody.temperature = 0;
+		}
+		if (selectedModel.name === 'o3-mini' || selectedModel.name === 'o3-mini-2025-01-31')
+		{
+			requestBody.reasoning_effort = StorageService.load('reasoning_effort', 'low');
+		}
+		if (model !== 'sambanova' && selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31')
+		{
+			requestBody.max_tokens = selectedModel.max_completion_tokens;
+		}
+		return requestBody;
+	},
+	buildRequestHeaders(apiKey, config)
+	{
+		return {
+			'Content-Type': 'application/json',
+			[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
+			...config.additionalHeaders,
+		};
 	},
 	formatMessagesWithImages(prompt, images = [], model)
 	{
@@ -182,15 +193,15 @@ const AiService = {
 			{
 				const base64Data = dataURL.split(',')[1];
 				const mimeType = dataURL.match(/^data:(.*?);base64,/)
-					?.[1];
+					?.[1] || 'image/png';
 				return {
 					type: 'image',
 					source:
 					{
 						type: "base64",
-						media_type: mimeType || 'image/png',
-						data: base64Data,
-					}
+						media_type: mimeType,
+						data: base64Data
+					},
 				};
 			});
 			return [
@@ -209,7 +220,7 @@ const AiService = {
 			image_url:
 			{
 				url: dataURL
-			}
+			},
 		}));
 		return [
 		{
@@ -237,6 +248,7 @@ const AiService = {
 			if (done) break;
 			buffer += decoder.decode(value);
 			const lines = buffer.split('\n');
+			buffer = lines.pop() || '';
 			for (const line of lines)
 			{
 				if (line.startsWith('data: '))
@@ -250,19 +262,15 @@ const AiService = {
 						if (content)
 						{
 							accumulatedText += content;
-							if (onProgress)
-							{
-								onProgress(accumulatedText);
-							}
+							onProgress?.(accumulatedText);
 						}
 					}
 					catch (e)
 					{
-						console.error('Error parsing streaming JSON:', e);
+						console.error('Error parsing streaming JSON:', e, 'Data:', data);
 					}
 				}
 			}
-			buffer = lines.pop() || '';
 		}
 		return {
 			choices: [
@@ -286,15 +294,15 @@ const AiService = {
 			method: 'POST',
 			headers:
 			{
-				[CONFIG.API.CONFIG.groq.apiKeyHeader]: CONFIG.API.CONFIG.groq.apiKeyPrefix + apiKey
+				[CONFIG.API.CONFIG.groq.apiKeyHeader]: CONFIG.API.CONFIG.groq.apiKeyPrefix + apiKey,
 			},
-			body: formData
+			body: formData,
 		});
 		if (!response.ok)
 		{
 			throw new Error(`Transcription failed with status ${response.status}`);
 		}
 		return await response.json();
-	}
+	},
 };
 window.AiService = AiService;
