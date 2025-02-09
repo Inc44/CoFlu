@@ -42,7 +42,8 @@ class SettingsApp
 			saveSettingsBtn: document.getElementById('saveSettings'),
 			reasoningEffortContainer: document.getElementById('reasoningEffortContainer'),
 			reasoningEffortSelect: document.getElementById('reasoningEffort'),
-			batchSizeInput: document.getElementById('batchSize')
+			batchSizeInput: document.getElementById('batchSize'),
+			batchRPMInput: document.getElementById('batchRPM'),
 		};
 	}
 	init()
@@ -88,6 +89,7 @@ class SettingsApp
 				}
 			});
 		this.elements.batchSizeInput.value = StorageService.load('translation_batch_size', 10);
+		this.elements.batchRPMInput.value = StorageService.load('translation_batch_rpm', 0);
 		this.updateModelVisibility(savedModel);
 		this.updateApiKeyLabel(savedModel);
 		UIState.updateTheme(this.elements.darkToggle.checked);
@@ -236,6 +238,20 @@ class SettingsApp
 			this.elements.batchSizeInput.value = batchSize;
 			StorageService.save('translation_batch_size', batchSize);
 		});
+		this.elements.batchRPMInput.addEventListener('change', () =>
+		{
+			let rateLimit = parseInt(this.elements.batchRPMInput.value, 10);
+			if (isNaN(rateLimit) || rateLimit < 0)
+			{
+				rateLimit = 0;
+			}
+			else if (rateLimit > 60000)
+			{
+				rateLimit = 60000;
+			}
+			this.elements.batchRPMInput.value = rateLimit;
+			StorageService.save('translation_batch_rpm', rateLimit);
+		});
 	}
 	updateApiKeyLabel(model)
 	{
@@ -259,7 +275,8 @@ class SettingsApp
 			selected_language: StorageService.load('selected_language', 'en'),
 			transcribe_language: StorageService.load('transcribe_language', 'en'),
 			translation_enabled: StorageService.load('translation_enabled', false),
-			translation_batch_size: StorageService.load('translation_batch_size', 10)
+			translation_batch_size: StorageService.load('translation_batch_size', 10),
+			translation_batch_rpm: StorageService.load('translation_batch_rpm', 0),
 		};
 		if (this.elements.reasoningEffortSelect)
 		{

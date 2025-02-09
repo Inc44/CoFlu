@@ -7,7 +7,9 @@ class TranslateApp
 		this.state = {
 			abortController: null,
 			translatedBlob: null,
-			translatedFileName: null
+			translatedFileName: null,
+			requestQueue: [],
+			lastRequestTime: 0,
 		};
 	}
 	getElements()
@@ -107,6 +109,58 @@ class TranslateApp
 			URL.revokeObjectURL(url);
 		}
 	}
+	async rateLimitRequests(apiCall)
+	{
+		const quotaRateLimit = StorageService.load('translation_batch_rpm', 0);
+		if (quotaRateLimit === 0)
+		{
+			return await apiCall();
+		}
+		return new Promise((resolve, reject) =>
+		{
+			this.state.requestQueue.push(
+			{
+				apiCall,
+				resolve,
+				reject
+			});
+			this.processRequestQueue(quotaRateLimit);
+		});
+	}
+	async processRequestQueue(quotaRateLimit)
+	{
+		if (this.state.requestQueue.length === 0)
+		{
+			return;
+		}
+		const now = Date.now();
+		const timeSinceLastRequest = now - this.state.lastRequestTime;
+		const delayRequired = (60000 / quotaRateLimit) - timeSinceLastRequest;
+		if (delayRequired > 0)
+		{
+			await new Promise(resolve => setTimeout(resolve, delayRequired));
+		}
+		this.state.lastRequestTime = Date.now();
+		const
+		{
+			apiCall,
+			resolve,
+			reject
+		} = this.state.requestQueue.shift();
+		try
+		{
+			const result = await apiCall();
+			resolve(result);
+		}
+		catch (error)
+		{
+			reject(error);
+		}
+		if (this.state.requestQueue.length > 0)
+		{
+			setTimeout(() => this.processRequestQueue(quotaRateLimit), 0);
+		}
+	}
 	async translateDocument()
 	{
 		if (this.elements.translateBtn.dataset.translating === 'true')
@@ -115,6 +169,7 @@ class TranslateApp
 			{
 				this.state.abortController.abort();
 			}
+			this.state.requestQueue = [];
 			return;
 		}
 		const file = this.elements.documentFile.files[0];
@@ -182,10 +237,10 @@ class TranslateApp
 						try
 						{
 							const prompt = `Translate the following text to ${targetLanguage}. Provide the translation ONLY, without any introductory phrases or additional commentary.\n\n${original_text}`;
-							const response = await AiService.generate(prompt, apiModel,
+							const response = await this.rateLimitRequests(() => AiService.generate(prompt, apiModel,
 							{
-								abortSignal: this.state.abortController.signal
-							});
+								abortSignal: this.state.abortController.signal,
+							}));
 							let translated_text;
 							if (isGemini)
 							{
@@ -250,6 +305,8 @@ class TranslateApp
 		{
 			UIState.setTranslating(false, this.elements);
 			this.state.abortController = null;
+			this.state.requestQueue = [];
+			this.state.lastRequestTime = 0;
 		}
 	}
 }
