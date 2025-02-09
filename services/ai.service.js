@@ -78,6 +78,10 @@ const AiService = {
 					text: prompt
 				}, ...imageParts, ...videoParts]
 			}],
+			generationConfig:
+			{
+				temperature: 0,
+			}
 		};
 		try
 		{

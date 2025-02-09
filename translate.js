@@ -121,7 +121,7 @@ class TranslateApp
 	}
 	getRateLimit()
 	{
-		return this.getNumericSetting('translation_batch_rpm', 10, 0, 60000);
+		return this.getNumericSetting('translation_batch_rpm', 0, 0, 60000);
 	}
 	getExponentialRetry()
 	{

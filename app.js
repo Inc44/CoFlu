@@ -92,7 +92,7 @@ class App
 			'translationToggle': ['translation_enabled', false],
 			'streamingToggle': ['streaming_enabled', true],
 			'cleanupToggle': ['cleanup_enabled', true],
-			'darkToggle': ['dark_enabled', false],
+			'darkToggle': ['dark_enabled', true],
 			'wideToggle': ['wide_enabled', false]
 		};
 		Object.entries(toggleSettings)

@@ -66,7 +66,7 @@ class SettingsApp
 		this.loadInputSetting('apiKeyInput', CONFIG.API.KEYS[this.elements.apiModelSelect.value] || '', this.elements.apiModelSelect.value);
 		this.loadCheckboxSetting('streamingToggle', 'streaming_enabled', true);
 		this.loadCheckboxSetting('cleanupToggle', 'cleanup_enabled', true);
-		this.loadCheckboxSetting('darkToggle', 'dark_enabled', false);
+		this.loadCheckboxSetting('darkToggle', 'dark_enabled', true);
 		this.loadCheckboxSetting('numberedLinesToggle', 'numbered_lines_enabled', false);
 		this.loadCheckboxSetting('wideToggle', 'wide_enabled', false);
 		this.loadSelectSetting('rendererSelect', 'selected_renderer', 'katex');
@@ -77,7 +77,7 @@ class SettingsApp
 		this.loadModelOptions();
 		this.loadInputSetting('languageSelect', 'selected_language', 'English');
 		this.loadInputSetting('batchSizeInput', 'translation_batch_size', 10, 'number');
-		this.loadInputSetting('batchRPMInput', 'translation_batch_rpm', 10, 'number');
+		this.loadInputSetting('batchRPMInput', 'translation_batch_rpm', 0, 'number');
 		this.loadInputSetting('exponentialRetryInput', 'exponential_retry', 10, 'number');
 		this.updateModelVisibility(this.elements.apiModelSelect.value);
 		this.updateApiKeyLabel(this.elements.apiModelSelect.value);

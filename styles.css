@@ -1,5 +1,5 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css");
-body {
+body[data-bs-theme="light"] {
 background-color: rgb(199, 195, 189);
 color: black;
 }
@@ -211,6 +211,9 @@ color: white;
 line-height: 1.5rem;
 text-align: center;
 transition: width 1s ease;
+}
+.progress-bar-animated {
+animation: 0.4s linear infinite progress-bar-stripes;
 }
 @media print {
 * {
