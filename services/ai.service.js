@@ -11,7 +11,7 @@ const AiService = {
 		{
 			if (model === 'gemini')
 			{
-				await this.generateWithGemini(apiKey, prompt, options);
+				return await this.generateWithGemini(apiKey, prompt, options);
 			}
 			else
 			{
@@ -56,20 +56,17 @@ const AiService = {
 				});
 				if (!response.ok)
 				{
-					throw new Error(`API request failed: ${response.status}`);
+					const errorText = await response.text();
+					throw new Error(`API request failed: ${response.status} - ${errorText}`);
 				}
 				if (options.streaming)
 				{
-					await this.handleStreamingResponse(response, model, options.onProgress);
+					return await this.handleStreamingResponse(response, model, options.onProgress);
 				}
 				else
 				{
 					const data = await response.json();
-					const content = config.extractContent(data);
-					if (content && options.onProgress)
-					{
-						options.onProgress(content);
-					}
+					return data;
 				}
 			}
 		}
@@ -157,16 +154,18 @@ const AiService = {
 						}
 					}
 				}
+				return {
+					response:
+					{
+						text: () => accumulatedText
+					}
+				};
 			}
 			else
 			{
 				const result = await model.generateContent(textPrompt);
 				const response = result.response;
-				const content = CONFIG.API.CONFIG.gemini.extractContent(response);
-				if (content && options.onProgress)
-				{
-					options.onProgress(content);
-				}
+				return result;
 			}
 		}
 		catch (error)
@@ -265,6 +264,15 @@ const AiService = {
 			}
 			buffer = lines.pop() || '';
 		}
+		return {
+			choices: [
+			{
+				message:
+				{
+					content: accumulatedText
+				}
+			}]
+		};
 	},
 	async transcribe(file, language, apiKey)
 	{

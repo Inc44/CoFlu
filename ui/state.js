@@ -45,7 +45,7 @@ const UIState = {
 		const imageUploadCard = document.querySelector('.card:has(#imageList)');
 		if (imageUploadCard)
 		{
-			imageUploadCard.style.display = modelDetails && modelDetails.vision ? 'block' : 'none';
+			imageUploadCard.style.display = modelDetails.image ? 'block' : 'none';
 		}
 	},
 	updateVideoUploadVisibility(modelDetails)
@@ -53,7 +53,7 @@ const UIState = {
 		const videoUploadCard = document.querySelector('.card:has(#videoList)');
 		if (videoUploadCard)
 		{
-			videoUploadCard.style.display = modelDetails && modelDetails.vision && modelDetails.name.includes("gemini-2.0") ? 'block' : 'none';
+			videoUploadCard.style.display = modelDetails.video ? 'block' : 'none';
 		}
 	},
 	showWPM(elements)

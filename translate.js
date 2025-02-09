@@ -80,7 +80,7 @@ class TranslateApp
 			return;
 		}
 		const targetLanguage = this.elements.languageSelect.value;
-		const apiModel = this.elements.apiModelSelect.value;
+		const apiModel = StorageService.load('selected_api_model', 'chatgpt');
 		const apiKey = StorageService.load(CONFIG.API.KEYS[apiModel]);
 		if (!apiKey)
 		{
@@ -89,16 +89,26 @@ class TranslateApp
 		}
 		UIState.setTranslating(true, this.elements);
 		this.state.abortController = new AbortController();
+		const wordNamespaceURI = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 		try
 		{
 			const zip = new JSZip();
 			const docxData = await zip.loadAsync(file);
+			if (!docxData.file("word/document.xml"))
+			{
+				throw new Error("word/document.xml not found in DOCX.  Invalid DOCX file.");
+			}
 			const documentXmlContent = await docxData.file("word/document.xml")
 				.async("string");
 			const parser = new DOMParser();
 			const xmlDoc = parser.parseFromString(documentXmlContent, "application/xml");
-			const wordNamespaceURI = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 			const textElements = xmlDoc.getElementsByTagNameNS(wordNamespaceURI, 't');
+			if (textElements.length === 0)
+			{
+				alert('No text elements (<w:t>) found in the document.');
+				UIState.setTranslating(false, this.elements);
+				return;
+			}
 			for (let i = 0; i < textElements.length; i++)
 			{
 				const element = textElements[i];
@@ -112,18 +122,32 @@ class TranslateApp
 						{
 							abortSignal: this.state.abortController.signal
 						});
-						const translated_text = response;
-						element.textContent = translated_text;
+						const translated_text = CONFIG.API.CONFIG[apiModel].extractContent(response);
+						while (element.firstChild)
+						{
+							element.removeChild(element.firstChild);
+						}
+						element.appendChild(xmlDoc.createTextNode(translated_text));
 					}
 					catch (translationError)
 					{
 						if (translationError.name === 'AbortError')
 						{
 							console.log('Translation aborted by user.');
+							if (this.state.abortController)
+							{
+								this.state.abortController = null;
+							}
+							UIState.setTranslating(false, this.elements);
 							return;
 						}
 						console.error('Translation error:', translationError);
-						element.textContent = "[Translation Failed]";
+						alert(`Translation error: ${translationError.message}`);
+						while (element.firstChild)
+						{
+							element.removeChild(element.firstChild);
+						}
+						element.appendChild(xmlDoc.createTextNode("[Translation Failed]"));
 					}
 				}
 			}
@@ -150,7 +174,7 @@ class TranslateApp
 		catch (error)
 		{
 			console.error('DOCX processing error:', error);
-			alert('Error processing DOCX file. Please check console for details.');
+			alert(`Error processing DOCX file: ${error.message}`);
 		}
 		finally
 		{
