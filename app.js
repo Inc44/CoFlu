@@ -197,6 +197,13 @@ class App
 				StorageService.save('wide_enabled', isWide);
 			});
 		}
+		if (this.elements.languageSelect)
+		{
+			this.elements.languageSelect.addEventListener('change', () =>
+			{
+				StorageService.save('selected_language', this.elements.languageSelect.value);
+			});
+		}
 	}
 	setupPromptHandlers()
 	{
