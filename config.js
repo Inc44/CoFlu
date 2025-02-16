@@ -159,6 +159,21 @@ window.CONFIG = {
 				default: "llama-3.2-90b-vision-preview",
 				options: [
 				{
+					name: "qwen-2.5-32b",
+					max_completion_tokens: 131072,
+					image:false
+				},
+				{
+					name: "qwen-2.5-coder-32b",
+					max_completion_tokens: 131072,
+					image:false
+				},
+				{
+					name: "deepseek-r1-distill-qwen-32b",
+					max_completion_tokens: 131072,
+					image:false
+				},
+				{
 					name: "deepseek-r1-distill-llama-70b",
 					max_completion_tokens: 131072,
 					image:false
