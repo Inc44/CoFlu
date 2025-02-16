@@ -224,6 +224,11 @@ window.CONFIG = {
 				default: "Llama-3.2-90B-Vision-Instruct",
 				options: [
 				{
+					name: "DeepSeek-R1",
+					max_completion_tokens: 4096,
+					image:false
+				},
+				{
 					name: "DeepSeek-R1-Distill-Llama-70B",
 					max_completion_tokens: 32768,
 					image:false
