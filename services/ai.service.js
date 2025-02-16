@@ -222,6 +222,14 @@ const AiService = {
 	},
 	formatMessagesWithImages(prompt, images = [], model)
 	{
+		if (images.length === 0)
+		{
+			return [
+			{
+				"role": "user",
+				"content": prompt
+			}];
+		}
 		if (model === 'claude')
 		{
 			const imageContent = images.map(dataURL =>
