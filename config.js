@@ -224,6 +224,16 @@ window.CONFIG = {
 				default: "Llama-3.2-90B-Vision-Instruct",
 				options: [
 				{
+					name: "DeepSeek-R1-Distill-Llama-70B",
+					max_completion_tokens: 32768,
+					image:false
+				},
+				{
+					name: "Llama-3.1-Tulu-3-405B",
+					max_completion_tokens: 16384,
+					image:false
+				},
+				{
 					name: "Meta-Llama-3.1-405B-Instruct",
 					max_completion_tokens: 16384,
 					image:false
@@ -239,6 +249,26 @@ window.CONFIG = {
 					image:false
 				},
 				{
+					name: "Meta-Llama-3.3-70B-Instruct",
+					max_completion_tokens: 4096,
+					image:false
+				},
+				{
+					name: "Qwen2.5-72B-Instruct",
+					max_completion_tokens: 16384,
+					image:false
+				},
+				{
+					name: "Qwen2.5-Coder-32B-Instruct",
+					max_completion_tokens: 16384,
+					image:false
+				},
+				{
+					name: "QwQ-32B-Preview",
+					max_completion_tokens: 16384,
+					image:false
+				},
+				{
 					name: "Meta-Llama-3.2-1B-Instruct",
 					max_completion_tokens: 16384,
 					image:true
@@ -247,11 +277,6 @@ window.CONFIG = {
 					name: "Meta-Llama-3.2-3B-Instruct",
 					max_completion_tokens: 8192,
 					image:true
-				},
-				{
-					name: "Meta-Llama-3.3-70B-Instruct",
-					max_completion_tokens: 4096,
-					image:false
 				},
 				{
 					name: "Llama-3.2-11B-Vision-Instruct",
