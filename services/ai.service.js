@@ -69,15 +69,64 @@ const AiService = {
 					}
 				};
 			});
-		const textPrompt = {
-			contents: [
+		let contents = [];
+		if (options.messages && Array.isArray(options.messages))
+		{
+			contents = options.messages.map(msg =>
+			{
+				if (msg.role === "user")
+				{
+					let textAndMediaParts = [];
+					if (msg.content)
+					{
+						textAndMediaParts.push(
+						{
+							text: msg.content
+						});
+					}
+					if (imageParts.length === 0 && videoParts.length === 0)
+					{
+						return {
+							role: msg.role,
+							parts: [
+							{
+								text: msg.content
+							}]
+						}
+					}
+					else
+					{
+						return {
+							role: msg.role,
+							parts: [...textAndMediaParts, ...imageParts, ...videoParts]
+						};
+					}
+				}
+				else
+				{
+					return {
+						role: msg.role,
+						parts: [
+						{
+							text: msg.content
+						}]
+					};
+				}
+			});
+		}
+		else
+		{
+			contents = [
 			{
 				role: "user",
 				parts: [
 				{
 					text: prompt
 				}, ...imageParts, ...videoParts]
-			}],
+			}];
+		}
+		const textPrompt = {
+			contents: contents,
 			generationConfig:
 			{
 				temperature: 0,
@@ -192,10 +241,86 @@ const AiService = {
 	},
 	buildRequestBody(prompt, model, selectedModel, options)
 	{
-		let messages = this.formatMessagesWithImages(prompt, options.images, model);
+		let messages = [];
+		if (options.messages && Array.isArray(options.messages))
+		{
+			messages = options.messages.map(msg =>
+			{
+				if (msg.role === 'user' && options.images && options.images.length > 0 && model !== 'claude')
+				{
+					const imageContent = options.images.map(dataURL => (
+					{
+						type: 'image_url',
+						image_url:
+						{
+							url: dataURL
+						},
+					}));
+					return {
+						role: msg.role,
+						content: [...imageContent,
+						{
+							type: 'text',
+							text: msg.content
+						}]
+					};
+				}
+				else if (msg.role === 'user' && options.images && options.images.length > 0 && model === 'claude')
+				{
+					const imageContent = options.images.map(dataURL =>
+					{
+						const base64Data = dataURL.split(',')[1];
+						const mimeType = dataURL.match(/^data:(.*?);base64,/)
+							?.[1] || 'image/png';
+						return {
+							type: 'image',
+							source:
+							{
+								type: "base64",
+								media_type: mimeType,
+								data: base64Data
+							},
+						};
+					});
+					let contentArray = [];
+					if (msg.content)
+					{
+						contentArray.push(
+						{
+							type: "text",
+							text: msg.content
+						});
+					}
+					contentArray.push(...imageContent);
+					return {
+						role: msg.role,
+						content: contentArray
+					};
+				}
+				else
+				{
+					return {
+						role: msg.role,
+						content: msg.content
+					};
+				}
+			});
+		}
+		else
+		{
+			messages = [
+			{
+				"role": "user",
+				"content": prompt
+			}];
+			if (options.images && options.images.length > 0)
+			{
+				messages = this.formatMessagesWithImages(prompt, options.images, model);
+			}
+		}
 		let requestBody = {
 			model: selectedModel.name,
-			messages,
+			messages: messages,
 			stream: options.streaming
 		};
 		if (selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31')
