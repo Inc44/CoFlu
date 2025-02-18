@@ -10,6 +10,7 @@ class App
 			imageUploader: null,
 			videoUploader: null
 		};
+		this.loadSavedSettings();
 	}
 	getElements()
 	{
@@ -45,7 +46,6 @@ class App
 		try
 		{
 			await this.initializeComponents();
-			this.loadSavedSettings();
 			this.loadSavedContent();
 			this.setupEventHandlers();
 			this.updateInitialUI();

@@ -134,19 +134,16 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 ## Bugs
 
 - Clearing text settings or importing an empty file doesn't override all settings but only modifies specified parameters.
-- Streaming responses succeed, but the text area is empty.
 - Toggling "Numbered Lines" does nothing; it must display numbered lines in both single- and double-column diffs.
 
 ## TODOs
 
-- Add more SambaNova models, like R1 or Tulu.
 - Add the No BS response prompt extension.
 - Add Ollama local LLMs support to obtain independence.
 - Add image drag-and-drop or paste (Ctrl+V for image data) into the image upload card.
 - Bring audio support for ChatGPT, Gemini, SambaNova, and Qwen.
 - Enable editing of custom prompts. When a custom prompt is selected, a text input field should reappear, similar to when adding a new custom prompt. Additionally, a delete button should be available.
 - Extend document support to other formats, including PDFs, both for input and translation.
-- Fix card text area height mismatch.
 - Replace LaTeX punctuation inside separate text macros.
 - Rewrite and refactor the entire codebase.
 - Rewrite Gemini without Google Generative AI.

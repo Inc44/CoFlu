@@ -8,9 +8,11 @@ class ChatApp
 			messages: [],
 			abortController: null,
 			imageUploader: null,
-			videoUploader: null
+			videoUploader: null,
+			isStreaming: false,
 		};
 		this.loadMessages();
+		this.selectedRenderer = StorageService.load('selected_renderer', 'katex');
 	}
 	getElements()
 	{
@@ -34,6 +36,11 @@ class ChatApp
 		this.initializeComponents();
 		this.displayMessages();
 		this.updateInitialUI();
+		const savedModel = StorageService.load('selected_api_model', 'chatgpt');
+		if (this.elements.apiModelSelect)
+		{
+			this.elements.apiModelSelect.value = savedModel;
+		}
 	}
 	async initializeComponents()
 	{
@@ -75,16 +82,38 @@ class ChatApp
 				StorageService.save('selected_api_model', selectedModel);
 				UIState.updateImageUploadVisibility(currentModelDetails);
 				UIState.updateVideoUploadVisibility(currentModelDetails);
+				this.loadMessages();
+				this.displayMessages();
 			});
 		}
 	}
 	loadMessages()
 	{
-		this.state.messages = StorageService.load('chat_history', []);
+		const savedMessages = StorageService.load('chat_history', []);
+		const currentModel = this.elements.apiModelSelect.value;
+		if (currentModel === 'gemini')
+		{
+			this.state.messages = savedMessages.map(this.convertFromGeminiFormat);
+		}
+		else
+		{
+			this.state.messages = savedMessages.map(this.convertToGeminiFormat);
+		}
+		this.state.messages = savedMessages;
 	}
 	saveMessages()
 	{
-		StorageService.save('chat_history', this.state.messages);
+		const currentModel = this.elements.apiModelSelect.value;
+		let messagesToSave = this.state.messages;
+		if (currentModel === 'gemini')
+		{
+			messagesToSave = this.state.messages.map(this.convertToGeminiFormat);
+		}
+		else
+		{
+			messagesToSave = this.state.messages.map(this.convertFromGeminiFormat);
+		}
+		StorageService.save('chat_history', messagesToSave);
 	}
 	async sendMessage()
 	{
@@ -104,15 +133,34 @@ class ChatApp
 		{
 			const imageURLs = Object.values(this.state.imageUploader.getImages());
 			const videoURLs = Object.values(this.state.videoUploader.getVideos());
+			const streamingEnabled = StorageService.load('streaming_enabled', true);
+			this.state.isStreaming = streamingEnabled;
 			const aiResponse = await AiService.generate("", model,
 			{
 				messages: this.state.messages,
 				images: imageURLs,
 				videos: videoURLs,
 				abortSignal: this.state.abortController.signal,
+				streaming: this.state.isStreaming,
+				onProgress: (text) =>
+				{
+					if (this.state.messages.length > 0 && this.state.messages[this.state.messages.length - 1].role === "assistant")
+					{
+						this.state.messages[this.state.messages.length - 1].content = text;
+					}
+					else
+					{
+						this.addAssistantMessage(text);
+					}
+					this.displayMessages();
+					this.saveMessages();
+				}
 			});
-			const assistantContent = model === 'gemini' ? aiResponse.response.text() : CONFIG.API.CONFIG[model].extractContent(aiResponse);
-			this.addAssistantMessage(assistantContent);
+			if (!this.state.isStreaming)
+			{
+				const assistantContent = model === 'gemini' ? aiResponse.response.text() : CONFIG.API.CONFIG[model].extractContent(aiResponse);
+				this.addAssistantMessage(assistantContent);
+			}
 		}
 		catch (error)
 		{
@@ -125,6 +173,7 @@ class ChatApp
 		finally
 		{
 			this.state.abortController = null;
+			this.state.isStreaming = false;
 		}
 	}
 	addUserMessage(text)
@@ -171,24 +220,78 @@ class ChatApp
 		messageDiv.classList.add('message');
 		messageDiv.classList.add(message.role === 'user' ? 'user-message' : 'assistant-message');
 		const contentPara = document.createElement('p');
-		if (Array.isArray(message.content))
+		let contentText = message.content;
+		if (typeof contentText === 'string')
 		{
-			message.content.forEach(part =>
-			{
-				if (part.type === 'text')
-				{
-					contentPara.textContent += part.text;
-				}
-				else if (part.type === 'image')
-				{}
-			});
-		}
-		else
-		{
-			contentPara.textContent = message.content;
+			contentText = TextService.format.latex(contentText);
+			contentPara.textContent = contentText;
 		}
 		messageDiv.appendChild(contentPara);
+		setTimeout(() =>
+		{
+			if (this.selectedRenderer === 'katex')
+			{
+				renderMathInElement(messageDiv,
+				{
+					delimiters: [
+					{
+						left: '$$',
+						right: '$$',
+						display: true
+					},
+					{
+						left: '$',
+						right: '$',
+						display: false
+					},
+					{
+						left: '\\[',
+						right: '\\]',
+						display: true
+					},
+					{
+						left: '\\(',
+						right: '\\)',
+						display: false
+					}, ],
+					throwOnError: false,
+					trust: true,
+					strict: false
+				});
+			}
+			else if (this.selectedRenderer === 'mathjax3')
+			{
+				MathJax.typesetPromise([messageDiv]);
+			}
+		}, 0);
 		return messageDiv;
+	}
+	convertToGeminiFormat(message)
+	{
+		if (message.role && typeof message.content === 'string')
+		{
+			return {
+				role: message.role === "assistant" ? "model" : message.role,
+				parts: [
+				{
+					text: message.content
+				}],
+			};
+		}
+		return message;
+	}
+	convertFromGeminiFormat(message)
+	{
+		if (message.role && Array.isArray(message.parts))
+		{
+			const textContent = message.parts.map(part => part.text)
+				.join('');
+			return {
+				role: message.role === "model" ? "assistant" : message.role,
+				content: textContent,
+			};
+		}
+		return message;
 	}
 }
 document.addEventListener('DOMContentLoaded', () =>
