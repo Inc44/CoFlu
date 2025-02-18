@@ -94,11 +94,11 @@ const AiService = {
 	},
 	buildGeminiContents(prompt, options, imageParts, videoParts)
 	{
+		let contents = [];
 		if (options.messages && Array.isArray(options.messages))
 		{
-			return options.messages.map(msg =>
+			options.messages.forEach(msg =>
 			{
-				const role = msg.role;
 				let parts = [];
 				if (msg.content)
 				{
@@ -107,38 +107,29 @@ const AiService = {
 						text: msg.content
 					});
 				}
-				const hasMedia = imageParts.length > 0 || videoParts.length > 0;
-				if (role === "user")
+				if (msg.role === "user")
 				{
-					if (hasMedia)
-					{
-						parts = [...parts, ...imageParts, ...videoParts]
-					}
-					return {
-						role,
-						parts
-					};
+					parts.push(...imageParts, ...videoParts);
 				}
-				else
+				contents.push(
 				{
-					return {
-						role,
-						parts
-					};
-				}
+					role: msg.role === "assistant" ? "model" : msg.role,
+					parts: parts
+				});
 			});
 		}
 		else
 		{
-			return [
+			contents.push(
 			{
 				role: "user",
 				parts: [
 				{
 					text: prompt
 				}, ...imageParts, ...videoParts]
-			}];
+			});
 		}
+		return contents;
 	},
 	async handleGeminiStreaming(model, textPrompt, options)
 	{
@@ -231,63 +222,56 @@ const AiService = {
 		{
 			messages = options.messages.map(msg =>
 			{
-				if (msg.role === "user")
+				let content = [];
+				if (msg.content)
 				{
-					if (options.images?.length > 0 && model !== 'claude')
+					if (typeof msg.content === 'string')
 					{
-						const imageContent = options.images.map(dataURL => (
+						content.push(
 						{
-							type: 'image_url',
-							image_url:
-							{
-								url: dataURL
-							},
-						}));
-						return {
-							role: msg.role,
-							content: [...imageContent,
-							{
-								type: 'text',
-								text: msg.content
-							}]
-						};
-					}
-					else if (options.images?.length > 0 && model === 'claude')
-					{
-						const imageContent = options.images.map(dataURL =>
-						{
-							const base64Data = dataURL.split(',')[1];
-							const mimeType = dataURL.match(/^data:(.*?);base64,/)
-								?.[1] || 'image/png';
-							return {
-								type: 'image',
-								source:
-								{
-									type: "base64",
-									media_type: mimeType,
-									data: base64Data
-								}
-							};
+							type: 'text',
+							text: msg.content
 						});
-						let contentArray = [];
-						if (msg.content)
-						{
-							contentArray.push(
-							{
-								type: "text",
-								text: msg.content
-							});
-						}
-						contentArray = [...contentArray, ...imageContent]
-						return {
-							role: msg.role,
-							content: contentArray
-						};
 					}
+					else if (Array.isArray(msg.content))
+					{
+						content = content.concat(msg.content);
+					}
+				}
+				if (options.images?.length > 0 && model !== 'claude')
+				{
+					const imageContent = options.images.map(dataURL => (
+					{
+						type: 'image_url',
+						image_url:
+						{
+							url: dataURL
+						},
+					}));
+					content = content.concat(imageContent);
+				}
+				if (options.images?.length > 0 && model === 'claude')
+				{
+					const imageContent = options.images.map(dataURL =>
+					{
+						const base64Data = dataURL.split(',')[1];
+						const mimeType = dataURL.match(/^data:(.*?);base64,/)
+							?.[1] || 'image/png';
+						return {
+							type: 'image',
+							source:
+							{
+								type: "base64",
+								media_type: mimeType,
+								data: base64Data
+							}
+						};
+					});
+					content = content.concat(imageContent);
 				}
 				return {
 					role: msg.role,
-					content: msg.content
+					content: content.length === 1 ? content[0].text : content
 				};
 			});
 		}

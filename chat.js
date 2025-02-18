@@ -90,30 +90,11 @@ class ChatApp
 	loadMessages()
 	{
 		const savedMessages = StorageService.load('chat_history', []);
-		const currentModel = this.elements.apiModelSelect.value;
-		if (currentModel === 'gemini')
-		{
-			this.state.messages = savedMessages.map(this.convertFromGeminiFormat);
-		}
-		else
-		{
-			this.state.messages = savedMessages.map(this.convertToGeminiFormat);
-		}
 		this.state.messages = savedMessages;
 	}
 	saveMessages()
 	{
-		const currentModel = this.elements.apiModelSelect.value;
-		let messagesToSave = this.state.messages;
-		if (currentModel === 'gemini')
-		{
-			messagesToSave = this.state.messages.map(this.convertToGeminiFormat);
-		}
-		else
-		{
-			messagesToSave = this.state.messages.map(this.convertFromGeminiFormat);
-		}
-		StorageService.save('chat_history', messagesToSave);
+		StorageService.save('chat_history', this.state.messages);
 	}
 	async sendMessage()
 	{
@@ -135,9 +116,14 @@ class ChatApp
 			const videoURLs = Object.values(this.state.videoUploader.getVideos());
 			const streamingEnabled = StorageService.load('streaming_enabled', true);
 			this.state.isStreaming = streamingEnabled;
+			const messages = this.state.messages.map(msg => (
+			{
+				role: msg.role,
+				content: msg.content
+			}));
 			const aiResponse = await AiService.generate("", model,
 			{
-				messages: this.state.messages,
+				messages: messages,
 				images: imageURLs,
 				videos: videoURLs,
 				abortSignal: this.state.abortController.signal,
@@ -265,33 +251,6 @@ class ChatApp
 			}
 		}, 0);
 		return messageDiv;
-	}
-	convertToGeminiFormat(message)
-	{
-		if (message.role && typeof message.content === 'string')
-		{
-			return {
-				role: message.role === "assistant" ? "model" : message.role,
-				parts: [
-				{
-					text: message.content
-				}],
-			};
-		}
-		return message;
-	}
-	convertFromGeminiFormat(message)
-	{
-		if (message.role && Array.isArray(message.parts))
-		{
-			const textContent = message.parts.map(part => part.text)
-				.join('');
-			return {
-				role: message.role === "model" ? "assistant" : message.role,
-				content: textContent,
-			};
-		}
-		return message;
 	}
 }
 document.addEventListener('DOMContentLoaded', () =>
