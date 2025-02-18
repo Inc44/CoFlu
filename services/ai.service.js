@@ -300,7 +300,7 @@ const AiService = {
 		{
 			requestBody.reasoning_effort = StorageService.load('reasoning_effort', 'low');
 		}
-		if (model !== 'sambanova' && selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31')
+		if (model !== 'sambanova' && selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31' && selectedModel.name !== 'grok-2-1212')
 		{
 			requestBody.max_tokens = selectedModel.max_completion_tokens;
 		}
