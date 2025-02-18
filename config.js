@@ -8,9 +8,10 @@ window.CONFIG = {
 			claude: 'claude_api_key',
 			deepseek: 'deepseek_api_key',
 			gemini: 'gemini_api_key',
+			grok: 'grok_api_key',
 			groq: 'groq_api_key',
-			sambanova: 'sambanova_api_key',
-			qwen: 'qwen_api_key'
+			qwen: 'qwen_api_key',
+			sambanova: 'sambanova_api_key'
 		},
 		ENDPOINTS:
 		{
@@ -18,9 +19,10 @@ window.CONFIG = {
 			claude: 'https://api.anthropic.com/v1/messages',
 			deepseek: 'https://api.deepseek.com/chat/completions',
 			gemini: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+			grok: 'https://api.x.ai/v1/chat/completions',
 			groq: 'https://api.groq.com/openai/v1/chat/completions',
-			sambanova: 'https://api.sambanova.ai/v1/chat/completions',
-			qwen: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions'
+			qwen: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions',
+			sambanova: 'https://api.sambanova.ai/v1/chat/completions'
 		},
 		MODELS:
 		{
@@ -154,6 +156,36 @@ window.CONFIG = {
 					video: true
 				}]
 			},
+			grok:
+			{
+				default: "grok-2-1212",
+				options: [
+				{
+					name: "grok-2-1212",
+					max_completion_tokens: 131072,
+					image: false
+				},
+				{
+					name: "grok-2-vision-1212",
+					max_completion_tokens: 32768,
+					image: true
+				},
+				{
+					name: "grok-3",
+					max_completion_tokens: 131072,
+					image: false
+				},
+				{
+					name: "grok-beta",
+					max_completion_tokens: 131072,
+					image: false
+				},
+				{
+					name: "grok-vision-beta",
+					max_completion_tokens: 8192,
+					image: true
+				}]
+			},
 			groq:
 			{
 				default: "llama-3.2-90b-vision-preview",
@@ -216,6 +248,56 @@ window.CONFIG = {
 				{
 					name: "mixtral-8x7b-32768",
 					max_completion_tokens: 32768,
+					image: false
+				}]
+			},
+			qwen:
+			{
+				default: "qwen-max",
+				options: [
+				{
+					name: "qwen-max",
+					max_completion_tokens: 8192,
+					image: false
+				},
+				{
+					name: "qwen-plus",
+					max_completion_tokens: 8192,
+					image: false
+				},
+				{
+					name: "qwen-turbo",
+					max_completion_tokens: 8192,
+					image: false
+				},
+				{
+					name: "qwen-vl-max",
+					max_completion_tokens: 2048,
+					image: true
+				},
+				{
+					name: "qwen-vl-plus",
+					max_completion_tokens: 2048,
+					image: true
+				},
+				{
+					name: "qwen2.5-vl-72b-instruct",
+					max_completion_tokens: 8192,
+					image: true
+				},
+				{
+					name: "qwen2.5-vl-7b-instruct",
+					max_completion_tokens: 8192,
+					image: true
+				},
+				{
+					name: "qwen2.5-vl-3b-instruct",
+					max_completion_tokens: 8192,
+					image: true
+				},
+				{
+					name: "qwen2.5-7b-instruct-1m",
+					max_completion_tokens: 8192,
 					image: false
 				}]
 			},
@@ -293,56 +375,6 @@ window.CONFIG = {
 					max_completion_tokens: 4096,
 					image: true
 				}]
-			},
-			qwen:
-			{
-				default: "qwen-max",
-				options: [
-				{
-					name: "qwen-max",
-					max_completion_tokens: 8192,
-					image: false
-				},
-				{
-					name: "qwen-plus",
-					max_completion_tokens: 8192,
-					image: false
-				},
-				{
-					name: "qwen-turbo",
-					max_completion_tokens: 8192,
-					image: false
-				},
-				{
-					name: "qwen-vl-max",
-					max_completion_tokens: 2048,
-					image: true
-				},
-				{
-					name: "qwen-vl-plus",
-					max_completion_tokens: 2048,
-					image: true
-				},
-				{
-					name: "qwen2.5-vl-72b-instruct",
-					max_completion_tokens: 8192,
-					image: true
-				},
-				{
-					name: "qwen2.5-vl-7b-instruct",
-					max_completion_tokens: 8192,
-					image: true
-				},
-				{
-					name: "qwen2.5-vl-3b-instruct",
-					max_completion_tokens: 8192,
-					image: true
-				},
-				{
-					name: "qwen2.5-7b-instruct-1m",
-					max_completion_tokens: 8192,
-					image: false
-				}]
 			}
 		},
 		CONFIG:
@@ -386,6 +418,15 @@ window.CONFIG = {
 				extractContent: data => data.candidates[0]?.content?.parts[0]?.text,
 				extractStreamContent: data => data.candidates[0]?.content?.parts[0]?.text,
 			},
+			grok:
+			{
+				url: 'https://api.x.ai/v1/chat/completions',
+				model: "grok-2-1212",
+				apiKeyHeader: 'Authorization',
+				apiKeyPrefix: 'Bearer ',
+				extractContent: data => data.choices[0]?.message?.content,
+				extractStreamContent: data => data.choices[0]?.delta?.content
+			},
 			groq:
 			{
 				url: 'https://api.groq.com/openai/v1/chat/completions',
@@ -395,19 +436,19 @@ window.CONFIG = {
 				extractContent: data => data.choices[0]?.message?.content,
 				extractStreamContent: data => data.choices[0]?.delta?.content
 			},
-			sambanova:
+			qwen:
 			{
-				url: 'https://api.sambanova.ai/v1/chat/completions',
-				model: "Llama-3.2-90B-Vision-Instruct",
+				url: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions',
+				model: "qwen-max",
 				apiKeyHeader: 'Authorization',
 				apiKeyPrefix: 'Bearer ',
 				extractContent: data => data.choices[0]?.message?.content,
 				extractStreamContent: data => data.choices[0]?.delta?.content
 			},
-			qwen:
+			sambanova:
 			{
-				url: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions',
-				model: "qwen-max",
+				url: 'https://api.sambanova.ai/v1/chat/completions',
+				model: "Llama-3.2-90B-Vision-Instruct",
 				apiKeyHeader: 'Authorization',
 				apiKeyPrefix: 'Bearer ',
 				extractContent: data => data.choices[0]?.message?.content,
@@ -439,20 +480,25 @@ window.CONFIG = {
 				max: 100,
 				size: 20
 			},
+			grok:
+			{
+				max: 100,
+				size: 10
+			},
 			groq:
 			{
 				max: 1,
 				size: 3
 			},
-			sambanova:
-			{
-				max: 1,
-				size: 20
-			},
 			qwen:
 			{
 				max: 10,
 				size: 10
+			},
+			sambanova:
+			{
+				max: 1,
+				size: 20
 			}
 		},
 		VIDEO:
@@ -477,17 +523,22 @@ window.CONFIG = {
 				max: 10,
 				size: 15
 			},
+			grok:
+			{
+				max: 0,
+				size: 0
+			},
 			groq:
 			{
 				max: 0,
 				size: 0
 			},
-			sambanova:
+			qwen:
 			{
 				max: 0,
 				size: 0
 			},
-			qwen:
+			sambanova:
 			{
 				max: 0,
 				size: 0
@@ -502,9 +553,10 @@ window.CONFIG = {
 			claude: 'Anthropic API Key:',
 			deepseek: 'DeepSeek API Key:',
 			gemini: 'Google API Key:',
+			grok: 'Grok API Key:',
 			groq: 'Groq API Key:',
-			sambanova: 'SambaNova API Key:',
-			qwen: 'Qwen API Key:'
+			qwen: 'Qwen API Key:',
+			sambanova: 'SambaNova API Key:'
 		},
 		STANDARD_PROMPTS: ["Proofread this text but only fix grammar", "Proofread this text but only fix grammar and Markdown style", "Proofread this text improving clarity and flow", "Proofread this text fixing only awkward parts", "Proofread this text", "Markdown OCR"]
 	},
@@ -516,9 +568,10 @@ window.CONFIG = {
 			claude: /^sk-ant-[A-Za-z0-9]{32,}$/,
 			deepseek: /^sk-[A-Za-z0-9]{32,}$/,
 			gemini: /^AI[A-Za-z0-9-_]{32,}$/,
+			grok: /^xai-[A-Za-z0-9]{32,}$/,
 			groq: /^gsk_[A-Za-z0-9]{32,}$/,
-			sambanova: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-			qwen: /^sk-[A-Za-z0-9]{32,}$/
+			qwen: /^sk-[A-Za-z0-9]{32,}$/,
+			sambanova: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 		}
 	}
 };

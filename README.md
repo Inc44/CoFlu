@@ -29,14 +29,15 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 *   **AI Text Generation:** Generate high-quality text using a selection of leading AI models:
     *   **OpenAI's ChatGPT:** Including the latest `gpt-4o` and `o3-mini` models.
     *   **Anthropic's Claude:** Leveraging the `claude-3.5-sonnet` and `claude-3.5-haiku` models.
+    *   **DeepSeek:** Featuring both R1 and V3.
     *   **Google's Gemini:** Access to multiple Gemini 2.0 models and the ability to use videos.
     *   **Groq's LLaMAs and Mixtral:** Utilizing Groq's high-speed inference for rapid text generation.
-    *   **SambaNova's LLaMAs:** Including vision models.
+    *   **X's Grok:** Using the most preferred AI yet.
     *   **Qwen:** Including models like `qwen-max` and `qwen-vl-max`.
-    *   **DeepSeek:** Featuring both R1 and V3.
+    *   **SambaNova's LLaMAs:** Including vision models.
 *   **Customizable Prompts:** Use predefined prompts (e.g., "Proofread this text") or create and save your own custom prompts for repeated use.
 *   **Streaming Support:** (Optional) Receive generated text as a stream, allowing you to see the output as it's being created (particularly useful for longer generations).
-*   **Image and Video Input:** For models that support it (e.g., Gemini, some ChatGPT and Groq models), upload images or videos to provide visual context for your prompts.
+*   **Image and Video Input:** For models that support it, upload images or videos to provide visual context for your prompts.
 *   **Audio Transcription:** Transcribe audio files (`.flac`, `.mp3`, `.mp4`, `.mpeg`, `.mpga`, `.m4a`, `.ogg`, `.wav`, `.webm`) into text using Groq's Whisper model. Supports multiple languages.
 *   **Translation:** Translate text into a variety of languages using the selected AI model. This is a core part of the groundbreaking `.docx` translation feature.
 
@@ -44,7 +45,7 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 
 *   **Translate DOCX Files:** Upload Microsoft Word (`.docx`) documents for translation.
 *   **Layout Preservation:** CoFlu meticulously preserves the original document's formatting, including fonts, styles, tables, and images. This is a *key differentiator* from simple text translators.
-*   **LLM-Powered Translation:** Uses the selected AI model (ChatGPT, Claude, Gemini, Groq, SambaNova, Qwen) for high-quality, context-aware translation. This often surpasses the accuracy of traditional machine translation systems.
+*   **LLM-Powered Translation:** Uses the selected AI model (ChatGPT, Claude, Gemini, Grok, Groq, Qwen, SambaNova) for high-quality, context-aware translation. This often surpasses the accuracy of traditional machine translation systems.
 *   **Translation Batch Size:** Set the maximum size of the translation batch (smaller values may help prevent API errors).
 *   **Translation Batch RPM:** Set the delay between batches (larger values may help prevent API errors).
 *   **Exponential Retry:** Number of retries for failed requests.
@@ -110,9 +111,10 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
     *   **OpenAI:** [OpenAI Platform](https://platform.openai.com/api-keys)
     *   **Anthropic:** [Anthropic Console](https://console.anthropic.com/settings/keys)
     *   **Google:** [Google AI Studio](https://aistudio.google.com/app/apikey)
+    *   **Grok:** [xAI Cloud Console](https://console.x.ai)
     *   **Groq:** [GroqCloud](https://console.groq.com/keys)
-    *   **SambaNova:** [SambaNova API](https://cloud.sambanova.ai/apis)
     *   **Qwen:** [Qwen API](https://bailian.console.alibabacloud.com/?apiKey=1#/api-key)
+    *   **SambaNova:** [SambaNova API](https://cloud.sambanova.ai/apis)
 
 *   Enter your API keys in the "Settings" page. CoFlu stores them securely in your browser's local storage. **They are *not* sent to any external server.**
 
