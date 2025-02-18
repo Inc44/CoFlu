@@ -13,6 +13,9 @@ class ChatApp
 		};
 		this.loadMessages();
 		this.selectedRenderer = StorageService.load('selected_renderer', 'katex');
+		this.throttleTimer = null;
+		this.throttleDelay = 1000;
+		this.accumulatedText = '';
 	}
 	getElements()
 	{
@@ -118,6 +121,7 @@ class ChatApp
 			return;
 		}
 		this.state.abortController = new AbortController();
+		this.accumulatedText = '';
 		try
 		{
 			const imageURLs = Object.values(this.state.imageUploader.getImages());
@@ -138,16 +142,8 @@ class ChatApp
 				streaming: this.state.isStreaming,
 				onProgress: (text) =>
 				{
-					if (this.state.messages.length > 0 && this.state.messages[this.state.messages.length - 1].role === "assistant")
-					{
-						this.state.messages[this.state.messages.length - 1].content = text;
-					}
-					else
-					{
-						this.addAssistantMessage(text, false);
-					}
-					this.displayMessages();
-					this.saveMessages();
+					this.accumulatedText = text;
+					this.throttledDisplay();
 				}
 			});
 			if (!this.state.isStreaming)
@@ -168,7 +164,35 @@ class ChatApp
 		{
 			this.state.abortController = null;
 			this.state.isStreaming = false;
+			if (this.state.isStreaming)
+			{
+				this.addAssistantMessage(this.accumulatedText);
+			}
 		}
+	}
+	throttledDisplay()
+	{
+		if (!this.throttleTimer)
+		{
+			this.throttleTimer = setTimeout(() =>
+			{
+				this.updateAssistantMessage(this.accumulatedText);
+				this.throttleTimer = null;
+			}, this.throttleDelay);
+		}
+	}
+	updateAssistantMessage(text)
+	{
+		if (this.state.messages.length > 0 && this.state.messages[this.state.messages.length - 1].role === "assistant")
+		{
+			this.state.messages[this.state.messages.length - 1].content = text;
+		}
+		else
+		{
+			this.addAssistantMessage(text, false);
+		}
+		this.displayMessages();
+		this.saveMessages();
 	}
 	addUserMessage(text)
 	{
@@ -184,7 +208,7 @@ class ChatApp
 	{
 		if (format)
 		{
-			text = TextService.format.latex(text)
+			text = TextService.format.latex(text);
 		}
 		this.state.messages.push(
 		{
