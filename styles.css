@@ -57,10 +57,7 @@ color: rgb(46, 218, 119);
 #customPromptContainer {
 display: none;
 }
-.form-control,
-.form-select {
-margin: 0.5rem;
-}
+
 .button-group {
 display: flex;
 flex-wrap: wrap;
@@ -78,7 +75,8 @@ margin-top: 0.1rem;
 margin-bottom: 0.1rem;
 }
 #clearSource,
-#clearTarget {
+#clearTarget,
+#cleanChat {
 background-color: rgb(237, 53, 36);
 color: white;
 }
@@ -115,7 +113,8 @@ color: white;
 #sortTarget,
 #transcribeBtn,
 #translateBtn,
-#saveSettings {
+#saveSettings,
+#sendMessage {
 background-color: rgb(1, 111, 255);
 color: white;
 }
@@ -214,6 +213,30 @@ transition: width 1s ease;
 }
 .progress-bar-animated {
 animation: 0.4s linear infinite progress-bar-stripes;
+}
+.message {
+border-radius: 5px;
+clear: both;
+color: white;
+margin: 1rem;
+max-width: 84%;
+padding: 1rem;
+}
+.message p {
+margin: 0rem;
+}
+.user-message {
+background-color: rgb(1, 111, 255);
+float: right;
+}
+.assistant-message {
+background-color: rgb(140, 84, 208);
+float: left;
+}
+.message-images img,
+.message-videos video {
+margin-top: 1rem;
+max-width: 40rem;
 }
 @media print {
 * {
