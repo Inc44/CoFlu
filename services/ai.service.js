@@ -13,13 +13,12 @@ const AiService = {
 			{
 				return await this.transcribe(options.file, options.language, apiKey);
 			}
-			if (model === 'gemini')
+			switch (model)
 			{
-				return await this.generateWithGemini(apiKey, prompt, options, 0);
-			}
-			else
-			{
-				return await this.generateWithOtherModels(apiKey, prompt, model, options, 0);
+				case 'gemini':
+					return await this.generateWithGemini(apiKey, prompt, options, 0);
+				default:
+					return await this.generateWithOtherModels(apiKey, prompt, model, options, 0);
 			}
 		}
 		catch (error)
@@ -31,109 +30,28 @@ const AiService = {
 	async generateWithGemini(apiKey, prompt, options, attempt)
 	{
 		const maxRetries = StorageService.load('exponential_retry', 4);
-		const
-		{
-			GoogleGenerativeAI
-		} = await import("@google/generative-ai");
-		const genAI = new GoogleGenerativeAI(apiKey);
-		const selectedModelName = StorageService.load('gemini_model', CONFIG.API.MODELS.gemini.default);
-		const model = genAI.getGenerativeModel(
-		{
-			model: selectedModelName
-		});
-		const imageParts = (options.images || [])
-			.map(dataURL =>
-			{
-				const base64Data = dataURL.split(',')[1];
-				const mimeType = dataURL.match(/^data:(.*?);base64,/)
-					?.[1] || 'image/png';
-				return {
-					inlineData:
-					{
-						data: base64Data,
-						mimeType
-					}
-				};
-			});
-		const videoParts = (options.videos || [])
-			.map(dataURL =>
-			{
-				const base64Data = dataURL.split(',')[1];
-				const mimeType = dataURL.match(/^data:(.*?);base64,/)
-					?.[1] || 'video/mp4';
-				return {
-					inlineData:
-					{
-						data: base64Data,
-						mimeType
-					}
-				};
-			});
-		let contents = [];
-		if (options.messages && Array.isArray(options.messages))
-		{
-			contents = options.messages.map(msg =>
-			{
-				if (msg.role === "user")
-				{
-					let textAndMediaParts = [];
-					if (msg.content)
-					{
-						textAndMediaParts.push(
-						{
-							text: msg.content
-						});
-					}
-					if (imageParts.length === 0 && videoParts.length === 0)
-					{
-						return {
-							role: msg.role,
-							parts: [
-							{
-								text: msg.content
-							}]
-						}
-					}
-					else
-					{
-						return {
-							role: msg.role,
-							parts: [...textAndMediaParts, ...imageParts, ...videoParts]
-						};
-					}
-				}
-				else
-				{
-					return {
-						role: msg.role,
-						parts: [
-						{
-							text: msg.content
-						}]
-					};
-				}
-			});
-		}
-		else
-		{
-			contents = [
-			{
-				role: "user",
-				parts: [
-				{
-					text: prompt
-				}, ...imageParts, ...videoParts]
-			}];
-		}
-		const textPrompt = {
-			contents: contents,
-			generationConfig:
-			{
-				temperature: 0,
-			}
-		};
 		try
 		{
+			const
+			{
+				GoogleGenerativeAI
+			} = await import("@google/generative-ai");
+			const genAI = new GoogleGenerativeAI(apiKey);
+			const selectedModelName = StorageService.load('gemini_model', CONFIG.API.MODELS.gemini.default);
+			const model = genAI.getGenerativeModel(
+			{
+				model: selectedModelName
+			});
+			const imageParts = this.prepareMediaParts(options.images, 'image/png');
+			const videoParts = this.prepareMediaParts(options.videos, 'video/mp4');
+			const contents = this.buildGeminiContents(prompt, options, imageParts, videoParts);
+			const textPrompt = {
+				contents,
+				generationConfig:
+				{
+					temperature: 0
+				},
+			};
 			if (options.streaming)
 			{
 				return await this.handleGeminiStreaming(model, textPrompt, options);
@@ -148,12 +66,77 @@ const AiService = {
 			if (error.name === 'AbortError') throw error;
 			if (attempt < maxRetries)
 			{
-				const delay = Math.pow(2, attempt) * 1000;
+				const delay = this.calculateRetryDelay(attempt);
 				console.warn(`Gemini API error (attempt ${attempt + 1}/${maxRetries}): ${error.message}. Retrying in ${delay / 1000}s...`);
-				await new Promise(resolve => setTimeout(resolve, delay));
+				await this.wait(delay);
 				return this.generateWithGemini(apiKey, prompt, options, attempt + 1);
 			}
 			throw new Error(`Gemini API error after ${maxRetries} attempts: ${error.message}`);
+		}
+	},
+	prepareMediaParts(mediaURLs, defaultMimeType)
+	{
+		return (mediaURLs || [])
+			.map(dataURL =>
+			{
+				const base64Data = dataURL.split(',')[1];
+				const mimeType = dataURL.match(/^data:(.*?);base64,/)
+					?.[1] || defaultMimeType;
+				return {
+					inlineData:
+					{
+						data: base64Data,
+						mimeType
+					}
+				};
+			});
+	},
+	buildGeminiContents(prompt, options, imageParts, videoParts)
+	{
+		if (options.messages && Array.isArray(options.messages))
+		{
+			return options.messages.map(msg =>
+			{
+				const role = msg.role;
+				let parts = [];
+				if (msg.content)
+				{
+					parts.push(
+					{
+						text: msg.content
+					});
+				}
+				const hasMedia = imageParts.length > 0 || videoParts.length > 0;
+				if (role === "user")
+				{
+					if (hasMedia)
+					{
+						parts = [...parts, ...imageParts, ...videoParts]
+					}
+					return {
+						role,
+						parts
+					};
+				}
+				else
+				{
+					return {
+						role,
+						parts
+					};
+				}
+			});
+		}
+		else
+		{
+			return [
+			{
+				role: "user",
+				parts: [
+				{
+					text: prompt
+				}, ...imageParts, ...videoParts]
+			}];
 		}
 	},
 	async handleGeminiStreaming(model, textPrompt, options)
@@ -210,9 +193,9 @@ const AiService = {
 				const errorText = await response.text();
 				if (attempt < maxRetries)
 				{
-					const delay = Math.pow(2, attempt) * 1000;
+					const delay = this.calculateRetryDelay(attempt);
 					console.warn(`${model} API error (attempt ${attempt + 1}/${maxRetries}): ${response.status} - ${errorText}. Retrying in ${delay / 1000}s...`);
-					await new Promise(resolve => setTimeout(resolve, delay));
+					await this.wait(delay);
 					return this.generateWithOtherModels(apiKey, prompt, model, options, attempt + 1);
 				}
 				throw new Error(`API request failed after ${maxRetries} attempts: ${response.status} - ${errorText}`);
@@ -231,9 +214,9 @@ const AiService = {
 			if (error.name === 'AbortError') throw error;
 			if (attempt < maxRetries)
 			{
-				const delay = Math.pow(2, attempt) * 1000;
+				const delay = this.calculateRetryDelay(attempt);
 				console.warn(`Fetch error (attempt ${attempt + 1}/${maxRetries}): ${error.message}. Retrying in ${delay / 1000}s...`);
-				await new Promise(resolve => setTimeout(resolve, delay));
+				await this.wait(delay);
 				return this.generateWithOtherModels(apiKey, prompt, model, options, attempt + 1);
 			}
 			throw new Error(`API request failed after ${maxRetries} attempts: ${error.message}`);
@@ -246,72 +229,72 @@ const AiService = {
 		{
 			messages = options.messages.map(msg =>
 			{
-				if (msg.role === 'user' && options.images && options.images.length > 0 && model !== 'claude')
+				if (msg.role === "user")
 				{
-					const imageContent = options.images.map(dataURL => (
+					if (options.images?.length > 0 && model !== 'claude')
 					{
-						type: 'image_url',
-						image_url:
+						const imageContent = options.images.map(dataURL => (
 						{
-							url: dataURL
-						},
-					}));
-					return {
-						role: msg.role,
-						content: [...imageContent,
-						{
-							type: 'text',
-							text: msg.content
-						}]
-					};
-				}
-				else if (msg.role === 'user' && options.images && options.images.length > 0 && model === 'claude')
-				{
-					const imageContent = options.images.map(dataURL =>
-					{
-						const base64Data = dataURL.split(',')[1];
-						const mimeType = dataURL.match(/^data:(.*?);base64,/)
-							?.[1] || 'image/png';
-						return {
-							type: 'image',
-							source:
+							type: 'image_url',
+							image_url:
 							{
-								type: "base64",
-								media_type: mimeType,
-								data: base64Data
+								url: dataURL
 							},
+						}));
+						return {
+							role: msg.role,
+							content: [...imageContent,
+							{
+								type: 'text',
+								text: msg.content
+							}]
 						};
-					});
-					let contentArray = [];
-					if (msg.content)
-					{
-						contentArray.push(
-						{
-							type: "text",
-							text: msg.content
-						});
 					}
-					contentArray.push(...imageContent);
-					return {
-						role: msg.role,
-						content: contentArray
-					};
+					else if (options.images?.length > 0 && model === 'claude')
+					{
+						const imageContent = options.images.map(dataURL =>
+						{
+							const base64Data = dataURL.split(',')[1];
+							const mimeType = dataURL.match(/^data:(.*?);base64,/)
+								?.[1] || 'image/png';
+							return {
+								type: 'image',
+								source:
+								{
+									type: "base64",
+									media_type: mimeType,
+									data: base64Data
+								}
+							};
+						});
+						let contentArray = [];
+						if (msg.content)
+						{
+							contentArray.push(
+							{
+								type: "text",
+								text: msg.content
+							});
+						}
+						contentArray = [...contentArray, ...imageContent]
+						return {
+							role: msg.role,
+							content: contentArray
+						};
+					}
 				}
-				else
-				{
-					return {
-						role: msg.role,
-						content: msg.content
-					};
-				}
+				return {
+					role: msg.role,
+					content: msg.content
+				};
 			});
 		}
 		else
 		{
 			messages = [
 			{
-				"role": "user",
-				"content": prompt
+				role: "user",
+				content: prompt
 			}];
 			if (options.images && options.images.length > 0)
 			{
@@ -320,8 +303,8 @@ const AiService = {
 		}
 		let requestBody = {
 			model: selectedModel.name,
-			messages: messages,
-			stream: options.streaming
+			messages,
+			stream: options.streaming,
 		};
 		if (selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31')
 		{
@@ -351,8 +334,8 @@ const AiService = {
 		{
 			return [
 			{
-				"role": "user",
-				"content": prompt
+				role: "user",
+				content: prompt
 			}];
 		}
 		if (model === 'claude')
@@ -369,7 +352,7 @@ const AiService = {
 						type: "base64",
 						media_type: mimeType,
 						data: base64Data
-					},
+					}
 				};
 			});
 			return [
@@ -471,6 +454,14 @@ const AiService = {
 			throw new Error(`Transcription failed with status ${response.status}`);
 		}
 		return await response.json();
+	},
+	calculateRetryDelay(attempt)
+	{
+		return Math.pow(2, attempt) * 1000;
+	},
+	wait(ms)
+	{
+		return new Promise(resolve => setTimeout(resolve, ms));
 	},
 };
 window.AiService = AiService;
