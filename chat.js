@@ -122,6 +122,8 @@ class ChatApp
 		}
 		this.state.abortController = new AbortController();
 		this.accumulatedText = '';
+		this.elements.sendMessageBtn.textContent = 'Stop';
+		this.elements.sendMessageBtn.style.backgroundColor = 'red';
 		try
 		{
 			const imageURLs = Object.values(this.state.imageUploader.getImages());
@@ -162,12 +164,14 @@ class ChatApp
 		}
 		finally
 		{
+			this.elements.sendMessageBtn.textContent = 'Send';
+			this.elements.sendMessageBtn.style.backgroundColor = '';
 			this.state.abortController = null;
-			this.state.isStreaming = false;
 			if (this.state.isStreaming)
 			{
 				this.addAssistantMessage(this.accumulatedText);
 			}
+			this.state.isStreaming = false;
 		}
 	}
 	throttledDisplay()
@@ -177,6 +181,7 @@ class ChatApp
 			this.throttleTimer = setTimeout(() =>
 			{
 				this.updateAssistantMessage(this.accumulatedText);
+				this.displayMessages();
 				this.throttleTimer = null;
 			}, this.throttleDelay);
 		}
@@ -229,18 +234,19 @@ class ChatApp
 	displayMessages()
 	{
 		this.elements.chatContainer.innerHTML = '';
-		this.state.messages.forEach(message =>
+		this.state.messages.forEach((message, index) =>
 		{
-			const messageElement = this.createMessageElement(message);
+			const messageElement = this.createMessageElement(message, index);
 			this.elements.chatContainer.appendChild(messageElement);
 		});
 		this.elements.chatContainer.scrollTop = this.elements.chatContainer.scrollHeight;
 	}
-	createMessageElement(message)
+	createMessageElement(message, index)
 	{
 		const messageDiv = document.createElement('div');
 		messageDiv.classList.add('message');
 		messageDiv.classList.add(message.role === 'user' ? 'user-message' : 'assistant-message');
+		messageDiv.dataset.index = index;
 		const contentPara = document.createElement('p');
 		let contentText = message.content;
 		if (typeof contentText === 'string')
@@ -249,12 +255,88 @@ class ChatApp
 			contentText = marked.parse(contentText);
 		}
 		contentPara.innerHTML = contentText;
+		const buttonContainer = document.createElement('div');
+		buttonContainer.classList.add('message-buttons');
+		const copyButton = document.createElement('button');
+		copyButton.textContent = '📋';
+		copyButton.classList.add('copy-button', 'btn', 'btn-sm');
+		copyButton.addEventListener('click', () => this.copyMessage(index));
+		buttonContainer.appendChild(copyButton);
+		const editButton = document.createElement('button');
+		editButton.textContent = '✏️';
+		editButton.classList.add('edit-button', 'btn', 'btn-sm');
+		editButton.addEventListener('click', () => this.editMessage(index));
+		buttonContainer.appendChild(editButton);
+		const deleteButton = document.createElement('button');
+		deleteButton.textContent = '🗑️';
+		deleteButton.classList.add('delete-button', 'btn', 'btn-sm');
+		deleteButton.addEventListener('click', () => this.deleteMessage(index));
+		buttonContainer.appendChild(deleteButton);
+		messageDiv.appendChild(buttonContainer);
 		messageDiv.appendChild(contentPara);
 		setTimeout(() =>
 		{
 			this.renderMath(messageDiv);
 		}, 0);
 		return messageDiv;
+	}
+	editMessage(index)
+	{
+		const message = this.state.messages[index];
+		if (!message) return;
+		const messageDiv = this.elements.chatContainer.querySelector(`.message[data-index="${index}"]`);
+		if (!messageDiv) return;
+		const originalContent = message.content;
+		const textarea = document.createElement('textarea');
+		textarea.value = message.content;
+		textarea.classList.add('edit-textarea', 'form-control');
+		const buttonContainer = document.createElement('div');
+		buttonContainer.classList.add('edit-buttons');
+		const saveButton = document.createElement('button');
+		saveButton.textContent = '💾';
+		saveButton.classList.add('edit-button', 'btn', 'btn-sm');
+		saveButton.addEventListener('click', () => this.saveEditedMessage(index, textarea.value));
+		const cancelButton = document.createElement('button');
+		cancelButton.textContent = '❌';
+		cancelButton.classList.add('edit-button', 'btn', 'btn-sm');
+		cancelButton.addEventListener('click', () => this.cancelEdit(index, originalContent));
+		buttonContainer.appendChild(saveButton);
+		buttonContainer.appendChild(cancelButton);
+		messageDiv.innerHTML = '';
+		messageDiv.appendChild(textarea);
+		messageDiv.appendChild(buttonContainer);
+		textarea.focus();
+	}
+	saveEditedMessage(index, newText)
+	{
+		this.state.messages[index].content = newText;
+		this.saveMessages();
+		this.displayMessages();
+	}
+	cancelEdit(index, originalContent)
+	{
+		this.state.messages[index].content = originalContent;
+		this.displayMessages();
+	}
+	deleteMessage(index)
+	{
+		this.state.messages.splice(index, 1);
+		this.saveMessages();
+		this.displayMessages();
+	}
+	copyMessage(index)
+	{
+		const message = this.state.messages[index];
+		if (!message) return;
+		try
+		{
+			navigator.clipboard.writeText(message.content);
+		}
+		catch (err)
+		{
+			console.error('Failed to copy: ', err);
+			alert('Failed to copy message to clipboard.');
+		}
 	}
 	renderMath(element)
 	{

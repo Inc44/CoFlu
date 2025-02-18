@@ -76,11 +76,15 @@ margin-bottom: 0.1rem;
 }
 #clearSource,
 #clearTarget,
-#cleanChat {
+#cleanChat,
+.delete-button,
+.delete-button:hover {
 background-color: rgb(237, 53, 36);
 color: white;
 }
-#switchBtn {
+#switchBtn,
+.edit-button,
+.edit-button:hover {
 background-color: rgb(250, 157, 1);
 color: white;
 }
@@ -88,7 +92,9 @@ color: white;
 #copyTarget,
 #compareBtn,
 #downloadTranslated,
-#exportSettings {
+#exportSettings,
+.copy-button,
+.copy-button:hover {
 background-color: rgb(46, 218, 119);
 color: white;
 }
@@ -121,12 +127,16 @@ color: white;
 #uppercaseSource,
 #uppercaseTarget,
 #lowercaseSource,
-#lowercaseTarget {
+#lowercaseTarget,
+.assistant-message {
 background-color: rgb(68, 79, 173);
 color: white;
 }
 #renderMarkdownBtn,
-#importSettings {
+#importSettings,
+.input-file-label,
+.progress-bar,
+.user-message {
 background-color: rgb(140, 84, 208);
 color: white;
 }
@@ -144,7 +154,6 @@ height: 100%;
 }
 .input-file-label {
 display: inline-block;
-background-color: rgb(140, 84, 208);
 color: white;
 }
 #imageList,
@@ -205,7 +214,6 @@ box-shadow: inset 0rem 0.15rem 0.3rem black;
 height: 1.5rem;
 }
 .progress-bar {
-background-color: rgb(140, 84, 208);
 color: white;
 line-height: 1.5rem;
 text-align: center;
@@ -226,17 +234,25 @@ padding: 1rem;
 margin: 0rem;
 }
 .user-message {
-background-color: rgb(1, 111, 255);
 float: right;
 }
 .assistant-message {
-background-color: rgb(140, 84, 208);
 float: left;
 }
-.message-images img,
-.message-videos video {
-margin-top: 1rem;
-max-width: 40rem;
+.message-buttons {
+display: none;
+float: right;
+gap: 0.25rem;
+margin-bottom: 0.25rem;
+}
+.message:hover .message-buttons {
+display: flex;
+}
+.edit-buttons {
+display: flex;
+float: right;
+gap: 0.25rem;
+margin-top: 0.25rem;
 }
 @media print {
 * {
