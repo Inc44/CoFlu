@@ -157,13 +157,28 @@ const UIHandlers = {
 				elements.targetText.value = '';
 				UIState.showWPM(elements);
 				startTime = Date.now();
-				await AiService.generate(prompt, model, generationOptions);
+				const response = await AiService.generate(prompt, model, generationOptions);
+				if (!generationOptions.streaming)
+				{
+					const modelConfig = CONFIG.API.CONFIG[model];
+					if (model === 'gemini')
+					{
+						elements.targetText.value = response.response.text();
+					}
+					else
+					{
+						elements.targetText.value = modelConfig.extractContent(response);
+					}
+					TextService.updateStats(elements.targetText, 'target');
+					StorageService.save('targetText', elements.targetText.value);
+				}
 			}
 			catch (error)
 			{
 				if (error.name !== 'AbortError')
 				{
 					console.error('Generation error:', error);
+					alert('An error occurred during generation: ' + error.message);
 				}
 			}
 			finally

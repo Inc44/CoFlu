@@ -58,7 +58,8 @@ const AiService = {
 			}
 			else
 			{
-				return await model.generateContent(textPrompt);
+				const result = await model.generateContent(textPrompt);
+				return result;
 			}
 		}
 		catch (error)
@@ -206,7 +207,8 @@ const AiService = {
 			}
 			else
 			{
-				return await response.json();
+				const jsonResponse = await response.json();
+				return jsonResponse;
 			}
 		}
 		catch (error)
