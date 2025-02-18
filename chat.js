@@ -73,6 +73,14 @@ class ChatApp
 	{
 		this.elements.sendMessageBtn.addEventListener('click', this.sendMessage.bind(this));
 		this.elements.cleanChatBtn.addEventListener('click', this.clearChat.bind(this));
+		this.elements.messageInput.addEventListener('keydown', (event) =>
+		{
+			if (event.key === 'Enter' && !event.shiftKey)
+			{
+				event.preventDefault();
+				this.sendMessage();
+			}
+		});
 		if (this.elements.apiModelSelect)
 		{
 			this.elements.apiModelSelect.addEventListener('change', () =>
@@ -136,7 +144,7 @@ class ChatApp
 					}
 					else
 					{
-						this.addAssistantMessage(text);
+						this.addAssistantMessage(text, false);
 					}
 					this.displayMessages();
 					this.saveMessages();
@@ -144,7 +152,7 @@ class ChatApp
 			});
 			if (!this.state.isStreaming)
 			{
-				const assistantContent = model === 'gemini' ? aiResponse.response.text() : CONFIG.API.CONFIG[model].extractContent(aiResponse);
+				let assistantContent = model === 'gemini' ? aiResponse.response.text() : CONFIG.API.CONFIG[model].extractContent(aiResponse);
 				this.addAssistantMessage(assistantContent);
 			}
 		}
@@ -172,8 +180,12 @@ class ChatApp
 		this.displayMessages();
 		this.saveMessages();
 	}
-	addAssistantMessage(text)
+	addAssistantMessage(text, format = true)
 	{
+		if (format)
+		{
+			text = TextService.format.latex(text)
+		}
 		this.state.messages.push(
 		{
 			role: "assistant",
@@ -210,47 +222,53 @@ class ChatApp
 		if (typeof contentText === 'string')
 		{
 			contentText = TextService.format.latex(contentText);
-			contentPara.textContent = contentText;
+			contentText = marked.parse(contentText);
 		}
+		contentPara.innerHTML = contentText;
 		messageDiv.appendChild(contentPara);
 		setTimeout(() =>
 		{
-			if (this.selectedRenderer === 'katex')
-			{
-				renderMathInElement(messageDiv,
-				{
-					delimiters: [
-					{
-						left: '$$',
-						right: '$$',
-						display: true
-					},
-					{
-						left: '$',
-						right: '$',
-						display: false
-					},
-					{
-						left: '\\[',
-						right: '\\]',
-						display: true
-					},
-					{
-						left: '\\(',
-						right: '\\)',
-						display: false
-					}, ],
-					throwOnError: false,
-					trust: true,
-					strict: false
-				});
-			}
-			else if (this.selectedRenderer === 'mathjax3')
-			{
-				MathJax.typesetPromise([messageDiv]);
-			}
+			this.renderMath(messageDiv);
 		}, 0);
 		return messageDiv;
+	}
+	renderMath(element)
+	{
+		if (this.selectedRenderer === 'katex')
+		{
+			renderMathInElement(element,
+			{
+				delimiters: [
+				{
+					left: '$$',
+					right: '$$',
+					display: true
+				},
+				{
+					left: '$',
+					right: '$',
+					display: false
+				},
+				{
+					left: '\\[',
+					right: '\\]',
+					display: true
+				},
+				{
+					left: '\\(',
+					right: '\\)',
+					display: false
+				}, ],
+				throwOnError: false,
+				trust: true,
+				strict: false
+			});
+		}
+		else if (this.selectedRenderer === 'mathjax3')
+		{
+			MathJax.typesetPromise([element])
+				.catch(err => console.error("MathJax typesetting error:", err));
+		}
 	}
 }
 document.addEventListener('DOMContentLoaded', () =>

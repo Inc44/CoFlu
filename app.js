@@ -232,55 +232,58 @@ class App
 			document.getElementById('rightColumn')
 				.innerHTML = marked.parse(targetMarkdown);
 			this.elements.printContainer.innerHTML = marked.parse(targetMarkdown);
-			const selectedRenderer = StorageService.load('selected_renderer', 'katex');
-			if (selectedRenderer === 'katex')
-			{
-				this.renderMathWithKatex();
-			}
-			else if (selectedRenderer === 'mathjax3')
-			{
-				MathJax.typesetPromise();
-			}
+			this.renderMath();
 		});
 	}
-	renderMathWithKatex()
+	renderMath()
 	{
+		const selectedRenderer = StorageService.load('selected_renderer', 'katex');
 		const elements = [
 			document.getElementById('leftColumn'),
 			document.getElementById('rightColumn'),
-			this.elements.printContainer
+			this.elements.printContainer,
+			this.elements.sourceText,
+			this.elements.targetText
 		];
 		elements.forEach(element =>
 		{
 			if (element)
 			{
-				renderMathInElement(element,
+				if (selectedRenderer === 'katex')
 				{
-					delimiters: [
+					renderMathInElement(element,
 					{
-						left: '$$',
-						right: '$$',
-						display: true
-					},
-					{
-						left: '$',
-						right: '$',
-						display: false
-					},
-					{
-						left: '\\[',
-						right: '\\]',
-						display: true
-					},
-					{
-						left: '\\(',
-						right: '\\)',
-						display: false
-					}],
-					throwOnError: false,
-					trust: true,
-					strict: false
-				});
+						delimiters: [
+						{
+							left: '$$',
+							right: '$$',
+							display: true
+						},
+						{
+							left: '$',
+							right: '$',
+							display: false
+						},
+						{
+							left: '\\[',
+							right: '\\]',
+							display: true
+						},
+						{
+							left: '\\(',
+							right: '\\)',
+							display: false
+						}, ],
+						throwOnError: false,
+						trust: true,
+						strict: false
+					});
+				}
+				else if (selectedRenderer === 'mathjax3')
+				{
+					MathJax.typesetPromise([element])
+						.catch(err => console.error("MathJax typesetting error:", err));
+				}
 			}
 		});
 	}
