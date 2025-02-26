@@ -93,6 +93,11 @@ window.CONFIG = {
 				default: "claude-3-5-sonnet-20241022",
 				options: [
 				{
+					name: "claude-3-7-sonnet-20250219",
+					max_completion_tokens: 64000,
+					image: true
+				},
+				{
 					name: "claude-3-5-sonnet-20241022",
 					max_completion_tokens: 8192,
 					image: true
@@ -100,7 +105,7 @@ window.CONFIG = {
 				{
 					name: "claude-3-5-haiku-20241022",
 					max_completion_tokens: 8192,
-					image: false
+					image: true
 				}]
 			},
 			deepseek:
