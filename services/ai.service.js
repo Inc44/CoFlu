@@ -292,11 +292,11 @@ const AiService = {
 			messages,
 			stream: options.streaming,
 		};
-		if (selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31')
+		if (!selectedModel.reasoning_effort && !selectedModel.thinking)
 		{
 			requestBody.temperature = 0;
 		}
-		if (selectedModel.name === 'o3-mini' || selectedModel.name === 'o3-mini-2025-01-31')
+		if (selectedModel.reasoning_effort)
 		{
 			requestBody.reasoning_effort = StorageService.load('reasoning_effort', 'low');
 		}
@@ -311,7 +311,7 @@ const AiService = {
 				};
 			}
 		}
-		if (model !== 'sambanova' && selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31' && selectedModel.name !== 'grok-2-1212')
+		if (model !== 'sambanova' && !selectedModel.reasoning_effort && selectedModel.name !== 'grok-2-1212')
 		{
 			requestBody.max_tokens = selectedModel.max_completion_tokens;
 		}
