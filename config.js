@@ -95,7 +95,7 @@ window.CONFIG = {
 				{
 					name: "claude-3-7-sonnet-20250219",
 					max_completion_tokens: 64000,
-					thinking: 1024,
+					thinking: true,
 					image: true
 				},
 				{

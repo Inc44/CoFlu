@@ -45,7 +45,8 @@ class SettingsApp
 			reasoningEffortContainer: document.getElementById('reasoningEffortContainer'),
 			reasoningEffortSelect: document.getElementById('reasoningEffort'),
 			thinkingBudgetContainer: document.getElementById('thinkingBudgetContainer'),
-			thinkingBudgetRange: document.getElementById('thinkingBudget'),
+			thinkingBudgetRange: document.getElementById('thinkingBudgetRange'),
+			thinkingBudgetNumber: document.getElementById('thinkingBudgetNumber'),
 			languageSelect: document.getElementById('language'),
 			batchSizeInput: document.getElementById('batchSize'),
 			batchRPMInput: document.getElementById('batchRPM'),
@@ -58,6 +59,7 @@ class SettingsApp
 		this.setupEventListeners();
 		this.updateModelVisibility(this.elements.apiModelSelect.value);
 		this.updateThemeAndLayout();
+		this.syncThinkingBudgetInputs();
 	}
 	updateThemeAndLayout()
 	{
@@ -78,10 +80,9 @@ class SettingsApp
 		{
 			this.loadSelectSetting('reasoningEffortSelect', 'reasoning_effort', 'low');
 		}
-		if (this.elements.thinkingBudgetRange)
-		{
-			this.loadSelectSetting('thinkingBudgetRange', 'thinking', 1024);
-		}
+		const thinkingBudget = parseInt(StorageService.load('thinking', 0), 10);
+		this.elements.thinkingBudgetRange.value = thinkingBudget;
+		this.elements.thinkingBudgetNumber.value = thinkingBudget;
 		this.loadModelOptions();
 		this.loadInputSetting('languageSelect', 'selected_language', 'English');
 		this.loadInputSetting('batchSizeInput', 'translation_batch_size', 10, 'number');
@@ -90,6 +91,7 @@ class SettingsApp
 		this.updateModelVisibility(this.elements.apiModelSelect.value);
 		this.updateApiKeyLabel(this.elements.apiModelSelect.value);
 		this.displayCurrentSettings();
+		this.syncThinkingBudgetInputs();
 	}
 	loadSelectSetting(elementKey, storageKey, defaultValue)
 	{
@@ -195,7 +197,16 @@ class SettingsApp
 		this.elements.wideToggle?.addEventListener('change', this.handleWideToggleChange.bind(this));
 		this.elements.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
 		this.elements.reasoningEffortSelect?.addEventListener('change', this.handleReasoningEffortChange.bind(this));
-		this.elements.thinkingBudgetRange?.addEventListener('change', this.handleThinkingBudgetChange.bind(this));
+		this.elements.thinkingBudgetRange?.addEventListener('input', () =>
+		{
+			this.elements.thinkingBudgetNumber.value = this.elements.thinkingBudgetRange.value;
+			this.handleThinkingBudgetChange();
+		});
+		this.elements.thinkingBudgetNumber?.addEventListener('input', () =>
+		{
+			this.elements.thinkingBudgetRange.value = this.elements.thinkingBudgetNumber.value;
+			this.handleThinkingBudgetChange();
+		});
 		this.elements.importSettingsBtn?.addEventListener('click', this.importSettings.bind(this));
 		this.elements.exportSettingsBtn?.addEventListener('click', this.exportSettings.bind(this));
 		this.elements.saveSettingsBtn?.addEventListener('click', this.saveSettings.bind(this));
@@ -255,7 +266,8 @@ class SettingsApp
 	}
 	handleThinkingBudgetChange()
 	{
-		StorageService.save('thinking', this.elements.thinkingBudgetRange.value);
+		const value = parseInt(this.elements.thinkingBudgetNumber.value, 10);
+		StorageService.save('thinking', value);
 	}
 	handleLanguageChange()
 	{
@@ -304,14 +316,11 @@ class SettingsApp
 			translation_batch_size: parseInt(this.elements.batchSizeInput.value, 10),
 			translation_batch_rpm: parseInt(this.elements.batchRPMInput.value, 10),
 			exponential_retry: parseInt(this.elements.exponentialRetryInput.value, 10),
+			thinking: parseInt(this.elements.thinkingBudgetNumber.value, 10)
 		};
 		if (this.elements.reasoningEffortSelect)
 		{
 			settings.reasoning_effort = this.elements.reasoningEffortSelect.value;
-		}
-		if (this.elements.thinkingBudgetRange)
-		{
-			settings.thinking = this.elements.thinkingBudgetRange.value;
 		}
 		Object.entries(CONFIG.API.KEYS)
 			.forEach(([provider, key]) =>
@@ -409,6 +418,10 @@ class SettingsApp
 			console.error('Error saving settings:', error);
 			alert(`Error saving settings: ${error.message}`);
 		}
+	}
+	syncThinkingBudgetInputs()
+	{
+		this.elements.thinkingBudgetNumber.value = this.elements.thinkingBudgetRange.value;
 	}
 }
 document.addEventListener('DOMContentLoaded', () =>

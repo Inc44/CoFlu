@@ -111,8 +111,10 @@
 								</div>
 								<div class="mb-3" id="thinkingBudgetContainer" style="display: none;">
 									<label for="thinkingBudget" class="form-label">Thinking Budget:</label>
-									<input type="range" class="form-range" id="thinkingBudget" min="0" max="63999" step="1" value="">
-									<input type="number" class="form-text" id="thinkingBudget" min="0" max="63999" step="1" value="">
+									<div id="thinkingBudgetContainer">
+										<input type="number" class="form-control" id="thinkingBudgetNumber" min="0" max="63999" step="1">
+										<input type="range" class="form-range" id="thinkingBudgetRange" min="0" max="63999" step="1">
+									</div>
 								</div>
 								<div class="mb-3 form-check">
 									<input type="checkbox" class="form-check-input" id="streamingToggle" checked>

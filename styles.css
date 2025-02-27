@@ -254,6 +254,16 @@ float: right;
 gap: 0.25rem;
 margin-top: 0.25rem;
 }
+#thinkingBudgetContainer {
+display: flex;
+gap: 1rem;
+}
+#thinkingBudgetRange { 
+height: unset;
+}
+#thinkingBudgetNumber {
+width: 5.5rem;
+}
 @media print {
 * {
 margin: 0;

@@ -300,9 +300,16 @@ const AiService = {
 		{
 			requestBody.reasoning_effort = StorageService.load('reasoning_effort', 'low');
 		}
-		if (selectedModel.name === 'claude-3-7-sonnet-20250219')
+		if (selectedModel.thinking)
 		{
-			requestBody.thinking = StorageService.load('thinking', 1024);
+			const thinkingBudget = parseInt(StorageService.load('thinking', 0), 10);
+			if (thinkingBudget >= 1024)
+			{
+				requestBody.thinking = {
+					type: "enabled",
+					budget_tokens: thinkingBudget
+				};
+			}
 		}
 		if (model !== 'sambanova' && selectedModel.name !== 'o3-mini' && selectedModel.name !== 'o3-mini-2025-01-31' && selectedModel.name !== 'grok-2-1212')
 		{
