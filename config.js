@@ -408,21 +408,45 @@ window.CONFIG = {
 				},
 				extractContent: data =>
 				{
-					let allText = "";
+					if (!data?.content || !Array.isArray(data.content))
+					{
+						return "";
+					}
+					const textParts = [];
 					for (const item of data.content)
 					{
-						if (item.type === 'text' && item.text)
+						switch (item?.type)
 						{
-							allText += item.text + "\n";
-						}
-						else if (item.type === 'thinking' && item.thinking)
-						{
-							allText += item.thinking + "\n";
+							case 'text':
+								if (item.text)
+								{
+									textParts.push(item.text);
+								}
+								break;
+							case 'thinking':
+								if (item.thinking)
+								{
+									textParts.push(item.thinking + "\n");
+								}
+								break;
 						}
 					}
-					return allText.trim();
+					return textParts.join('\n')
+						.trim();
 				},
-				extractStreamContent: data => data.delta?.text
+				extractStreamContent: data =>
+				{
+					const delta = data?.delta;
+					switch (delta.type)
+					{
+						case 'text_delta':
+							return delta.text;
+						case 'thinking_delta':
+							return delta.thinking;
+						case 'signature_delta':
+							return "\n\n";
+					}
+				}
 			},
 			deepseek:
 			{
