@@ -90,11 +90,12 @@ window.CONFIG = {
 			},
 			claude:
 			{
-				default: "claude-3-5-sonnet-20241022",
+				default: "claude-3-7-sonnet-20250219",
 				options: [
 				{
 					name: "claude-3-7-sonnet-20250219",
 					max_completion_tokens: 64000,
+					thinking: 1024,
 					image: true
 				},
 				{

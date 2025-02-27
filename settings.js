@@ -44,6 +44,8 @@ class SettingsApp
 			saveSettingsBtn: document.getElementById('saveSettings'),
 			reasoningEffortContainer: document.getElementById('reasoningEffortContainer'),
 			reasoningEffortSelect: document.getElementById('reasoningEffort'),
+			thinkingBudgetContainer: document.getElementById('thinkingBudgetContainer'),
+			thinkingBudgetRange: document.getElementById('thinkingBudget'),
 			languageSelect: document.getElementById('language'),
 			batchSizeInput: document.getElementById('batchSize'),
 			batchRPMInput: document.getElementById('batchRPM'),
@@ -75,6 +77,10 @@ class SettingsApp
 		if (this.elements.reasoningEffortSelect)
 		{
 			this.loadSelectSetting('reasoningEffortSelect', 'reasoning_effort', 'low');
+		}
+		if (this.elements.thinkingBudgetRange)
+		{
+			this.loadSelectSetting('thinkingBudgetRange', 'thinking', 1024);
 		}
 		this.loadModelOptions();
 		this.loadInputSetting('languageSelect', 'selected_language', 'English');
@@ -147,6 +153,7 @@ class SettingsApp
 		{
 			selectedContainer.classList.add('active');
 			this.updateReasoningEffortVisibility(selectedProvider);
+			this.updateThinkingBudgetVisibility(selectedProvider)
 		}
 	}
 	updateReasoningEffortVisibility(selectedProvider)
@@ -163,6 +170,20 @@ class SettingsApp
 			this.elements.reasoningEffortContainer.style.display = 'none';
 		}
 	}
+	updateThinkingBudgetVisibility(selectedProvider)
+	{
+		const modelSelect = this.elements.modelSelects[selectedProvider];
+		const selectedModelName = modelSelect ? modelSelect.value : null;
+		const selectedModelDetails = CONFIG.API.MODELS[selectedProvider]?.options.find(m => m.name === selectedModelName);
+		if (selectedModelDetails && selectedModelDetails.thinking)
+		{
+			this.elements.thinkingBudgetContainer.style.display = 'block';
+		}
+		else
+		{
+			this.elements.thinkingBudgetContainer.style.display = 'none';
+		}
+	}
 	setupEventListeners()
 	{
 		this.elements.apiModelSelect?.addEventListener('change', this.handleApiModelChange.bind(this));
@@ -174,6 +195,7 @@ class SettingsApp
 		this.elements.wideToggle?.addEventListener('change', this.handleWideToggleChange.bind(this));
 		this.elements.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
 		this.elements.reasoningEffortSelect?.addEventListener('change', this.handleReasoningEffortChange.bind(this));
+		this.elements.thinkingBudgetRange?.addEventListener('change', this.handleThinkingBudgetChange.bind(this));
 		this.elements.importSettingsBtn?.addEventListener('click', this.importSettings.bind(this));
 		this.elements.exportSettingsBtn?.addEventListener('click', this.exportSettings.bind(this));
 		this.elements.saveSettingsBtn?.addEventListener('click', this.saveSettings.bind(this));
@@ -189,6 +211,7 @@ class SettingsApp
 					const selectedSubModel = select.value;
 					StorageService.save(`${provider}_model`, selectedSubModel);
 					this.updateReasoningEffortVisibility(provider);
+					this.updateThinkingBudgetVisibility(provider);
 				});
 			});
 	}
@@ -229,6 +252,10 @@ class SettingsApp
 	handleReasoningEffortChange()
 	{
 		StorageService.save('reasoning_effort', this.elements.reasoningEffortSelect.value);
+	}
+	handleThinkingBudgetChange()
+	{
+		StorageService.save('thinking', this.elements.thinkingBudgetRange.value);
 	}
 	handleLanguageChange()
 	{
@@ -281,6 +308,10 @@ class SettingsApp
 		if (this.elements.reasoningEffortSelect)
 		{
 			settings.reasoning_effort = this.elements.reasoningEffortSelect.value;
+		}
+		if (this.elements.thinkingBudgetRange)
+		{
+			settings.thinking = this.elements.thinkingBudgetRange.value;
 		}
 		Object.entries(CONFIG.API.KEYS)
 			.forEach(([provider, key]) =>
