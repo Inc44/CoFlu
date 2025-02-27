@@ -406,7 +406,22 @@ window.CONFIG = {
 					'content-type': 'application/json',
 					'anthropic-dangerous-direct-browser-access': 'true'
 				},
-				extractContent: data => data.content[0]?.text,
+				extractContent: data =>
+				{
+					let allText = "";
+					for (const item of data.content)
+					{
+						if (item.type === 'text' && item.text)
+						{
+							allText += item.text + "\n";
+						}
+						else if (item.type === 'thinking' && item.thinking)
+						{
+							allText += item.thinking + "\n";
+						}
+					}
+					return allText.trim();
+				},
 				extractStreamContent: data => data.delta?.text
 			},
 			deepseek:
