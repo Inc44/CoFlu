@@ -310,6 +310,10 @@ const AiService = {
 					budget_tokens: thinkingBudget
 				};
 			}
+			else
+			{
+				requestBody.temperature = 0;
+			}
 		}
 		if (model !== 'sambanova' && !selectedModel.reasoning_effort && selectedModel.name !== 'grok-2-1212')
 		{
