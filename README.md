@@ -136,6 +136,7 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 ## Bugs
 
 - Fix double messages in chat, random stops, and message duplication when streaming.
+- Fix flickering by loading wide mode the same way as dark mode at the beginning of the HTML.
 - Other bugs are not found yet.
 
 ## TODOs
