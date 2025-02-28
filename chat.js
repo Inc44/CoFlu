@@ -372,6 +372,59 @@ class ChatApp
 				.catch(err => console.error("MathJax typesetting error:", err));
 		}
 	}
+	exportChat()
+	{
+		const chatHistory = StorageService.load('chat_history', []);
+		const chatHistoryJSON = JSON.stringify(chatHistory, null, 2);
+		const blob = new Blob([chatHistoryJSON],
+		{
+			type: 'application/json'
+		});
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = 'CoFlu Chat.json';
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	}
+	importChat()
+	{
+		const input = document.createElement('input');
+		input.type = 'file';
+		input.accept = '.json';
+		input.addEventListener('change', (event) =>
+		{
+			const file = event.target.files[0];
+			if (file)
+			{
+				const reader = new FileReader();
+				reader.onload = (e) =>
+				{
+					try
+					{
+						const parsedHistory = JSON.parse(e.target.result);
+						if (!Array.isArray(parsedHistory))
+						{
+							throw new Error('Imported data is not a valid chat history array.');
+						}
+						StorageService.save('chat_history', parsedHistory);
+						this.loadMessages();
+						this.displayMessages();
+						alert('Chat history imported successfully!');
+					}
+					catch (error)
+					{
+						console.error('Error importing chat history:', error);
+						alert(`Error importing chat history: ${error.message}`);
+					}
+				};
+				reader.readAsText(file);
+			}
+		});
+		input.click();
+	}
 }
 document.addEventListener('DOMContentLoaded', () =>
 {
