@@ -25,59 +25,59 @@ window.CONFIG = {
 					options: [
 					{
 						name: "o3-mini",
-						max_completion_tokens: 200000,
+						max_tokens: 200000,
 						reasoning_effort: "low",
 						image: false
 					},
 					{
 						name: "o1-mini",
-						max_completion_tokens: 128000,
+						max_tokens: 128000,
 						image: false
 					},
 					{
 						name: "o1-mini-2024-09-12",
-						max_completion_tokens: 128000,
+						max_tokens: 128000,
 						image: false
 					},
 					{
 						name: "o3-mini-2025-01-31",
-						max_completion_tokens: 200000,
+						max_tokens: 200000,
 						reasoning_effort: "low",
 						image: false
 					},
 					{
 						name: "gpt-4o",
-						max_completion_tokens: 16383,
+						max_tokens: 16383,
 						image: true
 					},
 					{
 						name: "gpt-4o-mini",
-						max_completion_tokens: 16383,
+						max_tokens: 16383,
 						image: true
 					},
 					{
 						name: "gpt-4o-mini-2024-07-18",
-						max_completion_tokens: 16383,
+						max_tokens: 16383,
 						image: true
 					},
 					{
 						name: "gpt-4o-2024-11-20",
-						max_completion_tokens: 16383,
+						max_tokens: 16383,
 						image: true
 					},
 					{
 						name: "gpt-4o-2024-08-06",
-						max_completion_tokens: 16383,
+						max_tokens: 16383,
 						image: true
 					},
 					{
 						name: "gpt-4-1106-preview",
-						max_completion_tokens: 4095,
+						max_tokens: 4095,
 						image: true
 					},
 					{
 						name: "chatgpt-4o-latest",
-						max_completion_tokens: 16383,
+						max_tokens: 16383,
 						image: true
 					}]
 				},
@@ -87,18 +87,18 @@ window.CONFIG = {
 					options: [
 					{
 						name: "claude-3-7-sonnet-20250219",
-						max_completion_tokens: 128000,
+						max_tokens: 128000,
 						thinking: true,
 						image: true
 					},
 					{
 						name: "claude-3-5-sonnet-20241022",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true
 					},
 					{
 						name: "claude-3-5-haiku-20241022",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true
 					}]
 				},
@@ -108,12 +108,12 @@ window.CONFIG = {
 					options: [
 					{
 						name: "deepseek-chat",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: false
 					},
 					{
 						name: "deepseek-reasoner",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: false
 					}]
 				},
@@ -123,34 +123,34 @@ window.CONFIG = {
 					options: [
 					{
 						name: "gemini-exp-1206",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true,
 						video: true
 					},
 					{
 						name: "gemini-2.0-flash-001",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true,
 						video: true
 					},
 					{
 						name: "gemini-2.0-flash-lite-preview-02-05",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true
 					},
 					{
 						name: "gemini-2.0-pro-exp-02-05",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true
 					},
 					{
 						name: "gemini-2.0-flash-thinking-exp-01-21",
-						max_completion_tokens: 65536,
+						max_tokens: 65536,
 						image: true
 					},
 					{
 						name: "gemini-2.0-flash-exp",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true,
 						video: true
 					}]
@@ -161,27 +161,27 @@ window.CONFIG = {
 					options: [
 					{
 						name: "grok-2-1212",
-						max_completion_tokens: 131072,
+						max_tokens: 131072,
 						image: false
 					},
 					{
 						name: "grok-2-vision-1212",
-						max_completion_tokens: 32768,
+						max_tokens: 32768,
 						image: true
 					},
 					{
 						name: "grok-3",
-						max_completion_tokens: 131072,
+						max_tokens: 131072,
 						image: false
 					},
 					{
 						name: "grok-beta",
-						max_completion_tokens: 131072,
+						max_tokens: 131072,
 						image: false
 					},
 					{
 						name: "grok-vision-beta",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true
 					}]
 				},
@@ -191,72 +191,73 @@ window.CONFIG = {
 					options: [
 					{
 						name: "qwen-2.5-32b",
-						max_completion_tokens: 131072,
+						max_tokens: 131072,
 						image: false
 					},
 					{
 						name: "qwen-2.5-coder-32b",
-						max_completion_tokens: 131072,
+						max_tokens: 131072,
 						image: false
 					},
 					{
 						name: "deepseek-r1-distill-qwen-32b",
-						max_completion_tokens: 131072,
+						max_tokens: 131072,
 						image: false
 					},
 					{
 						name: "deepseek-r1-distill-llama-70b",
-						max_completion_tokens: 131072,
+						max_tokens: 131072,
 						image: false
 					},
 					{
 						name: "llama-3.1-8b-instant",
-						max_completion_tokens: 8000,
+						max_tokens: 8000,
 						image: false
 					},
 					{
 						name: "llama-3.2-11b-vision-preview",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true
 					},
 					{
 						name: "llama-3.2-1b-preview",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: false
 					},
 					{
 						name: "llama-3.2-3b-preview",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: false
 					},
 					{
 						name: "llama-3.2-90b-vision-preview",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true
 					},
 					{
 						name: "llama-3.3-70b-specdec",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: false
 					},
 					{
 						name: "llama-3.3-70b-versatile",
-						max_completion_tokens: 32768,
+						max_tokens: 32768,
 						image: false
 					},
 					{
 						name: "mixtral-8x7b-32768",
-						max_completion_tokens: 32768,
+						max_tokens: 32768,
 						image: false
 					}]
 				},
 				openrouter:
 				{
-					default: "",
+					default: "deepseek/deepseek-r1-distill-qwen-1.5b",
 					options: [
 					{
-						name: "",
-						max_completion_tokens: 0,
+						name: "deepseek/deepseek-r1-distill-qwen-1.5b",
+						max_tokens: 131072,
+						reasoning: {"max_tokens": 100000},
 						image: false
 					}]
 				},
@@ -266,47 +267,47 @@ window.CONFIG = {
 					options: [
 					{
 						name: "qwen-max",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: false
 					},
 					{
 						name: "qwen-plus",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: false
 					},
 					{
 						name: "qwen-turbo",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: false
 					},
 					{
 						name: "qwen-vl-max",
-						max_completion_tokens: 2048,
+						max_tokens: 2048,
 						image: true
 					},
 					{
 						name: "qwen-vl-plus",
-						max_completion_tokens: 2048,
+						max_tokens: 2048,
 						image: true
 					},
 					{
 						name: "qwen2.5-vl-72b-instruct",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true
 					},
 					{
 						name: "qwen2.5-vl-7b-instruct",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true
 					},
 					{
 						name: "qwen2.5-vl-3b-instruct",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true
 					},
 					{
 						name: "qwen2.5-7b-instruct-1m",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: false
 					}]
 				},
@@ -316,82 +317,82 @@ window.CONFIG = {
 					options: [
 					{
 						name: "DeepSeek-R1",
-						max_completion_tokens: 4096,
+						max_tokens: 4096,
 						image: false
 					},
 					{
 						name: "DeepSeek-R1-Distill-Llama-70B",
-						max_completion_tokens: 32768,
+						max_tokens: 32768,
 						image: false
 					},
 					{
 						name: "Llama-3.1-Tulu-3-405B",
-						max_completion_tokens: 16384,
+						max_tokens: 16384,
 						image: false
 					},
 					{
 						name: "Meta-Llama-3.1-405B-Instruct",
-						max_completion_tokens: 16384,
+						max_tokens: 16384,
 						image: false
 					},
 					{
 						name: "Meta-Llama-3.1-70B-Instruct",
-						max_completion_tokens: 131072,
+						max_tokens: 131072,
 						image: false
 					},
 					{
 						name: "Meta-Llama-3.1-8B-Instruct",
-						max_completion_tokens: 16384,
+						max_tokens: 16384,
 						image: false
 					},
 					{
 						name: "Meta-Llama-3.3-70B-Instruct",
-						max_completion_tokens: 4096,
+						max_tokens: 4096,
 						image: false
 					},
 					{
 						name: "Qwen2.5-72B-Instruct",
-						max_completion_tokens: 16384,
+						max_tokens: 16384,
 						image: false
 					},
 					{
 						name: "Qwen2.5-Coder-32B-Instruct",
-						max_completion_tokens: 16384,
+						max_tokens: 16384,
 						image: false
 					},
 					{
 						name: "QwQ-32B-Preview",
-						max_completion_tokens: 16384,
+						max_tokens: 16384,
 						image: false
 					},
 					{
 						name: "Meta-Llama-3.2-1B-Instruct",
-						max_completion_tokens: 16384,
+						max_tokens: 16384,
 						image: true
 					},
 					{
 						name: "Meta-Llama-3.2-3B-Instruct",
-						max_completion_tokens: 8192,
+						max_tokens: 8192,
 						image: true
 					},
 					{
 						name: "Llama-3.2-11B-Vision-Instruct",
-						max_completion_tokens: 4096,
+						max_tokens: 4096,
 						image: true
 					},
 					{
 						name: "Llama-3.2-90B-Vision-Instruct",
-						max_completion_tokens: 4096,
+						max_tokens: 4096,
 						image: true
 					}]
 				},
 				together:
 				{
-					default: "",
+					default: "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
 					options: [
 					{
-						name: "",
-						max_completion_tokens: 0,
+						name: "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+						max_tokens: 131073,
 						image: false
 					}]
 				}

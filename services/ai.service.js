@@ -315,9 +315,9 @@ const AiService = {
 				requestBody.temperature = 0;
 			}
 		}
-		if (model !== 'sambanova' && !selectedModel.reasoning_effort && selectedModel.name !== 'grok-2-1212')
+		if (model !== 'openrouter' && model !== 'sambanova' && model !== 'together' && !selectedModel.reasoning_effort && selectedModel.name !== 'grok-2-1212')
 		{
-			requestBody.max_tokens = selectedModel.max_completion_tokens;
+			requestBody.max_tokens = selectedModel.max_tokens;
 		}
 		return requestBody;
 	},
