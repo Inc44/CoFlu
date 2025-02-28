@@ -50,8 +50,10 @@ class SettingsApp
 				google: document.getElementById('googleModelContainer'),
 				x: document.getElementById('xModelContainer'),
 				groq: document.getElementById('groqModelContainer'),
+				openrouter: document.getElementById('openrouterModelContainer'),
 				alibaba: document.getElementById('alibabaModelContainer'),
-				sambanova: document.getElementById('sambanovaModelContainer')
+				sambanova: document.getElementById('sambanovaModelContainer'),
+				together: document.getElementById('togetherModelContainer')
 			},
 			modelSelects:
 			{
@@ -61,8 +63,10 @@ class SettingsApp
 				google: document.getElementById('googleModel'),
 				x: document.getElementById('xModel'),
 				groq: document.getElementById('groqModel'),
+				openrouter: document.getElementById('openrouterModel'),
 				alibaba: document.getElementById('alibabaModel'),
-				sambanova: document.getElementById('sambanovaModel')
+				sambanova: document.getElementById('sambanovaModel'),
+				together: document.getElementById('togetherModel')
 			},
 		};
 	}

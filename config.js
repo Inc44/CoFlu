@@ -10,8 +10,10 @@ window.CONFIG = {
 			google: 'google_api_key',
 			x: 'x_api_key',
 			groq: 'groq_api_key',
+			openrouter: 'openrouter_api_key',
 			alibaba: 'alibaba_api_key',
 			sambanova: 'sambanova_api_key',
+			together: 'together_api_key'
 		},
 		MODELS:
 		{
@@ -248,6 +250,16 @@ window.CONFIG = {
 						image: false
 					}]
 				},
+				openrouter:
+				{
+					default: "",
+					options: [
+					{
+						name: "",
+						max_completion_tokens: 0,
+						image: false
+					}]
+				},
 				alibaba:
 				{
 					default: "qwen-max",
@@ -371,6 +383,16 @@ window.CONFIG = {
 						name: "Llama-3.2-90B-Vision-Instruct",
 						max_completion_tokens: 4096,
 						image: true
+					}]
+				},
+				together:
+				{
+					default: "",
+					options: [
+					{
+						name: "",
+						max_completion_tokens: 0,
+						image: false
 					}]
 				}
 			},
@@ -508,6 +530,15 @@ window.CONFIG = {
 					extractContent: data => data.choices[0]?.message?.content,
 					extractStreamContent: data => data.choices[0]?.delta?.content
 				},
+				openrouter:
+				{
+					url: 'https://openrouter.ai/api/v1/chat/completions',
+					model: "",
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.choices[0]?.message?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.content
+				},
 				alibaba:
 				{
 					url: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions',
@@ -521,6 +552,15 @@ window.CONFIG = {
 				{
 					url: 'https://api.sambanova.ai/v1/chat/completions',
 					model: "Llama-3.2-90B-Vision-Instruct",
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.choices[0]?.message?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.content
+				},
+				together:
+				{
+					url: 'https://api.together.xyz/v1/chat/completions',
+					model: "",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -582,6 +622,11 @@ window.CONFIG = {
 					max: 1,
 					size: 3
 				},
+				openrouter:
+				{
+					max: 0,
+					size: 0
+				},
 				alibaba:
 				{
 					max: 10,
@@ -591,6 +636,11 @@ window.CONFIG = {
 				{
 					max: 1,
 					size: 20
+				},
+				together:
+				{
+					max: 0,
+					size: 0
 				}
 			},
 			VIDEO:
@@ -625,12 +675,22 @@ window.CONFIG = {
 					max: 0,
 					size: 0
 				},
+				openrouter:
+				{
+					max: 0,
+					size: 0
+				},
 				alibaba:
 				{
 					max: 0,
 					size: 0
 				},
 				sambanova:
+				{
+					max: 0,
+					size: 0
+				},
+				together:
 				{
 					max: 0,
 					size: 0
@@ -664,8 +724,10 @@ window.CONFIG = {
 			google: 'Google API Key:',
 			x: 'X API Key:',
 			groq: 'Groq API Key:',
+			openrouter: 'OpenRouter API Key:',
 			alibaba: 'Alibaba API Key:',
-			sambanova: 'SambaNova API Key:'
+			sambanova: 'SambaNova API Key:',
+			together: 'Together API Key:'
 		},
 		NO_BS_PROMPT: "Provide the result ONLY, without any introductory phrases or additional commentary",
 		STANDARD_PROMPTS: ["Proofread this text but only fix grammar", "Proofread this text but only fix grammar and Markdown style", "Proofread this text improving clarity and flow", "Proofread this text fixing only awkward parts", "Proofread this text", "Markdown OCR"],
@@ -681,8 +743,10 @@ window.CONFIG = {
 			google: /^AI[A-Za-z0-9-_]{32,}$/,
 			x: /^xai-[A-Za-z0-9]{32,}$/,
 			groq: /^gsk_[A-Za-z0-9]{32,}$/,
+			openrouter: /^sk-or-v1-[A-Za-z0-9]{32,}$/,
 			alibaba: /^sk-[A-Za-z0-9]{32,}$/,
-			sambanova: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+			sambanova: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+			together: /^tgp_v1_[A-Za-z0-9]{32,}$/
 		}
 	}
 };
