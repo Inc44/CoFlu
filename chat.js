@@ -167,10 +167,6 @@ class ChatApp
 			this.elements.sendMessageBtn.textContent = 'Send';
 			this.elements.sendMessageBtn.style.backgroundColor = '';
 			this.state.abortController = null;
-			if (this.state.isStreaming)
-			{
-				this.addAssistantMessage(this.accumulatedText);
-			}
 			this.state.isStreaming = false;
 		}
 	}
@@ -194,7 +190,7 @@ class ChatApp
 		}
 		else
 		{
-			this.addAssistantMessage(text, false);
+			this.addAssistantMessage(text);
 		}
 		this.displayMessages();
 		this.saveMessages();
@@ -209,12 +205,8 @@ class ChatApp
 		this.displayMessages();
 		this.saveMessages();
 	}
-	addAssistantMessage(text, format = true)
+	addAssistantMessage(text)
 	{
-		if (format)
-		{
-			text = TextService.format.latex(text);
-		}
 		this.state.messages.push(
 		{
 			role: "assistant",
