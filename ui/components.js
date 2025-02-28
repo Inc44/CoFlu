@@ -31,7 +31,7 @@ const UIComponents = {
 		}
 		async handleImageUpload(files)
 		{
-			const apiModel = this.options.getApiModel?.() || 'chatgpt';
+			const apiModel = this.options.getApiModel?.() || 'openai';
 			const limits = CONFIG.LIMITS.COMPLETION.IMAGE[apiModel];
 			if (files.length + Object.keys(this.uploadedImages)
 				.length > limits.max)
@@ -52,7 +52,7 @@ const UIComponents = {
 					alert(`Image ${file.name} exceeds the maximum size of ${limits.size}MB.`);
 					continue;
 				}
-				if (apiModel === 'gemini')
+				if (apiModel === 'google')
 				{
 					const currentTotalSize = this.getTotalSize();
 					const potentialTotalSize = currentTotalSize + fileSizeMB;
@@ -152,7 +152,7 @@ const UIComponents = {
 		}
 		async handleVideoUpload(files)
 		{
-			const apiModel = this.options.getApiModel?.() || 'gemini';
+			const apiModel = this.options.getApiModel?.() || 'google';
 			const limits = CONFIG.LIMITS.COMPLETION.VIDEO[apiModel];
 			if (files.length + Object.keys(this.uploadedVideos)
 				.length > limits.max)
@@ -173,7 +173,7 @@ const UIComponents = {
 					alert(`Video ${file.name} exceeds the maximum size of ${limits.size}MB.`);
 					continue;
 				}
-				if (apiModel === 'gemini')
+				if (apiModel === 'google')
 				{
 					const currentTotalSize = this.getTotalSize();
 					const potentialTotalSize = currentTotalSize + fileSizeMB;

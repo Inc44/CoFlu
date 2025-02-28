@@ -37,7 +37,7 @@ class TranslateApp
 	}
 	loadSettings()
 	{
-		const savedModel = StorageService.load('selected_api_model', 'chatgpt');
+		const savedModel = StorageService.load('selected_api_model', 'openai');
 		if (this.elements.apiModelSelect)
 		{
 			this.elements.apiModelSelect.value = savedModel;
@@ -320,7 +320,7 @@ class TranslateApp
 			abortSignal: this.state.abortController.signal
 		});
 		const response = await this.rateLimitRequests(apiCall);
-		if (apiModel === "gemini")
+		if (apiModel === "google")
 		{
 			let translatedText = response.response?.text?.() || response.candidates?.[0]?.content?.parts?.[0]?.text || "[Translation Failed]";
 			await new Promise(resolve => setTimeout(resolve, 1000));

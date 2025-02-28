@@ -39,7 +39,7 @@ class ChatApp
 		this.initializeComponents();
 		this.displayMessages();
 		this.updateInitialUI();
-		const savedModel = StorageService.load('selected_api_model', 'chatgpt');
+		const savedModel = StorageService.load('selected_api_model', 'openai');
 		if (this.elements.apiModelSelect)
 		{
 			this.elements.apiModelSelect.value = savedModel;
@@ -150,7 +150,7 @@ class ChatApp
 			});
 			if (!this.state.isStreaming)
 			{
-				let assistantContent = model === 'gemini' ? aiResponse.response.text() : CONFIG.API.CONFIG.COMPLETION[model].extractContent(aiResponse);
+				let assistantContent = model === 'google' ? aiResponse.response.text() : CONFIG.API.CONFIG.COMPLETION[model].extractContent(aiResponse);
 				this.addAssistantMessage(assistantContent);
 			}
 		}
@@ -356,13 +356,13 @@ class ChatApp
 					display: false
 				},
 				{
-					left: '\\[',
-					right: '\\]',
+					left: '\[',
+					right: '\]',
 					display: true
 				},
 				{
-					left: '\\(',
-					right: '\\)',
+					left: '\(',
+					right: '\)',
 					display: false
 				}, ],
 				throwOnError: false,

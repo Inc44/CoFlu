@@ -44,24 +44,24 @@ class SettingsApp
 			},
 			modelContainers:
 			{
-				chatgpt: document.getElementById('chatgptModelContainer'),
-				claude: document.getElementById('claudeModelContainer'),
+				openai: document.getElementById('openaiModelContainer'),
+				anthropic: document.getElementById('anthropicModelContainer'),
 				deepseek: document.getElementById('deepseekModelContainer'),
-				gemini: document.getElementById('geminiModelContainer'),
-				grok: document.getElementById('grokModelContainer'),
+				google: document.getElementById('googleModelContainer'),
+				x: document.getElementById('xModelContainer'),
 				groq: document.getElementById('groqModelContainer'),
-				qwen: document.getElementById('qwenModelContainer'),
+				alibaba: document.getElementById('alibabaModelContainer'),
 				sambanova: document.getElementById('sambanovaModelContainer')
 			},
 			modelSelects:
 			{
-				chatgpt: document.getElementById('chatgptModel'),
-				claude: document.getElementById('claudeModel'),
+				openai: document.getElementById('openaiModel'),
+				anthropic: document.getElementById('anthropicModel'),
 				deepseek: document.getElementById('deepseekModel'),
-				gemini: document.getElementById('geminiModel'),
-				grok: document.getElementById('grokModel'),
+				google: document.getElementById('googleModel'),
+				x: document.getElementById('xModel'),
 				groq: document.getElementById('groqModel'),
-				qwen: document.getElementById('qwenModel'),
+				alibaba: document.getElementById('alibabaModel'),
 				sambanova: document.getElementById('sambanovaModel')
 			},
 		};
@@ -94,9 +94,9 @@ class SettingsApp
 		this.loadInputSetting('exponentialRetryInput', 'exponential_retry', 10, 'number');
 		this.loadInputSetting('languageSelect', 'selected_language', 'English');
 		this.loadInputSetting('transcribeLanguageSelect', 'transcribe_language', 'en');
-		this.loadSelectSetting('apiModelSelect', 'selected_api_model', 'chatgpt');
+		this.loadSelectSetting('apiModelSelect', 'selected_api_model', 'openai');
 		this.loadSelectSetting('rendererSelect', 'selected_renderer', 'katex');
-		this.loadSelectSetting('transcriptionApiModelSelect', 'selected_transcription_api_model', 'openai');
+		this.loadSelectSetting('transcriptionApiModelSelect', 'selected_transcription_api_model', 'groq');
 		if (this.elements.reasoningEffortSelect)
 		{
 			this.loadSelectSetting('reasoningEffortSelect', 'reasoning_effort', 'low');

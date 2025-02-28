@@ -4,20 +4,20 @@ window.CONFIG = {
 	{
 		KEYS:
 		{
-			chatgpt: 'chatgpt_api_key',
-			claude: 'claude_api_key',
+			openai: 'openai_api_key',
+			anthropic: 'anthropic_api_key',
 			deepseek: 'deepseek_api_key',
-			gemini: 'gemini_api_key',
-			grok: 'grok_api_key',
+			google: 'google_api_key',
+			x: 'x_api_key',
 			groq: 'groq_api_key',
-			qwen: 'qwen_api_key',
-			sambanova: 'sambanova_api_key'
+			alibaba: 'alibaba_api_key',
+			sambanova: 'sambanova_api_key',
 		},
 		MODELS:
 		{
 			COMPLETION:
 			{
-				chatgpt:
+				openai:
 				{
 					default: "chatgpt-4o-latest",
 					options: [
@@ -79,7 +79,7 @@ window.CONFIG = {
 						image: true
 					}]
 				},
-				claude:
+				anthropic:
 				{
 					default: "claude-3-7-sonnet-20250219",
 					options: [
@@ -115,7 +115,7 @@ window.CONFIG = {
 						image: false
 					}]
 				},
-				gemini:
+				google:
 				{
 					default: "gemini-exp-1206",
 					options: [
@@ -153,7 +153,7 @@ window.CONFIG = {
 						video: true
 					}]
 				},
-				grok:
+				x:
 				{
 					default: "grok-2-1212",
 					options: [
@@ -248,7 +248,7 @@ window.CONFIG = {
 						image: false
 					}]
 				},
-				qwen:
+				alibaba:
 				{
 					default: "qwen-max",
 					options: [
@@ -401,7 +401,7 @@ window.CONFIG = {
 		{
 			COMPLETION:
 			{
-				chatgpt:
+				openai:
 				{
 					url: 'https://api.openai.com/v1/chat/completions',
 					model: "chatgpt-4o-latest",
@@ -410,10 +410,10 @@ window.CONFIG = {
 					extractContent: data => data.choices[0]?.message?.content,
 					extractStreamContent: data => data.choices[0]?.delta?.content
 				},
-				claude:
+				anthropic:
 				{
 					url: 'https://api.anthropic.com/v1/messages',
-					model: "claude-3-5-sonnet-20241022",
+					model: "claude-3-7-sonnet-20250219",
 					apiKeyHeader: 'x-api-key',
 					apiKeyPrefix: '',
 					additionalHeaders:
@@ -474,13 +474,13 @@ window.CONFIG = {
 					extractContent: data => data.choices[0]?.message?.content,
 					extractStreamContent: data => data.choices[0]?.delta?.content
 				},
-				gemini:
+				google:
 				{
 					model: "gemini-exp-1206",
 					extractContent: data => data.candidates[0]?.content?.parts[0]?.text,
 					extractStreamContent: data => data.candidates[0]?.content?.parts[0]?.text,
 				},
-				grok:
+				x:
 				{
 					url: 'https://api.x.ai/v1/chat/completions',
 					model: "grok-2-1212",
@@ -498,7 +498,7 @@ window.CONFIG = {
 					extractContent: data => data.choices[0]?.message?.content,
 					extractStreamContent: data => data.choices[0]?.delta?.content
 				},
-				qwen:
+				alibaba:
 				{
 					url: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions',
 					model: "qwen-max",
@@ -519,23 +519,19 @@ window.CONFIG = {
 			},
 			TRANSCRIPTION:
 			{
-				chatgpt:
-				{
-					url: 'https://api.openai.com/v1/audio/transcriptions',
-					model: "whisper-1",
-					apiKeyHeader: 'Authorization',
-					apiKeyPrefix: 'Bearer ',
-					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
-				},
 				groq:
 				{
 					url: 'https://api.groq.com/openai/v1/audio/transcriptions',
 					model: "whisper-large-v3",
 					apiKeyHeader: 'Authorization',
-					apiKeyPrefix: 'Bearer ',
-					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					apiKeyPrefix: 'Bearer '
+				},
+				openai:
+				{
+					url: 'https://api.openai.com/v1/audio/transcriptions',
+					model: "whisper-1",
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer '
 				}
 			}
 		}
@@ -546,12 +542,12 @@ window.CONFIG = {
 		{
 			IMAGE:
 			{
-				chatgpt:
+				openai:
 				{
 					max: 100,
 					size: 20
 				},
-				claude:
+				anthropic:
 				{
 					max: 100,
 					size: 5
@@ -561,12 +557,12 @@ window.CONFIG = {
 					max: 0,
 					size: 0
 				},
-				gemini:
+				google:
 				{
 					max: 100,
 					size: 20
 				},
-				grok:
+				x:
 				{
 					max: 100,
 					size: 10
@@ -576,7 +572,7 @@ window.CONFIG = {
 					max: 1,
 					size: 3
 				},
-				qwen:
+				alibaba:
 				{
 					max: 10,
 					size: 10
@@ -589,12 +585,12 @@ window.CONFIG = {
 			},
 			VIDEO:
 			{
-				chatgpt:
+				openai:
 				{
 					max: 0,
 					size: 0
 				},
-				claude:
+				anthropic:
 				{
 					max: 0,
 					size: 0
@@ -604,12 +600,12 @@ window.CONFIG = {
 					max: 0,
 					size: 0
 				},
-				gemini:
+				google:
 				{
 					max: 10,
 					size: 15
 				},
-				grok:
+				x:
 				{
 					max: 0,
 					size: 0
@@ -619,7 +615,7 @@ window.CONFIG = {
 					max: 0,
 					size: 0
 				},
-				qwen:
+				alibaba:
 				{
 					max: 0,
 					size: 0
@@ -652,13 +648,13 @@ window.CONFIG = {
 	{
 		API_KEY_LABELS:
 		{
-			chatgpt: 'OpenAI API Key:',
-			claude: 'Anthropic API Key:',
+			openai: 'OpenAI API Key:',
+			anthropic: 'Anthropic API Key:',
 			deepseek: 'DeepSeek API Key:',
-			gemini: 'Google API Key:',
-			grok: 'Grok API Key:',
+			google: 'Google API Key:',
+			x: 'X API Key:',
 			groq: 'Groq API Key:',
-			qwen: 'Qwen API Key:',
+			alibaba: 'Alibaba API Key:',
 			sambanova: 'SambaNova API Key:'
 		},
 		NO_BS_PROMPT: "Provide the result ONLY, without any introductory phrases or additional commentary",
@@ -669,13 +665,13 @@ window.CONFIG = {
 	{
 		API_KEY_PATTERNS:
 		{
-			chatgpt: /^sk-[A-Za-z0-9]{32,}$/,
-			claude: /^sk-ant-[A-Za-z0-9]{32,}$/,
+			openai: /^sk-[A-Za-z0-9]{32,}$/,
+			anthropic: /^sk-ant-[A-Za-z0-9]{32,}$/,
 			deepseek: /^sk-[A-Za-z0-9]{32,}$/,
-			gemini: /^AI[A-Za-z0-9-_]{32,}$/,
-			grok: /^xai-[A-Za-z0-9]{32,}$/,
+			google: /^AI[A-Za-z0-9-_]{32,}$/,
+			x: /^xai-[A-Za-z0-9]{32,}$/,
 			groq: /^gsk_[A-Za-z0-9]{32,}$/,
-			qwen: /^sk-[A-Za-z0-9]{32,}$/,
+			alibaba: /^sk-[A-Za-z0-9]{32,}$/,
 			sambanova: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 		}
 	}
@@ -685,11 +681,11 @@ window.MathJax = {
 	{
 		inlineMath: [
 			['$', '$'],
-			['\\(', '\\)']
+			['\(', '\)']
 		],
 		displayMath: [
 			['$$', '$$'],
-			['\\[', '\\]']
+			['\[', '\]']
 		]
 	}
 };

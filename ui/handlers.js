@@ -128,7 +128,7 @@ const UIHandlers = {
 			{
 				UIState.setGenerating(true, elements);
 				state.abortController = new AbortController();
-				const model = StorageService.load('selected_api_model', 'chatgpt');
+				const model = StorageService.load('selected_api_model', 'openai');
 				const selectedPrompt = elements.promptSelect.value;
 				const customPrompt = elements.customPromptInput.value;
 				let prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
@@ -165,7 +165,7 @@ const UIHandlers = {
 				if (!generationOptions.streaming)
 				{
 					const modelConfig = CONFIG.API.CONFIG.COMPLETION[model];
-					if (model === 'gemini')
+					if (model === 'google')
 					{
 						elements.targetText.value = response.response.text();
 					}

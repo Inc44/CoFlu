@@ -83,7 +83,7 @@ class App
 	}
 	loadSavedSettings()
 	{
-		const savedModel = StorageService.load('selected_api_model', 'chatgpt');
+		const savedModel = StorageService.load('selected_api_model', 'openai');
 		if (this.elements.apiModelSelect)
 		{
 			this.elements.apiModelSelect.value = savedModel;
@@ -267,13 +267,13 @@ class App
 							display: false
 						},
 						{
-							left: '\\[',
-							right: '\\]',
+							left: '\[',
+							right: '\]',
 							display: true
 						},
 						{
-							left: '\\(',
-							right: '\\)',
+							left: '\(',
+							right: '\)',
 							display: false
 						}, ],
 						throwOnError: false,
@@ -304,19 +304,26 @@ class App
 			}
 			try
 			{
-				const apiKey = StorageService.load(CONFIG.API.KEYS.groq);
+				const transcriptionModel = StorageService.load('selected_transcription_api_model', 'groq');
+				const apiKey = StorageService.load(CONFIG.API.KEYS[transcriptionModel]);
 				if (!apiKey)
 				{
-					throw new Error("Please enter your Groq API key.");
+					throw new Error(`Please enter your ${transcriptionModel} API key.`);
 				}
 				const file = this.elements.audioFile?.files[0];
 				if (!file)
 				{
 					throw new Error("Please select an audio file.");
 				}
+				const limits = CONFIG.LIMITS.TRANSCRIPTION.AUDIO[transcriptionModel];
+				if (file.size / (1024 * 1024) > limits.size)
+				{
+					throw new Error(`Audio file exceeds the maximum size of ${limits.size}MB for ${transcriptionModel}.`);
+				}
 				UIState.setTranscribing(true, this.elements);
 				this.state.transcribeAbortController = new AbortController();
-				const result = await AiService.transcribe(file, this.elements.transcribeLanguage.value, apiKey);
+				const selectedWhisperModel = StorageService.load(`${transcriptionModel}_whisper_model`, CONFIG.API.MODELS.TRANSCRIPTION[transcriptionModel].default);
+				const result = await AiService.transcribe(file, this.elements.transcribeLanguage.value, apiKey, selectedWhisperModel, transcriptionModel, this.state.transcribeAbortController.signal);
 				if (this.elements.sourceText)
 				{
 					this.elements.sourceText.value = result.text;

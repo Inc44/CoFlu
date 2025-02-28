@@ -15,7 +15,7 @@ const AiService = {
 			}
 			switch (model)
 			{
-				case 'gemini':
+				case 'google':
 					return await this.generateWithGemini(apiKey, prompt, options, 0);
 				default:
 					return await this.generateWithOtherModels(apiKey, prompt, model, options, 0);
@@ -37,7 +37,7 @@ const AiService = {
 				GoogleGenerativeAI
 			} = await import("@google/generative-ai");
 			const genAI = new GoogleGenerativeAI(apiKey);
-			const selectedModelName = StorageService.load('gemini_model', CONFIG.API.MODELS.COMPLETION.gemini.default);
+			const selectedModelName = StorageService.load('google_model', CONFIG.API.MODELS.COMPLETION.google.default);
 			const model = genAI.getGenerativeModel(
 			{
 				model: selectedModelName
@@ -68,11 +68,11 @@ const AiService = {
 			if (attempt < maxRetries)
 			{
 				const delay = this.calculateRetryDelay(attempt);
-				console.warn(`Gemini API error (attempt ${attempt + 1}/${maxRetries}): ${error.message}. Retrying in ${delay / 1000}s...`);
+				console.warn(`Google API error (attempt ${attempt + 1}/${maxRetries}): ${error.message}. Retrying in ${delay / 1000}s...`);
 				await this.wait(delay);
 				return this.generateWithGemini(apiKey, prompt, options, attempt + 1);
 			}
-			throw new Error(`Gemini API error after ${maxRetries} attempts: ${error.message}`);
+			throw new Error(`Google API error after ${maxRetries} attempts: ${error.message}`);
 		}
 	},
 	prepareMediaParts(mediaURLs, defaultMimeType)
@@ -141,7 +141,7 @@ const AiService = {
 			{
 				throw new DOMException('Aborted', 'AbortError');
 			}
-			const content = CONFIG.API.CONFIG.gemini.extractStreamContent(chunk);
+			const content = CONFIG.API.CONFIG.google.extractStreamContent(chunk);
 			if (content)
 			{
 				accumulatedText += content;
@@ -238,7 +238,7 @@ const AiService = {
 						content = content.concat(msg.content);
 					}
 				}
-				if (options.images?.length > 0 && model !== 'claude')
+				if (options.images?.length > 0 && model !== 'anthropic')
 				{
 					const imageContent = options.images.map(dataURL => (
 					{
@@ -250,7 +250,7 @@ const AiService = {
 					}));
 					content = content.concat(imageContent);
 				}
-				if (options.images?.length > 0 && model === 'claude')
+				if (options.images?.length > 0 && model === 'anthropic')
 				{
 					const imageContent = options.images.map(dataURL =>
 					{
@@ -339,7 +339,7 @@ const AiService = {
 				content: prompt
 			}];
 		}
-		if (model === 'claude')
+		if (model === 'anthropic')
 		{
 			const imageContent = images.map(dataURL =>
 			{
@@ -434,25 +434,32 @@ const AiService = {
 			}]
 		};
 	},
-	async transcribe(file, language, apiKey)
+	async transcribe(file, language, apiKey, modelName, transcriptionModel, abortSignal)
 	{
 		const formData = new FormData();
 		formData.append('file', file);
-		formData.append('model', 'whisper-large-v3');
+		formData.append('model', modelName);
 		formData.append('language', language);
 		formData.append('response_format', 'verbose_json');
-		const response = await fetch(CONFIG.API.CONFIG.groq.url.replace('chat/completions', 'audio/transcriptions'),
+		const config = CONFIG.API.CONFIG.TRANSCRIPTION[transcriptionModel];
+		if (!config)
+		{
+			throw new Error(`Configuration not found for transcription model: ${transcriptionModel}`);
+		}
+		const response = await fetch(config.url,
 		{
 			method: 'POST',
 			headers:
 			{
-				[CONFIG.API.CONFIG.groq.apiKeyHeader]: CONFIG.API.CONFIG.groq.apiKeyPrefix + apiKey,
+				[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
 			},
 			body: formData,
+			signal: abortSignal
 		});
 		if (!response.ok)
 		{
-			throw new Error(`Transcription failed with status ${response.status}`);
+			const errorText = await response.text();
+			throw new Error(`Transcription failed with status ${response.status}: ${errorText}`);
 		}
 		return await response.json();
 	},
