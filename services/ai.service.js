@@ -141,7 +141,7 @@ const AiService = {
 			{
 				throw new DOMException('Aborted', 'AbortError');
 			}
-			const content = CONFIG.API.CONFIG.google.extractStreamContent(chunk);
+			const content = CONFIG.API.CONFIG.COMPLETION.google.extractStreamContent(chunk);
 			if (content)
 			{
 				accumulatedText += content;
