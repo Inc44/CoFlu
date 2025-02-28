@@ -371,7 +371,15 @@ class SettingsApp
 				{
 					try
 					{
-						const settings = JSON.parse(e.target.result);
+						let settings = e.target.result;
+						if (!settings.trim() || settings.trim() === '{}')
+						{
+							this.clearAllData();
+							alert('Data wiped successfully!');
+							this.loadSettings();
+							return;
+						}
+						settings = JSON.parse(settings);
 						if (typeof settings !== 'object' || settings === null)
 						{
 							throw new Error('Invalid settings file: Not a JSON object.');
@@ -400,6 +408,14 @@ class SettingsApp
 	{
 		try
 		{
+			let settingsText = this.elements.settingsTextArea.value;
+			if (!settingsText.trim() || settingsText.trim() === '{}')
+			{
+				this.clearAllData();
+				alert('Data wiped successfully!');
+				this.loadSettings();
+				return;
+			}
 			const settings = JSON.parse(this.elements.settingsTextArea.value);
 			if (typeof settings !== 'object' || settings === null)
 			{
@@ -418,6 +434,10 @@ class SettingsApp
 			console.error('Error saving settings:', error);
 			alert(`Error saving settings: ${error.message}`);
 		}
+	}
+	clearAllData()
+	{
+		localStorage.clear();
 	}
 	syncThinkingBudgetInputs()
 	{

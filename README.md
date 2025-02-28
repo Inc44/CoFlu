@@ -135,7 +135,7 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 
 ## Bugs
 
-- Clearing text settings or importing an empty file doesn't override all settings but only modifies specified parameters.
+- Not found yet.
 
 ## TODOs
 
