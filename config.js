@@ -644,7 +644,7 @@ window.CONFIG = {
 				groq:
 				{
 					max: 1,
-					size: 40
+					size: 25
 				},
 				openai:
 				{
