@@ -163,21 +163,6 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-body">
-							<h5>Import/Export Settings</h5>
-							<button class="btn btn-sm" id="importSettings">Import Settings</button>
-							<button class="btn btn-sm" id="exportSettings">Export Settings</button>
-							<button class="btn btn-sm" id="saveSettings">Save Settings</button>
-							<div class="card-body">
-								<textarea id="settingsTextArea" class="form-control" rows="10" placeholder="Type / Paste JSON Setting"></textarea>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
 							<h5>Prompt Settings</h5>
 							<div class="mb-3 form-check">
 								<input type="checkbox" class="form-check-input" id="noBSToggle" checked>
@@ -273,6 +258,21 @@
 								<label for="exponentialRetry" class="form-label">Exponential Retry:</label>
 								<input type="number" id="exponentialRetry" class="form-control" value="4" min="0" step="1">
 								<small class="form-text text-muted">Number of retry attempts for failed requests</small>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-body">
+							<h5>Import/Export Settings</h5>
+							<button class="btn btn-sm" id="importSettings">Import Settings</button>
+							<button class="btn btn-sm" id="exportSettings">Export Settings</button>
+							<button class="btn btn-sm" id="saveSettings">Save Settings</button>
+							<div class="card-body">
+								<textarea id="settingsTextArea" class="form-control" rows="10" placeholder="Type / Paste JSON Setting"></textarea>
 							</div>
 						</div>
 					</div>
