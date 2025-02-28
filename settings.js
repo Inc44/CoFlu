@@ -8,16 +8,28 @@ class SettingsApp
 	getElements()
 	{
 		return {
-			apiModelSelect: document.getElementById('apiModel'),
 			apiKeyInput: document.getElementById('apiKey'),
-			streamingToggle: document.getElementById('streamingToggle'),
+			apiModelSelect: document.getElementById('apiModel'),
+			batchRPMInput: document.getElementById('batchRPM'),
+			batchSizeInput: document.getElementById('batchSize'),
 			cleanupToggle: document.getElementById('cleanupToggle'),
-			rendererSelect: document.getElementById('renderer'),
 			darkToggle: document.getElementById('darkToggle'),
-			numberedLinesToggle: document.getElementById('numberedLinesToggle'),
-			wideToggle: document.getElementById('wideToggle'),
-			importSettingsBtn: document.getElementById('importSettings'),
+			exponentialRetryInput: document.getElementById('exponentialRetry'),
 			exportSettingsBtn: document.getElementById('exportSettings'),
+			importSettingsBtn: document.getElementById('importSettings'),
+			languageSelect: document.getElementById('language'),
+			noBSToggle: document.getElementById('noBSToggle'),
+			numberedLinesToggle: document.getElementById('numberedLinesToggle'),
+			reasoningEffortContainer: document.getElementById('reasoningEffortContainer'),
+			reasoningEffortSelect: document.getElementById('reasoningEffort'),
+			rendererSelect: document.getElementById('renderer'),
+			saveSettingsBtn: document.getElementById('saveSettings'),
+			settingsTextArea: document.getElementById('settingsTextArea'),
+			streamingToggle: document.getElementById('streamingToggle'),
+			thinkingBudgetContainer: document.getElementById('thinkingBudgetContainer'),
+			thinkingBudgetNumber: document.getElementById('thinkingBudgetNumber'),
+			thinkingBudgetRange: document.getElementById('thinkingBudgetRange'),
+			wideToggle: document.getElementById('wideToggle'),
 			modelContainers:
 			{
 				chatgpt: document.getElementById('chatgptModelContainer'),
@@ -40,17 +52,6 @@ class SettingsApp
 				qwen: document.getElementById('qwenModel'),
 				sambanova: document.getElementById('sambanovaModel')
 			},
-			settingsTextArea: document.getElementById('settingsTextArea'),
-			saveSettingsBtn: document.getElementById('saveSettings'),
-			reasoningEffortContainer: document.getElementById('reasoningEffortContainer'),
-			reasoningEffortSelect: document.getElementById('reasoningEffort'),
-			thinkingBudgetContainer: document.getElementById('thinkingBudgetContainer'),
-			thinkingBudgetRange: document.getElementById('thinkingBudgetRange'),
-			thinkingBudgetNumber: document.getElementById('thinkingBudgetNumber'),
-			languageSelect: document.getElementById('language'),
-			batchSizeInput: document.getElementById('batchSize'),
-			batchRPMInput: document.getElementById('batchRPM'),
-			exponentialRetryInput: document.getElementById('exponentialRetry')
 		};
 	}
 	init()
@@ -68,13 +69,14 @@ class SettingsApp
 	}
 	loadSettings()
 	{
-		this.loadSelectSetting('apiModelSelect', 'selected_api_model', 'chatgpt');
-		this.loadInputSetting('apiKeyInput', CONFIG.API.KEYS[this.elements.apiModelSelect.value] || '', this.elements.apiModelSelect.value);
-		this.loadCheckboxSetting('streamingToggle', 'streaming_enabled', true);
 		this.loadCheckboxSetting('cleanupToggle', 'cleanup_enabled', true);
 		this.loadCheckboxSetting('darkToggle', 'dark_enabled', true);
+		this.loadCheckboxSetting('noBSToggle', 'no_bs_enabled', false);
 		this.loadCheckboxSetting('numberedLinesToggle', 'numbered_lines_enabled', false);
+		this.loadCheckboxSetting('streamingToggle', 'streaming_enabled', true);
 		this.loadCheckboxSetting('wideToggle', 'wide_enabled', false);
+		this.loadInputSetting('apiKeyInput', CONFIG.API.KEYS[this.elements.apiModelSelect.value] || '', this.elements.apiModelSelect.value);
+		this.loadSelectSetting('apiModelSelect', 'selected_api_model', 'chatgpt');
 		this.loadSelectSetting('rendererSelect', 'selected_renderer', 'katex');
 		if (this.elements.reasoningEffortSelect)
 		{
@@ -188,15 +190,23 @@ class SettingsApp
 	}
 	setupEventListeners()
 	{
-		this.elements.apiModelSelect?.addEventListener('change', this.handleApiModelChange.bind(this));
 		this.elements.apiKeyInput?.addEventListener('change', this.handleApiKeyChange.bind(this));
-		this.elements.streamingToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'streamingToggle', 'streaming_enabled'));
+		this.elements.apiModelSelect?.addEventListener('change', this.handleApiModelChange.bind(this));
+		this.elements.batchRPMInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'batchRPMInput', 'translation_batch_rpm', 0, 60000));
+		this.elements.batchSizeInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'batchSizeInput', 'translation_batch_size', 1, 60000));
 		this.elements.cleanupToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'cleanupToggle', 'cleanup_enabled'));
 		this.elements.darkToggle?.addEventListener('change', this.handleDarkToggleChange.bind(this));
+		this.elements.exponentialRetryInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'exponentialRetryInput', 'exponential_retry', 0));
+		this.elements.exportSettingsBtn?.addEventListener('click', this.exportSettings.bind(this));
+		this.elements.importSettingsBtn?.addEventListener('click', this.importSettings.bind(this));
+		this.elements.languageSelect?.addEventListener('change', this.handleLanguageChange.bind(this));
+		this.elements.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
 		this.elements.numberedLinesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'numberedLinesToggle', 'numbered_lines_enabled'));
-		this.elements.wideToggle?.addEventListener('change', this.handleWideToggleChange.bind(this));
-		this.elements.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
 		this.elements.reasoningEffortSelect?.addEventListener('change', this.handleReasoningEffortChange.bind(this));
+		this.elements.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
+		this.elements.saveSettingsBtn?.addEventListener('click', this.saveSettings.bind(this));
+		this.elements.streamingToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'streamingToggle', 'streaming_enabled'));
+		this.elements.wideToggle?.addEventListener('change', this.handleWideToggleChange.bind(this));
 		this.elements.thinkingBudgetRange?.addEventListener('input', () =>
 		{
 			this.elements.thinkingBudgetNumber.value = this.elements.thinkingBudgetRange.value;
@@ -207,13 +217,6 @@ class SettingsApp
 			this.elements.thinkingBudgetRange.value = this.elements.thinkingBudgetNumber.value;
 			this.handleThinkingBudgetChange();
 		});
-		this.elements.importSettingsBtn?.addEventListener('click', this.importSettings.bind(this));
-		this.elements.exportSettingsBtn?.addEventListener('click', this.exportSettings.bind(this));
-		this.elements.saveSettingsBtn?.addEventListener('click', this.saveSettings.bind(this));
-		this.elements.languageSelect?.addEventListener('change', this.handleLanguageChange.bind(this));
-		this.elements.batchSizeInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'batchSizeInput', 'translation_batch_size', 1, 60000));
-		this.elements.batchRPMInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'batchRPMInput', 'translation_batch_rpm', 0, 60000));
-		this.elements.exponentialRetryInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'exponentialRetryInput', 'exponential_retry', 0));
 		Object.entries(this.elements.modelSelects)
 			.forEach(([provider, select]) =>
 			{
@@ -305,6 +308,7 @@ class SettingsApp
 			cleanup_enabled: this.elements.cleanupToggle.checked,
 			dark_enabled: this.elements.darkToggle.checked,
 			exponential_retry: parseInt(this.elements.exponentialRetryInput.value, 10),
+			no_bs_enabled: this.elements.noBSToggle.checked,
 			numbered_lines_enabled: this.elements.numberedLinesToggle.checked,
 			prompts: StorageService.load('prompts', []),
 			selected_api_model: this.elements.apiModelSelect.value,

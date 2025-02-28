@@ -138,7 +138,7 @@ const UIHandlers = {
 					const targetLanguage = elements.languageSelect.value;
 					prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLanguage}.\n\n${prompt}`;
 				}
-				if (elements.noBSToggle.checked)
+				if (StorageService.load('no_bs_enabled', false))
 				{
 					prompt = `${CONFIG.UI.NO_BS_PROMPT}.\n\n${prompt}`;
 				}
@@ -234,10 +234,11 @@ const UIHandlers = {
 				});
 		}
 		const toggleSettings = {
-			streamingToggle: 'streaming_enabled',
-			translationToggle: 'translation_enabled',
 			cleanupToggle: 'cleanup_enabled',
 			darkToggle: 'dark_enabled',
+			noBSToggle: 'no_bs_enabled',
+			streamingToggle: 'streaming_enabled',
+			translationToggle: 'translation_enabled',
 			wideToggle: 'wide_enabled',
 		};
 		Object.entries(toggleSettings)

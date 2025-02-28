@@ -24,6 +24,7 @@ class App
 			generateTargetBtn: document.getElementById('generateTarget'),
 			imageUploadInput: document.getElementById('imageUploadInput'),
 			languageSelect: document.getElementById('language'),
+			noBSToggle: document.getElementById('noBSToggle'),
 			printContainer: document.getElementById('printContainer'),
 			promptSelect: document.getElementById('promptSelect'),
 			renderMarkdownBtn: document.getElementById('renderMarkdownBtn'),
@@ -89,6 +90,7 @@ class App
 		}
 		const toggleSettings = {
 			'cleanupToggle': ['cleanup_enabled', true],
+			'noBSToggle': ['no_bs_enabled', false],
 			'streamingToggle': ['streaming_enabled', true],
 			'translationToggle': ['translation_enabled', false],
 			'wideToggle': ['wide_enabled', false]
