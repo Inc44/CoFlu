@@ -13,6 +13,12 @@ background-color: rgb(94, 15, 8);
 html[data-bs-theme="dark"] body .diff-insertion {
 background-color: rgb(15, 87, 46);
 }
+html[data-bs-theme="light"] .line-number {
+color: rgb(56, 60, 66);
+}
+html[data-bs-theme="dark"] .line-number {
+color: rgb(199, 195, 189);
+}
 html[data-bs-theme="light"] body #homePage {
 color: rgb(30, 35, 40);
 }
@@ -263,6 +269,12 @@ height: unset;
 }
 #thinkingBudgetNumber {
 width: 5.5rem;
+}
+.line-number {
+display: inline-block;
+margin-right: 0.5rem;
+min-width: 2.5rem;
+user-select: none;
 }
 @media print {
 * {
