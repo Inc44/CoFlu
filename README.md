@@ -136,7 +136,6 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 ## Bugs
 
 - Clearing text settings or importing an empty file doesn't override all settings but only modifies specified parameters.
-- Toggling "Numbered Lines" does nothing; it must display numbered lines in both single- and double-column diffs.
 
 ## TODOs
 

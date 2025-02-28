@@ -1,6 +1,9 @@
 // services/comparison.service.js
 const ComparisonService = {
-	compare(source, target, cleanup = true)
+	DIFF_EQUAL: 0,
+	DIFF_DELETION: -1,
+	DIFF_INSERTION: 1,
+	compare(source = '', target = '', cleanup = true)
 	{
 		const dmp = new diff_match_patch();
 		const diffs = dmp.diff_main(source, target);
@@ -14,60 +17,98 @@ const ComparisonService = {
 			levenshtein: dmp.diff_levenshtein(diffs)
 		};
 	},
-	generateViews(diffs)
+	generateViews(diffs = [])
 	{
+		const numberedLinesEnabled = StorageService.load('numbered_lines_enabled', false);
+		let single = this.generateSingleColumnView(diffs);
+		let double = this.generateDoubleColumnView(diffs);
+		if (numberedLinesEnabled)
+		{
+			single = this.postProcessAddLineNumbers(single);
+			double = {
+				left: this.postProcessAddLineNumbers(double.left),
+				right: this.postProcessAddLineNumbers(double.right)
+			};
+		}
 		return {
-			single: this.generateSingleColumnView(diffs),
-			double: this.generateDoubleColumnView(diffs)
+			single,
+			double
 		};
 	},
-	generateSingleColumnView(diffs)
+	generateSingleColumnView(diffs = [])
 	{
-		return diffs.map(([type, text]) =>
-			{
-				const className = type === 0 ? 'diff-equal' : type === -1 ? 'diff-deletion' : 'diff-insertion';
-				return `<span class="${className}">${TextService.format.escape(text)}</span>`;
-			})
-			.join('');
+		const htmlParts = [];
+		diffs.forEach(([type, text]) =>
+		{
+			const className = type === this.DIFF_EQUAL ? 'diff-equal' : type === this.DIFF_DELETION ? 'diff-deletion' : 'diff-insertion';
+			const escapedText = TextService.format.escape(text);
+			htmlParts.push(`<span class="${className}">${escapedText}</span>`);
+		});
+		return htmlParts.join('');
 	},
-	generateDoubleColumnView(diffs)
+	generateDoubleColumnView(diffs = [])
 	{
-		let leftHtml = '',
-			rightHtml = '';
+		const leftParts = [],
+			rightParts = [];
 		diffs.forEach(([type, text]) =>
 		{
 			const escapedText = TextService.format.escape(text);
-			if (type === 0)
+			if (type === this.DIFF_EQUAL)
 			{
-				leftHtml += `<span class="diff-equal">${escapedText}</span>`;
-				rightHtml += `<span class="diff-equal">${escapedText}</span>`;
+				leftParts.push(`<span class="diff-equal">${escapedText}</span>`);
+				rightParts.push(`<span class="diff-equal">${escapedText}</span>`);
 			}
-			else if (type === -1)
+			else if (type === this.DIFF_DELETION)
 			{
-				leftHtml += `<span class="diff-deletion">${escapedText}</span>`;
+				leftParts.push(`<span class="diff-deletion">${escapedText}</span>`);
 			}
-			else if (type === 1)
+			else if (type === this.DIFF_INSERTION)
 			{
-				rightHtml += `<span class="diff-insertion">${escapedText}</span>`;
+				rightParts.push(`<span class="diff-insertion">${escapedText}</span>`);
 			}
 		});
 		return {
-			left: leftHtml,
-			right: rightHtml
+			left: leftParts.join(''),
+			right: rightParts.join('')
 		};
 	},
-	calculateStats(diffs)
+	postProcessAddLineNumbers(html = '')
+	{
+		let lineNumber = 1;
+		const lines = html.split('\n');
+		let newHtml = '';
+		for (let i = 0; i < lines.length; i++)
+		{
+			if (i > 0)
+			{
+				newHtml += '\n';
+			}
+			newHtml += `<span class="line-number">${lineNumber}</span>${lines[i]}`;
+			lineNumber++;
+		}
+		return newHtml;
+	},
+	calculateStats(diffs = [])
 	{
 		let added = 0,
 			removed = 0,
 			common = 0;
 		diffs.forEach(([type, text]) =>
 		{
-			if (type === 1) added += text.length;
-			else if (type === -1) removed += text.length;
-			else common += text.length;
+			if (type === this.DIFF_INSERTION) added += text.length;
+			else if (type === this.DIFF_DELETION) removed += text.length;
+			else if (type === this.DIFF_EQUAL) common += text.length;
 		});
 		const total = added + removed + common;
+		if (total === 0)
+		{
+			return {
+				commonPercentage: "100.00",
+				differencePercentage: "0.00",
+				commonSymbols: 0,
+				differenceSymbols: 0
+			};
+		}
 		return {
 			commonPercentage: (common / total * 100)
 				.toFixed(2),
