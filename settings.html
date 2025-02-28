@@ -206,9 +206,48 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-body">
-							<h5>Translation Settings</h5>
+							<h5>Transcription Settings</h5>
 							<div class="mb-3">
 								<label for="transcribeLanguage" class="form-label">Language:</label>
+								<select class="form-select" id="language">
+									<option value="Chinese">Chinese</option>
+									<option value="English">English</option>
+									<option value="French">French</option>
+									<option value="German">German</option>
+									<option value="Japanese">Japanese</option>
+									<option value="Polish">Polish</option>
+									<option value="Russian">Russian</option>
+									<option value="Ukrainian">Ukrainian</option>
+								</select>
+							</div>
+							<div class="mb-3">
+								<label for="apiModel" class="form-label">API Model:</label>
+								<select class="form-select" id="apiModel">
+									<option value="chatgpt">ChatGPT</option>
+									<option value="groq">Groq</option>
+								</select>
+							</div>
+							<div id="whisperModelSelectionContainer">
+								<div class="mb-3 model-select" id="openaiWhisperModelContainer">
+									<label for="openaiWhisperModel" class="form-label">OpenAI Whisper Model:</label>
+									<select class="form-select" id="openaiWhisperModel"></select>
+								</div>
+								<div class="mb-3 model-select" id="groqWhisperModelContainer">
+									<label for="groqWhisperModel" class="form-label">Groq Whisper Model:</label>
+									<select class="form-select" id="groqWhisperModel"></select>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-body">
+							<h5>Translation Settings</h5>
+							<div class="mb-3">
+								<label for="languageSelect" class="form-label">Language:</label>
 								<select class="form-select" id="language">
 									<option value="Chinese">Chinese</option>
 									<option value="English">English</option>
@@ -239,9 +278,6 @@
 					</div>
 				</div>
 			</div>
-			
-			
-			
 		</div>
 	</body>
 </html>
