@@ -142,6 +142,7 @@ const UIHandlers = {
 				{
 					prompt = `${CONFIG.UI.NO_BS_PROMPT}.\n\n${prompt}`;
 				}
+				if (!prompt.trim()) return;
 				const generationOptions = {
 					streaming: StorageService.load('streaming_enabled', true),
 					images: Object.values(state.imageUploader.getImages()),
