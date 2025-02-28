@@ -22,13 +22,13 @@ class ChatApp
 		return {
 			apiModelSelect: document.getElementById('apiModel'),
 			chatContainer: document.getElementById('chatContainer'),
+			cleanChatBtn: document.getElementById('cleanChat'),
+			imageList: document.getElementById('imageList'),
+			imageUploadInput: document.getElementById('imageUploadInput'),
 			messageInput: document.getElementById('messageInput'),
 			sendMessageBtn: document.getElementById('sendMessage'),
-			cleanChatBtn: document.getElementById('cleanChat'),
-			imageUploadInput: document.getElementById('imageUploadInput'),
-			videoUploadInput: document.getElementById('videoUploadInput'),
-			imageList: document.getElementById('imageList'),
 			videoList: document.getElementById('videoList'),
+			videoUploadInput: document.getElementById('videoUploadInput')
 		};
 	}
 	init()

@@ -15,27 +15,27 @@ class App
 	getElements()
 	{
 		return {
-			sourceText: document.getElementById('sourceText'),
-			targetText: document.getElementById('targetText'),
-			compareBtn: document.getElementById('compareBtn'),
-			switchBtn: document.getElementById('switchBtn'),
-			generateTargetBtn: document.getElementById('generateTarget'),
-			renderMarkdownBtn: document.getElementById('renderMarkdownBtn'),
 			apiModelSelect: document.getElementById('apiModel'),
-			promptSelect: document.getElementById('promptSelect'),
+			audioFile: document.getElementById('audioFile'),
+			cleanupToggle: document.getElementById('cleanupToggle'),
+			compareBtn: document.getElementById('compareBtn'),
 			customPromptContainer: document.getElementById('customPromptContainer'),
 			customPromptInput: document.getElementById('customPrompt'),
-			savePromptBtn: document.getElementById('savePrompt'),
-			transcribeLanguage: document.getElementById('transcribeLanguage'),
-			audioFile: document.getElementById('audioFile'),
-			transcribeBtn: document.getElementById('transcribeBtn'),
-			translationToggle: document.getElementById('translationToggle'),
-			languageSelect: document.getElementById('language'),
+			generateTargetBtn: document.getElementById('generateTarget'),
 			imageUploadInput: document.getElementById('imageUploadInput'),
-			videoUploadInput: document.getElementById('videoUploadInput'),
+			languageSelect: document.getElementById('language'),
 			printContainer: document.getElementById('printContainer'),
+			promptSelect: document.getElementById('promptSelect'),
+			renderMarkdownBtn: document.getElementById('renderMarkdownBtn'),
+			savePromptBtn: document.getElementById('savePrompt'),
+			sourceText: document.getElementById('sourceText'),
 			streamingToggle: document.getElementById('streamingToggle'),
-			cleanupToggle: document.getElementById('cleanupToggle'),
+			switchBtn: document.getElementById('switchBtn'),
+			targetText: document.getElementById('targetText'),
+			transcribeBtn: document.getElementById('transcribeBtn'),
+			transcribeLanguage: document.getElementById('transcribeLanguage'),
+			translationToggle: document.getElementById('translationToggle'),
+			videoUploadInput: document.getElementById('videoUploadInput'),
 			wideToggle: document.getElementById('wideToggle'),
 			wpmContainer: document.getElementById('wpm-container'),
 			wpmDisplay: document.getElementById('wpm')
@@ -88,9 +88,9 @@ class App
 			this.elements.apiModelSelect.value = savedModel;
 		}
 		const toggleSettings = {
-			'translationToggle': ['translation_enabled', false],
-			'streamingToggle': ['streaming_enabled', true],
 			'cleanupToggle': ['cleanup_enabled', true],
+			'streamingToggle': ['streaming_enabled', true],
+			'translationToggle': ['translation_enabled', false],
 			'wideToggle': ['wide_enabled', false]
 		};
 		Object.entries(toggleSettings)

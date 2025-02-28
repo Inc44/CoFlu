@@ -604,7 +604,9 @@ window.CONFIG = {
 			qwen: 'Qwen API Key:',
 			sambanova: 'SambaNova API Key:'
 		},
-		STANDARD_PROMPTS: ["Proofread this text but only fix grammar", "Proofread this text but only fix grammar and Markdown style", "Proofread this text improving clarity and flow", "Proofread this text fixing only awkward parts", "Proofread this text", "Markdown OCR"]
+		NO_BS_PROMPT: "Provide the translation ONLY, without any introductory phrases or additional commentary",
+		STANDARD_PROMPTS: ["Proofread this text but only fix grammar", "Proofread this text but only fix grammar and Markdown style", "Proofread this text improving clarity and flow", "Proofread this text fixing only awkward parts", "Proofread this text", "Markdown OCR"],
+		TRANSLATION_PROMPT: "Translate the following text to"
 	},
 	VALIDATION:
 	{

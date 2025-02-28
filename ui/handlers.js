@@ -136,7 +136,11 @@ const UIHandlers = {
 				if (elements.translationToggle.checked)
 				{
 					const targetLanguage = elements.languageSelect.value;
-					prompt = `Translate the following text to ${targetLanguage}\n\n${prompt}`;
+					prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLanguage}.\n\n${prompt}`;
+				}
+				if (elements.noBSToggle.checked)
+				{
+					prompt = `${CONFIG.UI.NO_BS_PROMPT}.\n\n${prompt}`;
 				}
 				const generationOptions = {
 					streaming: StorageService.load('streaming_enabled', true),

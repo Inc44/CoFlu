@@ -302,21 +302,21 @@ class SettingsApp
 	getCurrentSettings()
 	{
 		const settings = {
-			selected_api_model: this.elements.apiModelSelect.value,
-			streaming_enabled: this.elements.streamingToggle.checked,
 			cleanup_enabled: this.elements.cleanupToggle.checked,
 			dark_enabled: this.elements.darkToggle.checked,
-			numbered_lines_enabled: this.elements.numberedLinesToggle.checked,
-			wide_enabled: this.elements.wideToggle.checked,
-			selected_renderer: this.elements.rendererSelect.value,
-			prompts: StorageService.load('prompts', []),
-			selected_language: this.elements.languageSelect.value,
-			transcribe_language: StorageService.load('transcribe_language', 'en'),
-			translation_enabled: StorageService.load('translation_enabled', false),
-			translation_batch_size: parseInt(this.elements.batchSizeInput.value, 10),
-			translation_batch_rpm: parseInt(this.elements.batchRPMInput.value, 10),
 			exponential_retry: parseInt(this.elements.exponentialRetryInput.value, 10),
-			thinking: parseInt(this.elements.thinkingBudgetNumber.value, 10)
+			numbered_lines_enabled: this.elements.numberedLinesToggle.checked,
+			prompts: StorageService.load('prompts', []),
+			selected_api_model: this.elements.apiModelSelect.value,
+			selected_language: this.elements.languageSelect.value,
+			selected_renderer: this.elements.rendererSelect.value,
+			streaming_enabled: this.elements.streamingToggle.checked,
+			thinking: parseInt(this.elements.thinkingBudgetNumber.value, 10),
+			transcribe_language: StorageService.load('transcribe_language', 'en'),
+			translation_batch_rpm: parseInt(this.elements.batchRPMInput.value, 10),
+			translation_batch_size: parseInt(this.elements.batchSizeInput.value, 10),
+			translation_enabled: StorageService.load('translation_enabled', false),
+			wide_enabled: this.elements.wideToggle.checked
 		};
 		if (this.elements.reasoningEffortSelect)
 		{

@@ -20,12 +20,12 @@ class TranslateApp
 	{
 		return {
 			apiModelSelect: document.getElementById('apiModel'),
-			languageSelect: document.getElementById('language'),
 			documentFile: document.getElementById('documentFile'),
-			translateBtn: document.getElementById('translateBtn'),
+			downloadBtn: document.getElementById('downloadTranslated'),
+			languageSelect: document.getElementById('language'),
 			progressBar: document.getElementById('translateProgress'),
 			progressBarInner: document.querySelector('#translateProgress .progress-bar'),
-			downloadBtn: document.getElementById('downloadTranslated'),
+			translateBtn: document.getElementById('translateBtn')
 		};
 	}
 	init()
@@ -50,9 +50,9 @@ class TranslateApp
 	setupEventListeners()
 	{
 		this.elements.apiModelSelect?.addEventListener('change', this.handleApiModelChange.bind(this));
+		this.elements.downloadBtn?.addEventListener('click', this.downloadTranslatedFile.bind(this));
 		this.elements.languageSelect?.addEventListener('change', this.handleLanguageChange.bind(this));
 		this.elements.translateBtn?.addEventListener('click', this.handleTranslateButtonClick.bind(this));
-		this.elements.downloadBtn?.addEventListener('click', this.downloadTranslatedFile.bind(this));
 	}
 	handleApiModelChange()
 	{
@@ -286,7 +286,7 @@ class TranslateApp
 			return;
 		}
 		const targetLanguage = this.elements.languageSelect.value;
-		const prompt = `Translate the following text to ${targetLanguage}. Provide the translation ONLY, without any introductory phrases or additional commentary.\n\n${originalText}`;
+		const prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLanguage}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${originalText}`;
 		try
 		{
 			const translatedText = await this.getTranslatedText(prompt, apiModel, apiKey);
