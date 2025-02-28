@@ -94,7 +94,7 @@ window.CONFIG = {
 				options: [
 				{
 					name: "claude-3-7-sonnet-20250219",
-					max_completion_tokens: 64000,
+					max_completion_tokens: 128000,
 					thinking: true,
 					image: true
 				},
@@ -403,6 +403,7 @@ window.CONFIG = {
 				additionalHeaders:
 				{
 					'anthropic-version': '2023-06-01',
+					'anthropic-beta': 'output-128k-2025-02-19',
 					'content-type': 'application/json',
 					'anthropic-dangerous-direct-browser-access': 'true'
 				},
