@@ -23,8 +23,10 @@ class ChatApp
 			apiModelSelect: document.getElementById('apiModel'),
 			chatContainer: document.getElementById('chatContainer'),
 			cleanChatBtn: document.getElementById('cleanChat'),
+			exportSettingsBtn: document.getElementById('exportSettings'),
 			imageList: document.getElementById('imageList'),
 			imageUploadInput: document.getElementById('imageUploadInput'),
+			importSettingsBtn: document.getElementById('importSettings'),
 			messageInput: document.getElementById('messageInput'),
 			sendMessageBtn: document.getElementById('sendMessage'),
 			videoList: document.getElementById('videoList'),
@@ -74,8 +76,10 @@ class ChatApp
 	}
 	setupEventListeners()
 	{
-		this.elements.sendMessageBtn.addEventListener('click', this.sendMessage.bind(this));
 		this.elements.cleanChatBtn.addEventListener('click', this.clearChat.bind(this));
+		this.elements.exportSettingsBtn.addEventListener('click', this.exportChat.bind(this));
+		this.elements.importSettingsBtn.addEventListener('click', this.importChat.bind(this));
+		this.elements.sendMessageBtn.addEventListener('click', this.sendMessage.bind(this));
 		this.elements.messageInput.addEventListener('keydown', (event) =>
 		{
 			if (event.key === 'Enter' && !event.shiftKey)
