@@ -117,7 +117,7 @@ window.CONFIG = {
 				},
 				google:
 				{
-					default: "gemini-exp-1206",
+					default: "gemini-2.0-pro-exp-02-05",
 					options: [
 					{
 						name: "gemini-exp-1206",
@@ -425,10 +425,6 @@ window.CONFIG = {
 					},
 					extractContent: data =>
 					{
-						if (!data?.content || !Array.isArray(data.content))
-						{
-							return "";
-						}
 						const textParts = [];
 						for (const item of data.content)
 						{
@@ -471,12 +467,26 @@ window.CONFIG = {
 					model: "deepseek-chat",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
-					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractContent: data =>
+					{
+						const message = data.choices[0].message;
+						const textParts = [];
+						if (message.reasoning_content)
+						{
+							textParts.push(message.reasoning_content + "\n");
+						}
+						if (message.content)
+						{
+							textParts.push(message.content);
+						}
+						return textParts.join('\n')
+							.trim();
+					},
+					extractStreamContent: data => data.choices[0]?.delta?.reasoning_content || data.choices[0]?.delta?.content,
 				},
 				google:
 				{
-					model: "gemini-exp-1206",
+					model: "gemini-2.0-pro-exp-02-05",
 					extractContent: data => data.candidates[0]?.content?.parts[0]?.text,
 					extractStreamContent: data => data.candidates[0]?.content?.parts[0]?.text,
 				},
