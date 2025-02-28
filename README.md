@@ -135,41 +135,40 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 
 ## Bugs
 
-- Fix double messages in chat, random stops, and message duplication when streaming.
-- Fix flickering by loading wide mode the same way as dark mode at the beginning of the HTML.
-- Other bugs are not found yet.
+- 🔴 Fix double messages in chat, random stops, and message duplication when streaming.
+- 🟡 Fix flickering by loading wide mode the same way as dark mode at the beginning of the HTML.
+- 🟢 Other bugs are not found yet.
 
 ## TODOs
 
-- Add `transcription.html` and transcription proofreading options.
-- Add audio input support for ChatGPT, Gemini, Qwen, and SambaNova.
-- Add support for local LLMs via Ollama.js for offline and independent use.
-- Adjust transcription size limits: 40 MB for Groq and 25 MB for OpenAI.
-- Allow disabling of thinking tokens (`<think>` for DeepSeek, Groq, and SambaNova; `"thinking"` for Claude).
-- Allow saving of images and videos attached to chat.
-- Consider adding new default prompts, such as:
-	*"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
-- Create online storage for large videos (up to 2 GB) for Gemini.
-- Enable editing of custom prompts:
-	- Include a delete button for custom prompts.
-	- When selecting a custom prompt, a text input field should reappear, similar to adding a new prompt.
-- Enable image drag-and-drop or paste (Ctrl+V) into the image upload card.
-- Enable transcription model selection (whisper-large-v3, whisper-large-v3-turbo, whisper-1).
-- Extend document support to additional formats, including PDFs, for both input and translation.
-- Implement history for index, chat, and translation.
-- Implement import/export functionality for chat.
-- Improve LaTeX handling by replacing punctuation inside separate text macros.
-- Include Cerebras if approved.
-- Integrate Together AI and OpenRouter.
-- Modify the word counter.
-- Provide an option to display tokens instead of words.
-- Provide an option to enable high-cost models (gpt-4.5, o1, opus-3).
-- Refactor and rewrite the entire codebase.
-- Rewrite Gemini without relying on Google Generative AI.
-- Support YouTube video transcription.
-- Support login via Google, Microsoft, and GitHub for syncing.
-- Support multiple chat sessions.
-- Support multiple transcription providers, including OpenAI alongside Groq.
+- 🟡 Add `transcription.html` and transcription proofreading options.
+- 🟡 Add audio input support for ChatGPT, Gemini, Qwen, and SambaNova.
+- 🔴 Add support for local LLMs via Ollama.js for offline and independent use.
+- 🟡 Adjust transcription size limits: 40 MB for Groq and 25 MB for OpenAI.
+- 🔴 Allow disabling of thinking tokens (`<think>` for DeepSeek, Groq, and SambaNova; `"thinking"` for Claude).
+- 🔴 Allow saving of images and videos attached to chat.
+- 🟢 Consider adding new default prompts, such as: *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
+- 🔴 Create online storage for large videos (up to 2 GB) for Gemini.
+- 🔴 Enable editing of custom prompts:
+	- 🔴 Include a delete button for custom prompts.
+	- 🟡 When selecting a custom prompt, a text input field should reappear, similar to adding a new prompt.
+- 🔴 Enable image drag-and-drop or paste (Ctrl+V) into the image upload card.
+- 🟡 Enable transcription model selection (whisper-large-v3, whisper-large-v3-turbo, whisper-1).
+- 🔴 Extend document support to additional formats, including PDFs, for both input and translation.
+- 🔴 Implement history for index, chat, and translation.
+- 🟡 Implement import/export functionality for chat.
+- 🟢 Improve LaTeX handling by replacing punctuation inside separate text macros.
+- 🟢 Include Cerebras if approved.
+- 🟢 Integrate Together AI and OpenRouter.
+- 🔴 Modify the word counter.
+- 🔴 Provide an option to display tokens instead of words.
+- 🟡 Provide an option to enable high-cost models (gpt-4.5, o1, opus-3).
+- 🔴 Refactor and rewrite the entire codebase.
+- 🔴 Rewrite Gemini without relying on Google Generative AI.
+- 🔴 Support YouTube video transcription.
+- 🔴 Support login via Google, Microsoft, and GitHub for syncing.
+- 🔴 Support multiple chat sessions.
+- 🟡 Support multiple transcription providers, including OpenAI alongside Groq.
 
 ## License
 
