@@ -328,7 +328,7 @@ class TranslateApp
 		}
 		else
 		{
-			return CONFIG.API.CONFIG[apiModel].extractContent(response) || "[Translation Failed]";
+			return CONFIG.API.CONFIG.COMPLETION[apiModel].extractContent(response) || "[Translation Failed]";
 		}
 	}
 	async rateLimitRequests(apiCall)

@@ -64,7 +64,7 @@ class ChatApp
 		if (this.elements.apiModelSelect)
 		{
 			const currentModel = this.elements.apiModelSelect.value;
-			const currentModelDetails = CONFIG.API.MODELS[currentModel]?.options.find(m => m.name === StorageService.load(`${currentModel}_model`, CONFIG.API.MODELS[currentModel].default));
+			const currentModelDetails = CONFIG.API.MODELS.COMPLETION[currentModel]?.options.find(m => m.name === StorageService.load(`${currentModel}_model`, CONFIG.API.MODELS.COMPLETION[currentModel].default));
 			if (currentModelDetails)
 			{
 				UIState.updateImageUploadVisibility(currentModelDetails);
@@ -89,7 +89,7 @@ class ChatApp
 			this.elements.apiModelSelect.addEventListener('change', () =>
 			{
 				const selectedModel = this.elements.apiModelSelect.value;
-				const currentModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === StorageService.load(`${selectedModel}_model`, CONFIG.API.MODELS[selectedModel].default));
+				const currentModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === StorageService.load(`${selectedModel}_model`, CONFIG.API.MODELS.COMPLETION[selectedModel].default));
 				StorageService.save('selected_api_model', selectedModel);
 				UIState.updateImageUploadVisibility(currentModelDetails);
 				UIState.updateVideoUploadVisibility(currentModelDetails);
@@ -150,7 +150,7 @@ class ChatApp
 			});
 			if (!this.state.isStreaming)
 			{
-				let assistantContent = model === 'gemini' ? aiResponse.response.text() : CONFIG.API.CONFIG[model].extractContent(aiResponse);
+				let assistantContent = model === 'gemini' ? aiResponse.response.text() : CONFIG.API.CONFIG.COMPLETION[model].extractContent(aiResponse);
 				this.addAssistantMessage(assistantContent);
 			}
 		}

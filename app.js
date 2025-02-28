@@ -344,7 +344,7 @@ class App
 		if (this.elements.apiModelSelect)
 		{
 			const currentModel = this.elements.apiModelSelect.value;
-			const currentModelDetails = CONFIG.API.MODELS[currentModel]?.options.find(m => m.name === StorageService.load(`${currentModel}_model`, CONFIG.API.MODELS[currentModel].default));
+			const currentModelDetails = CONFIG.API.MODELS.COMPLETION[currentModel]?.options.find(m => m.name === StorageService.load(`${currentModel}_model`, CONFIG.API.MODELS.COMPLETION[currentModel].default));
 			if (currentModelDetails)
 			{
 				UIState.updateImageUploadVisibility(currentModelDetails);

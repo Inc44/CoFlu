@@ -164,7 +164,7 @@ const UIHandlers = {
 				const response = await AiService.generate(prompt, model, generationOptions);
 				if (!generationOptions.streaming)
 				{
-					const modelConfig = CONFIG.API.CONFIG[model];
+					const modelConfig = CONFIG.API.CONFIG.COMPLETION[model];
 					if (model === 'gemini')
 					{
 						elements.targetText.value = response.response.text();
@@ -200,7 +200,7 @@ const UIHandlers = {
 			elements.apiModelSelect.addEventListener('change', () =>
 			{
 				const selectedModel = elements.apiModelSelect.value;
-				const currentModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === StorageService.load(`${selectedModel}_model`, CONFIG.API.MODELS[selectedModel].default));
+				const currentModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === StorageService.load(`${selectedModel}_model`, CONFIG.API.MODELS.COMPLETION[selectedModel].default));
 				StorageService.save('selected_api_model', selectedModel);
 				UIState.updateImageUploadVisibility(currentModelDetails);
 				UIState.updateVideoUploadVisibility(currentModelDetails);
@@ -212,7 +212,7 @@ const UIHandlers = {
 		elements.apiModelSelect?.addEventListener('change', () =>
 		{
 			const selectedModel = elements.apiModelSelect.value;
-			const selectedModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === elements.modelSelects[selectedModel].value);
+			const selectedModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === elements.modelSelects[selectedModel].value);
 			StorageService.save('selected_api_model', selectedModel);
 			UIState.updateImageUploadVisibility(selectedModelDetails);
 			UIState.updateVideoUploadVisibility(selectedModelDetails);
@@ -226,7 +226,7 @@ const UIHandlers = {
 					{
 						elements.apiModelSelect.value = provider;
 						const selectedModel = provider;
-						const selectedModelDetails = CONFIG.API.MODELS[selectedModel]?.options.find(m => m.name === select.value);
+						const selectedModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === select.value);
 						StorageService.save('selected_api_model', selectedModel);
 						UIState.updateImageUploadVisibility(selectedModelDetails);
 						UIState.updateVideoUploadVisibility(selectedModelDetails);

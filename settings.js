@@ -127,7 +127,7 @@ class SettingsApp
 	}
 	loadModelOptions()
 	{
-		Object.entries(CONFIG.API.MODELS)
+		Object.entries(CONFIG.API.MODELS.COMPLETION)
 			.forEach(([provider, modelConfig]) =>
 			{
 				const modelSelect = this.elements.modelSelects[provider];
@@ -164,7 +164,7 @@ class SettingsApp
 	{
 		const modelSelect = this.elements.modelSelects[selectedProvider];
 		const selectedModelName = modelSelect ? modelSelect.value : null;
-		const selectedModelDetails = CONFIG.API.MODELS[selectedProvider]?.options.find(m => m.name === selectedModelName);
+		const selectedModelDetails = CONFIG.API.MODELS.COMPLETION[selectedProvider]?.options.find(m => m.name === selectedModelName);
 		if (selectedModelDetails && selectedModelDetails.reasoning_effort)
 		{
 			this.elements.reasoningEffortContainer.style.display = 'block';
@@ -178,7 +178,7 @@ class SettingsApp
 	{
 		const modelSelect = this.elements.modelSelects[selectedProvider];
 		const selectedModelName = modelSelect ? modelSelect.value : null;
-		const selectedModelDetails = CONFIG.API.MODELS[selectedProvider]?.options.find(m => m.name === selectedModelName);
+		const selectedModelDetails = CONFIG.API.MODELS.COMPLETION[selectedProvider]?.options.find(m => m.name === selectedModelName);
 		if (selectedModelDetails && selectedModelDetails.thinking)
 		{
 			this.elements.thinkingBudgetContainer.style.display = 'block';
@@ -331,7 +331,7 @@ class SettingsApp
 			{
 				settings[key] = StorageService.load(key, '');
 			});
-		Object.entries(CONFIG.API.MODELS)
+		Object.entries(CONFIG.API.MODELS.COMPLETION)
 			.forEach(([provider, modelConfig]) =>
 			{
 				settings[`${provider}_model`] = this.elements.modelSelects[provider].value;

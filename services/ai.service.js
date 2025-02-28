@@ -37,7 +37,7 @@ const AiService = {
 				GoogleGenerativeAI
 			} = await import("@google/generative-ai");
 			const genAI = new GoogleGenerativeAI(apiKey);
-			const selectedModelName = StorageService.load('gemini_model', CONFIG.API.MODELS.gemini.default);
+			const selectedModelName = StorageService.load('gemini_model', CONFIG.API.MODELS.COMPLETION.gemini.default);
 			const model = genAI.getGenerativeModel(
 			{
 				model: selectedModelName
@@ -158,13 +158,13 @@ const AiService = {
 	async generateWithOtherModels(apiKey, prompt, model, options, attempt)
 	{
 		const maxRetries = StorageService.load('exponential_retry', 4);
-		const config = CONFIG.API.CONFIG[model];
+		const config = CONFIG.API.CONFIG.COMPLETION[model];
 		if (!config)
 		{
 			throw new Error(`Configuration not found for model: ${model}`);
 		}
-		const selectedModelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS[model].default);
-		const selectedModel = CONFIG.API.MODELS[model].options.find(m => m.name === selectedModelName);
+		const selectedModelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
+		const selectedModel = CONFIG.API.MODELS.COMPLETION[model].options.find(m => m.name === selectedModelName);
 		if (!selectedModel)
 		{
 			throw new Error(`Model ${selectedModelName} not found in configuration.`);
@@ -410,7 +410,7 @@ const AiService = {
 					try
 					{
 						const parsed = JSON.parse(data);
-						const content = CONFIG.API.CONFIG[model].extractStreamContent(parsed);
+						const content = CONFIG.API.CONFIG.COMPLETION[model].extractStreamContent(parsed);
 						if (content)
 						{
 							accumulatedText += content;

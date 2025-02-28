@@ -32,7 +32,7 @@ const UIComponents = {
 		async handleImageUpload(files)
 		{
 			const apiModel = this.options.getApiModel?.() || 'chatgpt';
-			const limits = CONFIG.LIMITS.IMAGE[apiModel];
+			const limits = CONFIG.LIMITS.COMPLETION.IMAGE[apiModel];
 			if (files.length + Object.keys(this.uploadedImages)
 				.length > limits.max)
 			{
@@ -153,7 +153,7 @@ const UIComponents = {
 		async handleVideoUpload(files)
 		{
 			const apiModel = this.options.getApiModel?.() || 'gemini';
-			const limits = CONFIG.LIMITS.VIDEO[apiModel];
+			const limits = CONFIG.LIMITS.COMPLETION.VIDEO[apiModel];
 			if (files.length + Object.keys(this.uploadedVideos)
 				.length > limits.max)
 			{
