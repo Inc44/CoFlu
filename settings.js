@@ -29,7 +29,19 @@ class SettingsApp
 			thinkingBudgetContainer: document.getElementById('thinkingBudgetContainer'),
 			thinkingBudgetNumber: document.getElementById('thinkingBudgetNumber'),
 			thinkingBudgetRange: document.getElementById('thinkingBudgetRange'),
+			transcribeLanguageSelect: document.getElementById('transcribeLanguage'),
+			transcriptionApiModelSelect: document.getElementById('transcriptionApiModel'),
 			wideToggle: document.getElementById('wideToggle'),
+			whisperModelContainers:
+			{
+				openai: document.getElementById('openaiWhisperModelContainer'),
+				groq: document.getElementById('groqWhisperModelContainer'),
+			},
+			whisperModelSelects:
+			{
+				openai: document.getElementById('openaiWhisperModel'),
+				groq: document.getElementById('groqWhisperModel'),
+			},
 			modelContainers:
 			{
 				chatgpt: document.getElementById('chatgptModelContainer'),
@@ -59,6 +71,7 @@ class SettingsApp
 		this.loadSettings();
 		this.setupEventListeners();
 		this.updateModelVisibility(this.elements.apiModelSelect.value);
+		this.updateTranscriptionModelVisibility(this.elements.transcriptionApiModelSelect.value);
 		this.updateThemeAndLayout();
 		this.syncThinkingBudgetInputs();
 	}
@@ -76,8 +89,14 @@ class SettingsApp
 		this.loadCheckboxSetting('streamingToggle', 'streaming_enabled', true);
 		this.loadCheckboxSetting('wideToggle', 'wide_enabled', false);
 		this.loadInputSetting('apiKeyInput', CONFIG.API.KEYS[this.elements.apiModelSelect.value] || '', this.elements.apiModelSelect.value);
+		this.loadInputSetting('batchRPMInput', 'translation_batch_rpm', 0, 'number');
+		this.loadInputSetting('batchSizeInput', 'translation_batch_size', 10, 'number');
+		this.loadInputSetting('exponentialRetryInput', 'exponential_retry', 10, 'number');
+		this.loadInputSetting('languageSelect', 'selected_language', 'English');
+		this.loadInputSetting('transcribeLanguageSelect', 'transcribe_language', 'en');
 		this.loadSelectSetting('apiModelSelect', 'selected_api_model', 'chatgpt');
 		this.loadSelectSetting('rendererSelect', 'selected_renderer', 'katex');
+		this.loadSelectSetting('transcriptionApiModelSelect', 'selected_transcription_api_model', 'openai');
 		if (this.elements.reasoningEffortSelect)
 		{
 			this.loadSelectSetting('reasoningEffortSelect', 'reasoning_effort', 'low');
@@ -86,11 +105,9 @@ class SettingsApp
 		this.elements.thinkingBudgetRange.value = thinkingBudget;
 		this.elements.thinkingBudgetNumber.value = thinkingBudget;
 		this.loadModelOptions();
-		this.loadInputSetting('languageSelect', 'selected_language', 'English');
-		this.loadInputSetting('batchSizeInput', 'translation_batch_size', 10, 'number');
-		this.loadInputSetting('batchRPMInput', 'translation_batch_rpm', 0, 'number');
-		this.loadInputSetting('exponentialRetryInput', 'exponential_retry', 10, 'number');
+		this.loadWhisperModelOptions();
 		this.updateModelVisibility(this.elements.apiModelSelect.value);
+		this.updateTranscriptionModelVisibility(this.elements.transcriptionApiModelSelect.value);
 		this.updateApiKeyLabel(this.elements.apiModelSelect.value);
 		this.displayCurrentSettings();
 		this.syncThinkingBudgetInputs();
@@ -145,6 +162,26 @@ class SettingsApp
 				}
 			});
 	}
+	loadWhisperModelOptions()
+	{
+		Object.entries(CONFIG.API.MODELS.TRANSCRIPTION)
+			.forEach(([provider, modelConfig]) =>
+			{
+				const modelSelect = this.elements.whisperModelSelects[provider];
+				if (modelSelect)
+				{
+					modelSelect.innerHTML = '';
+					modelConfig.options.forEach(model =>
+					{
+						const option = document.createElement('option');
+						option.value = model.name;
+						option.textContent = model.name;
+						modelSelect.appendChild(option);
+					});
+					modelSelect.value = StorageService.load(`${provider}_whisper_model`, modelConfig.default);
+				}
+			});
+	}
 	updateModelVisibility(selectedProvider)
 	{
 		Object.values(this.elements.modelContainers)
@@ -158,6 +195,19 @@ class SettingsApp
 			selectedContainer.classList.add('active');
 			this.updateReasoningEffortVisibility(selectedProvider);
 			this.updateThinkingBudgetVisibility(selectedProvider)
+		}
+	}
+	updateTranscriptionModelVisibility(selectedProvider)
+	{
+		Object.values(this.elements.whisperModelContainers)
+			.forEach(container =>
+			{
+				container.style.display = 'none';
+			});
+		const selectedContainer = this.elements.whisperModelContainers[selectedProvider];
+		if (selectedContainer)
+		{
+			selectedContainer.style.display = 'block';
 		}
 	}
 	updateReasoningEffortVisibility(selectedProvider)
@@ -206,6 +256,8 @@ class SettingsApp
 		this.elements.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
 		this.elements.saveSettingsBtn?.addEventListener('click', this.saveSettings.bind(this));
 		this.elements.streamingToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'streamingToggle', 'streaming_enabled'));
+		this.elements.transcribeLanguageSelect?.addEventListener('change', this.handleTranscribeLanguageChange.bind(this));
+		this.elements.transcriptionApiModelSelect?.addEventListener('change', this.handleTranscriptionApiModelChange.bind(this));
 		this.elements.wideToggle?.addEventListener('change', this.handleWideToggleChange.bind(this));
 		this.elements.thinkingBudgetRange?.addEventListener('input', () =>
 		{
@@ -228,6 +280,15 @@ class SettingsApp
 					this.updateThinkingBudgetVisibility(provider);
 				});
 			});
+		Object.entries(this.elements.whisperModelSelects)
+			.forEach(([provider, select]) =>
+			{
+				select?.addEventListener('change', () =>
+				{
+					const selectedWhisperSubModel = select.value;
+					StorageService.save(`${provider}_whisper_model`, selectedWhisperSubModel);
+				});
+			});
 	}
 	handleApiModelChange()
 	{
@@ -236,6 +297,12 @@ class SettingsApp
 		this.updateApiKeyLabel(selectedModel);
 		this.updateModelVisibility(selectedModel);
 		this.elements.apiKeyInput.value = StorageService.load(CONFIG.API.KEYS[selectedModel] || '', '');
+	}
+	handleTranscriptionApiModelChange()
+	{
+		const selectedModel = this.elements.transcriptionApiModelSelect.value;
+		StorageService.save('selected_transcription_api_model', selectedModel);
+		this.updateTranscriptionModelVisibility(selectedModel);
 	}
 	handleApiKeyChange()
 	{
@@ -276,6 +343,10 @@ class SettingsApp
 	{
 		StorageService.save('selected_language', this.elements.languageSelect.value);
 	}
+	handleTranscribeLanguageChange()
+	{
+		StorageService.save('transcribe_language', this.elements.transcribeLanguageSelect.value);
+	}
 	handleNumericInputChange(elementKey, storageKey, min = null, max = null)
 	{
 		let value = parseInt(this.elements[elementKey].value, 10);
@@ -314,9 +385,10 @@ class SettingsApp
 			selected_api_model: this.elements.apiModelSelect.value,
 			selected_language: this.elements.languageSelect.value,
 			selected_renderer: this.elements.rendererSelect.value,
+			selected_transcription_api_model: this.elements.transcriptionApiModelSelect.value,
 			streaming_enabled: this.elements.streamingToggle.checked,
 			thinking: parseInt(this.elements.thinkingBudgetNumber.value, 10),
-			transcribe_language: StorageService.load('transcribe_language', 'en'),
+			transcribe_language: this.elements.transcribeLanguageSelect.value,
 			translation_batch_rpm: parseInt(this.elements.batchRPMInput.value, 10),
 			translation_batch_size: parseInt(this.elements.batchSizeInput.value, 10),
 			translation_enabled: StorageService.load('translation_enabled', false),
@@ -335,6 +407,11 @@ class SettingsApp
 			.forEach(([provider, modelConfig]) =>
 			{
 				settings[`${provider}_model`] = this.elements.modelSelects[provider].value;
+			});
+		Object.entries(CONFIG.API.MODELS.TRANSCRIPTION)
+			.forEach(([provider, modelConfig]) =>
+			{
+				settings[`${provider}_whisper_model`] = this.elements.whisperModelSelects[provider].value;
 			});
 		return settings;
 	}
