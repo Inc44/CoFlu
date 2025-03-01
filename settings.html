@@ -14,6 +14,11 @@
 			const storedDarkMode = localStorage.getItem('dark_enabled');
 			const isDarkMode = storedDarkMode === 'true' || (storedDarkMode === null && true);
 			document.documentElement.setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
+			const storedWideMode = localStorage.getItem('wide_enabled');
+			const isWideMode = storedWideMode === 'true' || (storedWideMode === null && false);
+			if (isWideMode) {
+				document.documentElement.classList.add('wide');
+			}
 		</script>
 		<link href="styles.css" rel="stylesheet">
 		<script src="config.js"></script>

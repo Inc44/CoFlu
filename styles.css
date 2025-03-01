@@ -22,10 +22,10 @@ color: rgb(199, 195, 189);
 html[data-bs-theme="light"] body #homePage {
 color: rgb(30, 35, 40);
 }
-.container {
+html:not(.wide) .container {
 max-width: 100rem;
 }
-.container.wide {
+html.wide .container {
 max-width: 420rem;
 }
 .card {

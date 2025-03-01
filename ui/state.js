@@ -27,17 +27,20 @@ const UIState = {
 			darkToggle.checked = isDarkMode;
 		}
 	},
-	updateLayout(isWide)
+	updateLayout(isWideMode)
 	{
-		const contentElement = document.getElementById('content');
-		if (contentElement)
+		if (isWideMode)
 		{
-			contentElement.classList.toggle('wide', isWide);
+			document.documentElement.classList.add('wide');
+		}
+		else
+		{
+			document.documentElement.classList.remove('wide');
 		}
 		const wideToggle = document.getElementById('wideToggle');
 		if (wideToggle)
 		{
-			wideToggle.checked = isWide;
+			wideToggle.checked = isWideMode;
 		}
 	},
 	updateImageUploadVisibility(modelDetails)

@@ -32,8 +32,6 @@ class TranslateApp
 	{
 		this.loadSettings();
 		this.setupEventListeners();
-		const isWideMode = StorageService.load('wide_enabled') === true;
-		UIState.updateLayout(isWideMode);
 	}
 	loadSettings()
 	{

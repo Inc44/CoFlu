@@ -37,7 +37,6 @@ class App
 			transcribeLanguage: document.getElementById('transcribeLanguage'),
 			translationToggle: document.getElementById('translationToggle'),
 			videoUploadInput: document.getElementById('videoUploadInput'),
-			wideToggle: document.getElementById('wideToggle'),
 			wpmContainer: document.getElementById('wpm-container'),
 			wpmDisplay: document.getElementById('wpm')
 		};
@@ -92,8 +91,7 @@ class App
 			'cleanupToggle': ['cleanup_enabled', true],
 			'noBSToggle': ['no_bs_enabled', false],
 			'streamingToggle': ['streaming_enabled', true],
-			'translationToggle': ['translation_enabled', false],
-			'wideToggle': ['wide_enabled', false]
+			'translationToggle': ['translation_enabled', false]
 		};
 		Object.entries(toggleSettings)
 			.forEach(([elementId, [storageKey, defaultValue]]) =>
@@ -111,16 +109,6 @@ class App
 		if (this.elements.transcribeLanguage)
 		{
 			this.elements.transcribeLanguage.value = StorageService.load('transcribe_language', 'en');
-		}
-		const isWideMode = StorageService.load('wide_enabled') === true;
-		const contentElement = document.getElementById('content');
-		if (contentElement)
-		{
-			contentElement.classList.toggle('wide', isWideMode);
-		}
-		if (this.elements.wideToggle)
-		{
-			this.elements.wideToggle.checked = isWideMode;
 		}
 	}
 	loadSavedContent()
@@ -173,15 +161,6 @@ class App
 		this.setupPromptHandlers();
 		this.setupMarkdownHandler();
 		this.setupTranscribeHandler();
-		if (this.elements.wideToggle)
-		{
-			this.elements.wideToggle.addEventListener('change', (e) =>
-			{
-				const isWide = e.target.checked;
-				UIState.updateLayout(isWide);
-				StorageService.save('wide_enabled', isWide);
-			});
-		}
 		if (this.elements.languageSelect)
 		{
 			this.elements.languageSelect.addEventListener('change', () =>
@@ -357,12 +336,6 @@ class App
 				UIState.updateImageUploadVisibility(currentModelDetails);
 				UIState.updateVideoUploadVisibility(currentModelDetails);
 			}
-		}
-		const isWideMode = StorageService.load('wide_enabled') === true;
-		UIState.updateLayout(isWideMode);
-		if (this.elements.customPromptContainer && this.elements.promptSelect)
-		{
-			this.elements.customPromptContainer.style.display = this.elements.promptSelect.value === 'custom' ? 'block' : 'none';
 		}
 	}
 	setupErrorHandling()

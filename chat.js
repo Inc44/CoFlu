@@ -35,8 +35,6 @@ class ChatApp
 	}
 	init()
 	{
-		const isWideMode = StorageService.load('wide_enabled') === true;
-		UIState.updateLayout(isWideMode);
 		this.setupEventListeners();
 		this.initializeComponents();
 		this.displayMessages();

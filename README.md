@@ -142,7 +142,6 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 - 🟡 Fix JSON file input causing [object Object] to be saved.
 - 🟡 Fix Qwen Vision failure.
 - 🟡 Fix SUS key validation.
-- 🟡 Fix flickering by loading wide mode the same way as dark mode at the beginning of the HTML.
 - 🟡 Fix stop button not stopping in chat.
 - 🟡 Implement real-time update for import/export settings.
 - 🟢 Other bugs have not been found yet.
