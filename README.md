@@ -1,102 +1,85 @@
 # CoFlu
 
-CoFlu is a comprehensive text manipulation, generation, and comparison tool designed to be your one-stop solution for a wide range of text-related tasks. It empowers users to compare texts, generate content using cutting-edge AI models, transform text in various ways, transcribe audio, and even translate documents with unprecedented accuracy and layout preservation. CoFlu is particularly useful for proofreading, editing, content creation, version control, and ensuring consistency across different text versions.
+CoFlu is a powerful text manipulation, generation, and comparison tool. It's designed for tasks like proofreading, editing, content creation, version control, and ensuring text consistency. CoFlu offers unique capabilities, including AI-powered text generation, audio transcription, and unprecedented layout-preserving .docx translation using LLMs.
 
 ![CoFlu](CoFlu.png)
 
-**As of February 2025, CoFlu is the *only* website in the world offering Microsoft Word (.docx) translation with full layout preservation while leveraging the power of Large Language Models (LLMs) for superior translation quality.** This feature alone sets CoFlu apart, providing a powerful and unique capability for users working with formatted documents.
+**Key Differentiator:** As of February 2025, CoFlu is the *only* website offering Microsoft Word (.docx) translation that *fully preserves the original document's layout* (fonts, styles, tables, images, and other elements) while using LLMs for superior translation quality. This sets CoFlu apart, providing a powerful and unique capability for users working with formatted documents.
 
 ## Features
 
-**Core Functionality:**
+**1. Text Manipulation & Comparison:**
 
-*   **File Upload:** Import text from a variety of file formats: `.epub`, `.txt`, `.html`, `.htm`, `.css`, `.xml`, `.json`, and, crucially, `.docx`.
-*   **Text Comparison:** Analyze the differences between two texts using the Levenshtein distance algorithm, calculate percentage differences, and provide visual diff views. Includes an optional "semantic cleanup" for more meaningful comparisons.
-*   **Diff Views:** Visualize differences in either a single-column format (with insertions and deletions highlighted) or a double-column format for side-by-side comparison.
-*   **Text Transformation:** A comprehensive suite of text manipulation tools:
-    *   Convert to uppercase or lowercase.
-    *   Deduplicate lines.
-    *   Sort lines (alphabetically, both for entire lines and space-separated words within a single line).
-    *   Remove bold formatting.
-    *   Remove extra spaces.
-    *   Format LaTeX code (specifically, handling common spacing issues around delimiters).
-    *   Format HTML (e.g., replacing `&nbsp;` with regular spaces).
-    *   Retab: Consistently convert spaces to tabs for indentation, addressing inconsistencies in code or text.
-*   **Markdown Rendering:** Render Markdown content to HTML, with full support for mathematical expressions using either KaTeX or MathJax. A print/save feature (Ctrl+P) allows you to easily capture the rendered output.
+-   **File Upload:** Supports `.epub`, `.txt`, `.html`, `.htm`, `.css`, `.xml`, `.json`, and `.docx`.
+-   **Text Comparison:**
+    -   Calculates Levenshtein distance and percentage differences.
+    -   Optional "semantic cleanup" for more meaningful comparisons.
+    -   **Diff Views:** Single-column (insertions/deletions highlighted) or double-column (side-by-side).
+-   **Text Transformations:**
+    -   Convert case (uppercase/lowercase).
+    -   Deduplicate and sort lines (alphabetically, including space-separated words).
+    -   Remove bold formatting and extra spaces.
+    -   Format LaTeX (spacing around delimiters) and HTML (`&nbsp;` to spaces).
+    -   Retab: Convert spaces to tabs for consistent indentation.
+-   **Markdown Rendering:**
+    -   Converts Markdown to HTML, including math (KaTeX or MathJax).
+    -   Print/save as PDF with Ctrl+P.
 
-**AI-Powered Capabilities:**
+**2. AI-Powered Capabilities:**
 
-*   **AI Text Generation:** Generate high-quality text using a selection of leading AI models:
-    *   **OpenAI's ChatGPT:** Including the latest `gpt-4o` and `o3-mini` models.
-    *   **Anthropic's Claude:** Leveraging the `claude-3.5-sonnet` and `claude-3.5-haiku` models.
-    *   **DeepSeek:** Featuring both R1 and V3.
-    *   **Google's Gemini:** Access to multiple Gemini 2.0 models and the ability to use videos.
-    *   **Groq's LLaMAs and Mixtral:** Utilizing Groq's high-speed inference for rapid text generation.
-    *   **X's Grok:** Using the most preferred AI yet.
-    *   **Qwen:** Including models like `qwen-max` and `qwen-vl-max`.
-    *   **SambaNova's LLaMAs:** Including vision models.
-*   **Customizable Prompts:** Use predefined prompts (e.g., "Proofread this text") or create and save your own custom prompts for repeated use.
-*   **Streaming Support:** (Optional) Receive generated text as a stream, allowing you to see the output as it's being created (particularly useful for longer generations).
-*   **Image and Video Input:** For models that support it, upload images or videos to provide visual context for your prompts.
-*   **Audio Transcription:** Transcribe audio files (`.flac`, `.mp3`, `.mp4`, `.mpeg`, `.mpga`, `.m4a`, `.ogg`, `.wav`, `.webm`) into text using Groq's Whisper model. Supports multiple languages.
-*   **Translation:** Translate text into a variety of languages using the selected AI model. This is a core part of the groundbreaking `.docx` translation feature.
+-   **AI Text Generation:** Uses leading AI models:
+    -   **OpenAI:** `gpt-4o`, `o3-mini`, and others.
+    -   **Anthropic:** `claude-3-7-sonnet`, `claude-3-5-sonnet`, `claude-3-5-haiku`.
+    -   **DeepSeek:** R1 and V3.
+    -   **Google Gemini:** Gemini 2.0 models, including video input.
+    -   **Groq:** LPU high-speed inference, including vision models.
+    -   **OpenRouter:** Unsage Dolphin 3.0, Mistral, and `gpt-4o` extended output.
+    -   **xAI:** The most based Grok.
+    -   **Alibaba:** `qwen-max`, `qwen-vl-max`, and others.
+    -   **SambaNova:** Fastest full-size DeepSeek and LLaMAs.
+    -   **Together.AI:** Qwens.
+-   **Prompting:**
+    -   Predefined prompts (e.g., "Proofread this text").
+    -   Create and save custom prompts.
+    -   Optional streaming output (see text as it's generated).
+    -   Image/video input (for supported models).
+-   **Audio Transcription:**
+    -   Transcribes `.flac`, `.mp3`, `.mp4`, `.mpeg`, `.mpga`, `.m4a`, `.ogg`, `.wav`, `.webm`.
+    -   Uses Whisper models.
+    -   Supports multiple languages.
+-   **Text Translation:** Translates text using the selected AI model (also as part of the .docx feature).
 
-**Groundbreaking .DOCX Translation:**
+**3. Groundbreaking .DOCX Translation:**
 
-*   **Translate DOCX Files:** Upload Microsoft Word (`.docx`) documents for translation.
-*   **Layout Preservation:** CoFlu meticulously preserves the original document's formatting, including fonts, styles, tables, and images. This is a *key differentiator* from simple text translators.
-*   **LLM-Powered Translation:** Uses the selected AI model (ChatGPT, Claude, Gemini, Grok, Groq, Qwen, SambaNova) for high-quality, context-aware translation. This often surpasses the accuracy of traditional machine translation systems.
-*   **Translation Batch Size:** Set the maximum size of the translation batch (smaller values may help prevent API errors).
-*   **Translation Batch RPM:** Set the delay between batches (larger values may help prevent API errors).
-*   **Exponential Retry:** Number of retries for failed requests.
-*   **Download Translated DOCX:** After processing, download the fully translated `.docx` file, ready to use.
+-   **Upload & Translate .DOCX:** Handles Microsoft Word documents.
+-   **Full Layout Preservation:** *Crucially*, CoFlu maintains the *exact* original formatting (fonts, styles, tables, images).
+-   **LLM-Powered:** Uses the selected AI model for translation.
+-   **Translation Settings:**
+    -   **Batch Size:** Number of text chunks sent to the AI at once (smaller = more stable).
+    -   **Batch RPM:** Delay between batches (same as API rate limits).
+    -   **Exponential Retry:** Number of retries for failed API requests.
+-   **Download Translated .DOCX:** Automatically downloads the translated document.
 
-**User Experience & Customization:**
+**4. User Experience:**
 
-*   **Local Storage:** CoFlu saves your text, settings, and custom prompts locally in your browser's storage, so you don't lose your work.
-*   **Appearance Customization:**
-    *   Switch between light and dark modes.
-    *   Toggle a "wide mode" for a more expansive layout.
-*   **Settings Import/Export:** Import and export settings in JSON format.
+-   **Local Storage:** Saves text, chat, API keys, settings, and custom prompts in your browser. No data is sent to external servers (except for API calls to the chosen AI provider).
+-   **Appearance:** Light/dark mode, wide mode.
+-   **Settings Import/Export:** JSON format.
 
 ## Usage
 
-1.  **Load Text/Files:**
-    *   Use the "Upload File" buttons to load text files (including `.docx`) into the source and target text areas.
-    *   Alternatively, type or paste text directly into the text areas.
-
-2.  **Text Transformation:**
-    *   Use the buttons above each text area to apply transformations (uppercase, lowercase, dedupe, etc.).
-
-3.  **AI Text Generation:**
-    *   Select your desired API model (ChatGPT, Claude, Gemini, Groq, SambaNova, Qwen).
-    *   Enter the corresponding API key (see the "API Keys" section below).
-    *   Choose a predefined prompt or enter a custom prompt.
-    *   (Optional) Upload images or videos if the selected model supports them.
-    *   (Optional) Enable/disable streaming.
-    *   Click "Generate" to produce text in the target text area.
-
-4.  **Text Comparison:**
-    *   Click "Compare" to analyze the differences between the source and target texts.
-    *   View results, including Levenshtein distance, percentage differences, and visual diffs.
-
-5.  **Switch Texts:**
-    *   Click "Switch" to swap the contents of the source and target text areas.
-
-6.  **Audio Transcription:**
-    *   Select the target language for transcription.
-    *   Upload an audio file.
-    *   Click "Start Transcribe."
-
-7.  **Markdown Rendering:**
-    *   Click "Render" to convert Markdown in the text areas to HTML.
-    *   Choose your preferred math renderer (KaTeX or MathJax).
-    *   Use Ctrl+P to save the rendered target text.
-
-8.  **.DOCX Translation:**
-    *   Select the desired language.
-    *   Upload the file.
-    *   Click "Start Translation."
+1.  **Load Text:** Upload files or paste/type text into the source/target areas.
+2.  **Transform:** Use buttons above text areas for transformations (uppercase, lowercase, dedupe, etc.).
+3.  **AI Generate:**
+    -   Select an API model and enter your API key in settings.
+    -   Choose a prompt (predefined or custom).
+    -   (Optional) Upload images/videos, enable streaming.
+    -   Click "Generate."
+4.  **Compare:** Click "Compare" to see differences (Levenshtein, percentage, visual diffs).
+5.  **Switch:** Swap source and target text.
+6.  **Transcribe:** Select language, upload audio, click "Start Transcribe."
+7.  **Render Markdown:** Choose math renderer (KaTeX/MathJax), click "Render," use Ctrl+P to save.
+8.  **Translate .DOCX:** Select language, upload .docx, click "Start Translation."
 
 ## Custom Prompts
 
@@ -106,17 +89,18 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 
 ## API Keys
 
-*   You need API keys to use the AI generation, transcription, and `.docx` translation features.
-*   CoFlu supports API keys from:
-    *   **OpenAI:** [OpenAI Platform](https://platform.openai.com/api-keys)
-    *   **Anthropic:** [Anthropic Console](https://console.anthropic.com/settings/keys)
-    *   **Google:** [Google AI Studio](https://aistudio.google.com/app/apikey)
-    *   **Grok:** [xAI Cloud Console](https://console.x.ai)
-    *   **Groq:** [GroqCloud](https://console.groq.com/keys)
-    *   **Qwen:** [Qwen API](https://bailian.console.alibabacloud.com/?apiKey=1#/api-key)
-    *   **SambaNova:** [SambaNova API](https://cloud.sambanova.ai/apis)
-
-*   Enter your API keys in the "Settings" page. CoFlu stores them securely in your browser's local storage. **They are *not* sent to any external server.**
+-   **Required for AI features (generation, transcription, .docx translation).**
+-   Enter keys in the "Settings" page.
+-   CoFlu supports:
+    -   **OpenAI:** [OpenAI Platform](https://platform.openai.com/api-keys)
+    -   **Anthropic:** [Anthropic Console](https://console.anthropic.com/settings/keys)
+    -   **Google:** [Google AI Studio](https://aistudio.google.com/app/apikey)
+    -   **Grok:** [xAI Cloud Console](https://console.x.ai)
+    -   **Groq:** [GroqCloud](https://console.groq.com/keys)
+    -   **OpenRouter:** [OpenRouter](https://openrouter.ai/settings/keys)
+    -   **Qwen:** [Alibaba Cloud](https://bailian.console.alibabacloud.com/?apiKey=1#/api-key)
+    -   **SambaNova:** [SambaNova Cloud](https://cloud.sambanova.ai/apis)
+    -   **Together:** [Together.AI](https://api.together.ai/settings/api-keys)
 
 ## Dependencies
 
@@ -135,11 +119,11 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 
 ## Bugs
 
-- 🔴 Fix CORS for Groq's 40MB audio upload
+- 🔴 Fix CORS for Groq's 40MB audio upload.
 - 🔴 Fix chat reasoning not showing.
 - 🔴 Fix max_completion_tokens for O models and max_tokens for others.
-- 🔴 Fix reasoning in OpenRouter as {"max_tokens": 100000} is not used.
-- 🟡 Fix JSON file input causing [object Object] to be saved.
+- 🔴 Fix reasoning in OpenRouter as `{"max_tokens": 100000}` is not used.
+- 🟡 Fix JSON file input causing `[object Object]` to be saved.
 - 🟡 Fix Qwen Vision failure.
 - 🟡 Fix SUS key validation.
 - 🟡 Fix stop button not stopping in chat.
@@ -162,7 +146,7 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 - 🔴 Implement history for index, chat, and translation.
 - 🔴 Modify the word counter.
 - 🔴 Possibly add TTS tools.
-- 🔴 Possibly add an OCR tool based on "Extract the text elements described by the user from the picture and return the result formatted as a JSON in the following format: {name_of_element: [value]}."
+- 🔴 Possibly add an OCR tool based on "Extract the text elements described by the user from the picture and return the result formatted as a JSON in the following format: {name_of_element: [value]}".
 - 🔴 Possibly add image diff.
 - 🔴 Provide an option to display tokens instead of words.
 - 🔴 Refactor and rewrite the entire codebase.
