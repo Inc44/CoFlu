@@ -135,36 +135,50 @@ CoFlu is a comprehensive text manipulation, generation, and comparison tool desi
 
 ## Bugs
 
+- 🔴 Fix CORS for Groq's 40MB audio upload
+- 🔴 Fix chat reasoning not showing.
+- 🔴 Fix max_completion_tokens for O models and max_tokens for others.
+- 🔴 Fix reasoning in OpenRouter as {"max_tokens": 100000} is not used.
+- 🟡 Fix JSON file input causing [object Object] to be saved.
+- 🟡 Fix Qwen Vision failure.
+- 🟡 Fix SUS key validation.
 - 🟡 Fix flickering by loading wide mode the same way as dark mode at the beginning of the HTML.
-- 🟢 Other bugs are not found yet.
+- 🟡 Fix stop button not stopping in chat.
+- 🟡 Implement real-time update for import/export settings.
+- 🟢 Other bugs have not been found yet.
 
 ## TODOs
 
-- 🟡 Add `transcription.html` and transcription proofreading options.
-- 🟡 Add audio input support for ChatGPT, Gemini, Qwen, and SambaNova.
 - 🔴 Add support for local LLMs via Ollama.js for offline and independent use.
 - 🔴 Adjust transcription size limits: 40 MB for Groq.
 - 🔴 Allow disabling of thinking tokens (`<think>` for DeepSeek, Groq, and SambaNova; `"thinking"` for Claude).
 - 🔴 Allow saving of images and videos attached to chat.
-- 🟢 Consider adding new default prompts, such as: *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
 - 🔴 Create online storage for large videos (up to 2 GB) for Gemini.
 - 🔴 Enable editing of custom prompts:
 	- 🔴 Include a delete button for custom prompts.
 	- 🟡 When selecting a custom prompt, a text input field should reappear, similar to adding a new prompt.
 - 🔴 Enable image drag-and-drop or paste (Ctrl+V) into the image upload card.
 - 🔴 Extend document support to additional formats, including PDFs, for both input and translation.
+- 🔴 Generate pages from HTML templates.
 - 🔴 Implement history for index, chat, and translation.
-- 🟢 Improve LaTeX handling by replacing punctuation inside separate text macros.
-- 🟢 Include Cerebras if approved.
-- 🟢 Integrate Together AI and OpenRouter.
 - 🔴 Modify the word counter.
+- 🔴 Possibly add TTS tools.
+- 🔴 Possibly add an OCR tool based on "Extract the text elements described by the user from the picture and return the result formatted as a JSON in the following format: {name_of_element: [value]}."
+- 🔴 Possibly add image diff.
 - 🔴 Provide an option to display tokens instead of words.
-- 🟡 Provide an option to enable high-cost models (gpt-4.5, o1, opus-3).
 - 🔴 Refactor and rewrite the entire codebase.
 - 🔴 Rewrite Gemini without relying on Google Generative AI.
 - 🔴 Support YouTube video transcription.
 - 🔴 Support login via Google, Microsoft, and GitHub for syncing.
 - 🔴 Support multiple chat sessions.
+- 🟡 Add `transcription.html` and transcription proofreading options.
+- 🟡 Add audio input support for ChatGPT, Gemini, Qwen, and SambaNova.
+- 🟡 Explore other models on www.minimax.io and lambdalabs.com.
+- 🟡 Provide an option to enable high-cost models (gpt-4.5, o1, opus-3).
+- 🟡 Rewrite Gemini for OpenAI compatibility.
+- 🟢 Consider adding new default prompts, such as: *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
+- 🟢 Improve LaTeX handling by replacing punctuation inside separate text macros.
+- 🟢 Include Cerebras if approved.
 
 ## License
 
