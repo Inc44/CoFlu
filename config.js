@@ -252,12 +252,61 @@ window.CONFIG = {
 				},
 				openrouter:
 				{
-					default: "deepseek/deepseek-r1-distill-qwen-1.5b",
+					default: "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
 					options: [
 					{
-						name: "deepseek/deepseek-r1-distill-qwen-1.5b",
+						name: "cognitivecomputations/dolphin3.0-mistral-24b:free",
+						max_tokens: 32768,
+						image: false
+					},
+					{
+						name: "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
+						max_tokens: 32768,
+						image: false
+					},
+					{
+						name: "deepseek/deepseek-r1-distill-llama-8b",
+						max_tokens: 32000,
+						image: false
+					},
+					{
+						name: "microsoft/phi-4",
+						max_tokens: 16384,
+						image: false
+					},
+					{
+						name: "minimax/minimax-01",
+						max_tokens: 1000192,
+						image: true
+					},
+					{
+						name: "mistralai/codestral-2501",
+						max_tokens: 256000,
+						image: false
+					},
+					{
+						name: "mistralai/mistral-large-2411",
+						max_tokens: 128000,
+						image: false
+					},
+					{
+						name: "mistralai/pixtral-large-2411",
+						max_tokens: 128000,
+						image: true
+					},
+					{
+						name: "nousresearch/hermes-3-llama-3.1-405b",
 						max_tokens: 131072,
-						reasoning: {"max_tokens": 100000},
+						image: false
+					},
+					{
+						name: "openai/gpt-4o:extended",
+						max_tokens: 128000,
+						image: false
+					},
+					{
+						name: "perplexity/r1-1776",
+						max_tokens: 128000,
 						image: false
 					}]
 				},
@@ -393,6 +442,11 @@ window.CONFIG = {
 					{
 						name: "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
 						max_tokens: 131073,
+						image: false
+					},
+					{
+						name: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+						max_tokens: 32768,
 						image: false
 					}]
 				}
@@ -534,11 +588,25 @@ window.CONFIG = {
 				openrouter:
 				{
 					url: 'https://openrouter.ai/api/v1/chat/completions',
-					model: "",
+					model: "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
-					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractContent: data =>
+					{
+						const message = data.choices[0].message;
+						const textParts = [];
+						if (message.reasoning)
+						{
+							textParts.push(message.reasoning + "\n");
+						}
+						if (message.content)
+						{
+							textParts.push(message.content);
+						}
+						return textParts.join('\n')
+							.trim();
+					},
+					extractStreamContent: data => data.choices[0]?.delta?.reasoning || data.choices[0]?.delta?.content
 				},
 				alibaba:
 				{
@@ -561,7 +629,7 @@ window.CONFIG = {
 				together:
 				{
 					url: 'https://api.together.xyz/v1/chat/completions',
-					model: "",
+					model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -625,8 +693,8 @@ window.CONFIG = {
 				},
 				openrouter:
 				{
-					max: 0,
-					size: 0
+					max: 1,
+					size: 8
 				},
 				alibaba:
 				{
