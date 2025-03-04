@@ -33,6 +33,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
     -   **DeepSeek:** R1 and V3.
     -   **Google Gemini:** Gemini 2.0 models, including video input.
     -   **Groq:** LPU high-speed inference, including vision models.
+    -   **Lambda:** LLaMA.
     -   **OpenRouter:** Unsage Dolphin 3.0, Mistral, and `gpt-4o` extended output.
     -   **xAI:** The most based Grok.
     -   **Alibaba:** `qwen-max`, `qwen-vl-max`, and others.
@@ -97,6 +98,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
     -   **Google:** [Google AI Studio](https://aistudio.google.com/app/apikey)
     -   **Grok:** [xAI Cloud Console](https://console.x.ai)
     -   **Groq:** [GroqCloud](https://console.groq.com/keys)
+    -   **Lambda:** [Lambda](https://cloud.lambdalabs.com/api-keys)
     -   **OpenRouter:** [OpenRouter](https://openrouter.ai/settings/keys)
     -   **Qwen:** [Alibaba Cloud](https://bailian.console.alibabacloud.com/?apiKey=1#/api-key)
     -   **SambaNova:** [SambaNova Cloud](https://cloud.sambanova.ai/apis)

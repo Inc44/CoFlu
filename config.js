@@ -10,6 +10,7 @@ window.CONFIG = {
 			google: 'google_api_key',
 			x: 'x_api_key',
 			groq: 'groq_api_key',
+			lambda: 'lambda_api_key',
 			openrouter: 'openrouter_api_key',
 			alibaba: 'alibaba_api_key',
 			sambanova: 'sambanova_api_key',
@@ -250,6 +251,16 @@ window.CONFIG = {
 						image: false
 					}]
 				},
+				lambda:
+				{
+					default: "hermes3-405b",
+					options: [
+					{
+						name: "hermes3-405b",
+						max_tokens: 131072,
+						image: false
+					}]
+				},
 				openrouter:
 				{
 					default: "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
@@ -293,11 +304,6 @@ window.CONFIG = {
 						name: "mistralai/pixtral-large-2411",
 						max_tokens: 128000,
 						image: true
-					},
-					{
-						name: "nousresearch/hermes-3-llama-3.1-405b",
-						max_tokens: 131072,
-						image: false
 					},
 					{
 						name: "openai/gpt-4o:extended",
@@ -585,6 +591,15 @@ window.CONFIG = {
 					extractContent: data => data.choices[0]?.message?.content,
 					extractStreamContent: data => data.choices[0]?.delta?.content
 				},
+				lambda:
+				{
+					url: 'https://api.lambdalabs.com/v1/chat/completions',
+					model: "hermes3-405b",
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.choices[0]?.message?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.content
+				},
 				openrouter:
 				{
 					url: 'https://openrouter.ai/api/v1/chat/completions',
@@ -691,6 +706,11 @@ window.CONFIG = {
 					max: 1,
 					size: 3
 				},
+				lambda:
+				{
+					max: 0,
+					size: 0
+				},
 				openrouter:
 				{
 					max: 1,
@@ -744,6 +764,11 @@ window.CONFIG = {
 					max: 0,
 					size: 0
 				},
+				lambda:
+				{
+					max: 0,
+					size: 0
+				},
 				openrouter:
 				{
 					max: 0,
@@ -793,6 +818,7 @@ window.CONFIG = {
 			google: 'Google API Key:',
 			x: 'X API Key:',
 			groq: 'Groq API Key:',
+			lambda: 'Lambda API Key:',
 			openrouter: 'OpenRouter API Key:',
 			alibaba: 'Alibaba API Key:',
 			sambanova: 'SambaNova API Key:',
@@ -812,6 +838,7 @@ window.CONFIG = {
 			google: /^AI[A-Za-z0-9-_]{32,}$/,
 			x: /^xai-[A-Za-z0-9]{32,}$/,
 			groq: /^gsk_[A-Za-z0-9]{32,}$/,
+			lambda: /^secret_[A-Za-z0-9]{32,}$/,
 			openrouter: /^sk-or-v1-[A-Za-z0-9]{32,}$/,
 			alibaba: /^sk-[A-Za-z0-9]{32,}$/,
 			sambanova: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
