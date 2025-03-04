@@ -103,7 +103,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
     -   **Qwen:** [Alibaba Cloud](https://bailian.console.alibabacloud.com/?apiKey=1#/api-key)
     -   **SambaNova:** [SambaNova Cloud](https://cloud.sambanova.ai/apis)
     -   **Together:** [Together.AI](https://api.together.ai/settings/api-keys)
-
+    
 ## Dependencies
 
 - [Bootstrap](https://getbootstrap.com)

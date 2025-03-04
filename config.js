@@ -487,7 +487,6 @@ window.CONFIG = {
 				openai:
 				{
 					url: 'https://api.openai.com/v1/chat/completions',
-					model: "chatgpt-4o-latest",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -496,7 +495,6 @@ window.CONFIG = {
 				anthropic:
 				{
 					url: 'https://api.anthropic.com/v1/messages',
-					model: "claude-3-7-sonnet-20250219",
 					apiKeyHeader: 'x-api-key',
 					apiKeyPrefix: '',
 					additionalHeaders:
@@ -547,7 +545,6 @@ window.CONFIG = {
 				deepseek:
 				{
 					url: 'https://api.deepseek.com/chat/completions',
-					model: "deepseek-chat",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data =>
@@ -569,14 +566,12 @@ window.CONFIG = {
 				},
 				google:
 				{
-					model: "gemini-2.0-pro-exp-02-05",
 					extractContent: data => data.candidates[0]?.content?.parts[0]?.text,
 					extractStreamContent: data => data.candidates[0]?.content?.parts[0]?.text,
 				},
 				x:
 				{
 					url: 'https://api.x.ai/v1/chat/completions',
-					model: "grok-2-1212",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -585,7 +580,6 @@ window.CONFIG = {
 				groq:
 				{
 					url: 'https://api.groq.com/openai/v1/chat/completions',
-					model: "llama-3.2-90b-vision-preview",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -594,7 +588,6 @@ window.CONFIG = {
 				lambda:
 				{
 					url: 'https://api.lambdalabs.com/v1/chat/completions',
-					model: "hermes3-405b",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -603,7 +596,6 @@ window.CONFIG = {
 				openrouter:
 				{
 					url: 'https://openrouter.ai/api/v1/chat/completions',
-					model: "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data =>
@@ -626,7 +618,6 @@ window.CONFIG = {
 				alibaba:
 				{
 					url: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions',
-					model: "qwen-max",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -635,7 +626,6 @@ window.CONFIG = {
 				sambanova:
 				{
 					url: 'https://api.sambanova.ai/v1/chat/completions',
-					model: "Llama-3.2-90B-Vision-Instruct",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -644,7 +634,6 @@ window.CONFIG = {
 				together:
 				{
 					url: 'https://api.together.xyz/v1/chat/completions',
-					model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -656,14 +645,12 @@ window.CONFIG = {
 				groq:
 				{
 					url: 'https://api.groq.com/openai/v1/audio/transcriptions',
-					model: "whisper-large-v3",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer '
 				},
 				openai:
 				{
 					url: 'https://api.openai.com/v1/audio/transcriptions',
-					model: "whisper-1",
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer '
 				}
