@@ -250,6 +250,18 @@ const AiService = {
 					}));
 					content = content.concat(imageContent);
 				}
+				if (options.videos?.length > 0)
+				{
+					const videoContent = options.videos.map(dataURL => (
+					{
+						type: 'image_url',
+						image_url:
+						{
+							url: dataURL
+						},
+					}));
+					content = content.concat(videoContent);
+				}
 				if (options.images?.length > 0 && model === 'anthropic')
 				{
 					const imageContent = options.images.map(dataURL =>
@@ -282,9 +294,9 @@ const AiService = {
 				role: "user",
 				content: prompt
 			}];
-			if (options.images && options.images.length > 0)
+			if ((options.images && options.images.length > 0) || (options.videos && options.videos.length > 0))
 			{
-				messages = this.formatMessagesWithImages(prompt, options.images, model);
+				messages = this.formatMessagesWithImages(prompt, options.images, options.videos, model);
 			}
 		}
 		let requestBody = {
@@ -329,9 +341,9 @@ const AiService = {
 			...config.additionalHeaders,
 		};
 	},
-	formatMessagesWithImages(prompt, images = [], model)
+	formatMessagesWithImages(prompt, images = [], videos = [], model)
 	{
-		if (images.length === 0)
+		if (images.length === 0 && videos.length == 0)
 		{
 			return [
 			{
@@ -366,18 +378,35 @@ const AiService = {
 				}, ...imageContent]
 			}];
 		}
-		const imageContent = images.map(dataURL => (
+		let mediaContent = [];
+		if (images.length > 0)
 		{
-			type: 'image_url',
-			image_url:
+			const imageContent = images.map(dataURL => (
 			{
-				url: dataURL
-			},
-		}));
+				type: 'image_url',
+				image_url:
+				{
+					url: dataURL
+				},
+			}));
+			mediaContent = mediaContent.concat(imageContent);
+		}
+		if (videos.length > 0)
+		{
+			const videoContent = videos.map(dataURL => (
+			{
+				type: 'image_url',
+				image_url:
+				{
+					url: dataURL
+				}
+			}));
+			mediaContent = mediaContent.concat(videoContent);
+		}
 		return [
 		{
 			role: "user",
-			content: [...imageContent,
+			content: [...mediaContent,
 			{
 				type: "text",
 				text: prompt
