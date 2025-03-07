@@ -318,16 +318,7 @@ class TranslateApp
 			abortSignal: this.state.abortController.signal
 		});
 		const response = await this.rateLimitRequests(apiCall);
-		if (apiModel === "google")
-		{
-			let translatedText = response.response?.text?.() || response.candidates?.[0]?.content?.parts?.[0]?.text || "[Translation Failed]";
-			await new Promise(resolve => setTimeout(resolve, 1000));
-			return translatedText;
-		}
-		else
-		{
-			return CONFIG.API.CONFIG.COMPLETION[apiModel].extractContent(response) || "[Translation Failed]";
-		}
+		return CONFIG.API.CONFIG.COMPLETION[apiModel].extractContent(response) || "[Translation Failed]";
 	}
 	async rateLimitRequests(apiCall)
 	{

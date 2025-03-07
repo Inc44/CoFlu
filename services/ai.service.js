@@ -126,9 +126,42 @@ const AiService = {
 				}
 				if (options.audios?.length > 0)
 				{
-					const audioContent = options.audios.map(dataURL => (
-					{}));
-					content = content.concat(audioContent);
+					if (model === 'sambanova')
+					{
+						const audioContent = options.audios.map(dataURL =>
+						{
+							return {
+								type: 'audio_content',
+								audio_content:
+								{
+									content: dataURL
+								}
+							};
+						});
+						content = content.concat(audioContent);
+					}
+					else
+					{
+						const audioContent = options.audios.map(dataURL =>
+						{
+							const base64Data = dataURL.split(',')[1];
+							const mimeType = 'audio/mp3' || dataURL.match(/^data:(.*?);base64,/)
+								?.[1];
+							if (mimeType.startsWith('audio/mpeg'))
+							{
+								mimeType = 'audio/mp3';
+							}
+							return {
+								type: 'input_audio',
+								input_audio:
+								{
+									data: base64Data,
+									format: mimeType.split('/')[1]
+								}
+							};
+						});
+						content = content.concat(audioContent);
+					}
 				}
 				if (options.images?.length > 0 && model !== 'anthropic')
 				{
@@ -235,15 +268,47 @@ const AiService = {
 	},
 	formatMessagesWithMedia(prompt, audios = [], images = [], videos = [], model)
 	{
-		if (audios.length === 0 && images.length === 0 && videos.length === 0)
+		let mediaContent = [];
+		if (audios.length > 0)
 		{
-			return [
+			if (model === 'sambanova')
 			{
-				role: "user",
-				content: prompt
-			}];
+				const audioContent = audios.map(dataURL =>
+				{
+					return {
+						type: 'audio_content',
+						audio_content:
+						{
+							content: dataURL
+						}
+					};
+				});
+				mediaContent = mediaContent.concat(audioContent);
+			}
+			else
+			{
+				const audioContent = audios.map(dataURL =>
+				{
+					const base64Data = dataURL.split(',')[1];
+					const mimeType = 'audio/mp3' || dataURL.match(/^data:(.*?);base64,/)
+						?.[1];
+					if (mimeType.startsWith('audio/mpeg'))
+					{
+						mimeType = 'audio/mp3';
+					}
+					return {
+						type: 'input_audio',
+						input_audio:
+						{
+							data: base64Data,
+							format: mimeType.split('/')[1]
+						}
+					};
+				});
+				mediaContent = mediaContent.concat(audioContent);
+			}
 		}
-		if (model === 'anthropic')
+		if (images.length > 0 && model === 'anthropic')
 		{
 			const imageContent = images.map(dataURL =>
 			{
@@ -260,18 +325,9 @@ const AiService = {
 					}
 				};
 			});
-			return [
-			{
-				role: "user",
-				content: [
-				{
-					type: "text",
-					text: prompt
-				}, ...imageContent]
-			}];
+			mediaContent = mediaContent.concat(imageContent);
 		}
-		let mediaContent = [];
-		if (images.length > 0)
+		else if (images.length > 0)
 		{
 			const imageContent = images.map(dataURL => (
 			{

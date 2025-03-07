@@ -164,7 +164,7 @@ class ChatApp
 			});
 			if (!this.state.isStreaming)
 			{
-				let assistantContent = model === 'google' ? aiResponse.response.text() : CONFIG.API.CONFIG.COMPLETION[model].extractContent(aiResponse);
+				let assistantContent = CONFIG.API.CONFIG.COMPLETION[model].extractContent(aiResponse);
 				this.addAssistantMessage(assistantContent);
 			}
 		}

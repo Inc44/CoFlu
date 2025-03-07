@@ -167,14 +167,7 @@ const UIHandlers = {
 				if (!generationOptions.streaming)
 				{
 					const modelConfig = CONFIG.API.CONFIG.COMPLETION[model];
-					if (model === 'google')
-					{
-						elements.targetText.value = response.response.text();
-					}
-					else
-					{
-						elements.targetText.value = modelConfig.extractContent(response);
-					}
+					elements.targetText.value = modelConfig.extractContent(response);
 					TextService.updateStats(elements.targetText, 'target');
 					StorageService.save('targetText', elements.targetText.value);
 				}
