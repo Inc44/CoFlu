@@ -123,6 +123,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 
 - 🔴 Adjust upload limits based on platform constraints, e.g., SambaNova (~20MB) and Google (>100MB).
 - 🔴 Fix CORS for Groq's 40MB audio upload.
+- 🔴 Fix CORS for Lambda Labs.
 - 🔴 Fix chat reasoning not showing.
 - 🔴 Fix max_completion_tokens for O models and max_tokens for others.
 - 🔴 Fix reasoning in OpenRouter as `{"max_tokens": 100000}` is not used.
@@ -130,10 +131,14 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟡 Fix JSON file input causing `[object Object]` to be saved.
 - 🟡 Fix Qwen Vision failure.
 - 🟡 Fix SUS key validation.
+- 🟡 Fix error when OpenAI requires audio to be attached.
+- 🟡 Fix error when Qwen requires an image to be attached.
+- 🟡 Fix scroll jumping up and down in chat.
 - 🟡 Fix smartphone layout issues where uploaded audio and rendered LaTeX extend beyond the screen.
 - 🟡 Fix stop button not stopping in chat.
 - 🟡 Implement real-time update for import/export settings.
 - 🟢 Correct spacing between uploader containers when hidden.
+- 🟢 Fix edit message size in chat.
 - 🟢 Other bugs have not been found yet.
 
 ## TODOs
@@ -143,6 +148,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🔴 Allow disabling of thinking tokens (`<think>` for DeepSeek, Groq, and SambaNova; `"thinking"` for Claude).
 - 🔴 Allow saving of images and videos attached to chat.
 - 🔴 Create online storage for large videos (up to 2 GB) for Gemini.
+- 🔴 Create tests.
 - 🔴 Enable container-level selection to improve contextual translation at the cost of layout preservation.
 - 🔴 Enable editing of custom prompts:
 	- 🔴 Include a delete button for custom prompts.
@@ -167,6 +173,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟢 Consider adding new default prompts, such as: *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
 - 🟢 Improve LaTeX handling by replacing punctuation inside separate text macros.
 - 🟢 Include Cerebras if approved.
+- 🟢 Remove max tokens.
 - 🟢 Verify supported upload formats.
 
 ## License
