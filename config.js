@@ -8,7 +8,6 @@ window.CONFIG = {
 			anthropic: 'anthropic_api_key',
 			deepseek: 'deepseek_api_key',
 			google: 'google_api_key',
-			googleopenai: 'googleopenai_api_key',
 			x: 'x_api_key',
 			groq: 'groq_api_key',
 			lambda: 'lambda_api_key',
@@ -120,44 +119,6 @@ window.CONFIG = {
 					}]
 				},
 				google:
-				{
-					default: "gemini-2.0-pro-exp-02-05",
-					options: [
-					{
-						name: "gemini-exp-1206",
-						max_tokens: 8192,
-						image: true,
-						video: true
-					},
-					{
-						name: "gemini-2.0-flash-001",
-						max_tokens: 8192,
-						image: true,
-						video: true
-					},
-					{
-						name: "gemini-2.0-flash-lite-preview-02-05",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "gemini-2.0-pro-exp-02-05",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "gemini-2.0-flash-thinking-exp-01-21",
-						max_tokens: 65536,
-						image: true
-					},
-					{
-						name: "gemini-2.0-flash-exp",
-						max_tokens: 8192,
-						image: true,
-						video: true
-					}]
-				},
-				googleopenai:
 				{
 					default: "gemini-2.0-pro-exp-02-05",
 					options: [
@@ -605,11 +566,6 @@ window.CONFIG = {
 				},
 				google:
 				{
-					extractContent: data => data.candidates[0]?.content?.parts[0]?.text,
-					extractStreamContent: data => data.candidates[0]?.content?.parts[0]?.text,
-				},
-				googleopenai:
-				{
 					url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
@@ -730,11 +686,6 @@ window.CONFIG = {
 					max: 100,
 					size: 20
 				},
-				googleopenai:
-				{
-					max: 100,
-					size: 20
-				},
 				x:
 				{
 					max: 100,
@@ -789,11 +740,6 @@ window.CONFIG = {
 					size: 0
 				},
 				google:
-				{
-					max: 10,
-					size: 15
-				},
-				googleopenai:
 				{
 					max: 10,
 					size: 15
@@ -860,7 +806,6 @@ window.CONFIG = {
 			anthropic: 'Anthropic API Key:',
 			deepseek: 'DeepSeek API Key:',
 			google: 'Google API Key:',
-			googleopenai: 'Google API Key:',
 			x: 'X API Key:',
 			groq: 'Groq API Key:',
 			lambda: 'Lambda API Key:',
@@ -881,7 +826,6 @@ window.CONFIG = {
 			anthropic: /^sk-ant-[A-Za-z0-9]{32,}$/,
 			deepseek: /^sk-[A-Za-z0-9]{32,}$/,
 			google: /^AI[A-Za-z0-9-_]{32,}$/,
-			googleopenai: /^AI[A-Za-z0-9-_]{32,}$/,
 			x: /^xai-[A-Za-z0-9]{32,}$/,
 			groq: /^gsk_[A-Za-z0-9]{32,}$/,
 			lambda: /^secret_[A-Za-z0-9]{32,}$/,

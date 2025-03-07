@@ -13,66 +13,15 @@ const AiService = {
 			{
 				return await this.transcribe(options.file, options.language, apiKey);
 			}
-			switch (model)
+			if (model)
 			{
-				case 'google':
-					return await this.generateWithGemini(apiKey, prompt, options, 0);
-				default:
-					return await this.generateWithOtherModels(apiKey, prompt, model, options, 0);
+				return await this.complete(apiKey, prompt, model, options, 0);
 			}
 		}
 		catch (error)
 		{
 			console.error('Generation error:', error);
 			throw error;
-		}
-	},
-	async generateWithGemini(apiKey, prompt, options, attempt)
-	{
-		const maxRetries = StorageService.load('exponential_retry', 4);
-		try
-		{
-			const
-			{
-				GoogleGenerativeAI
-			} = await import("@google/generative-ai");
-			const genAI = new GoogleGenerativeAI(apiKey);
-			const selectedModelName = StorageService.load('google_model', CONFIG.API.MODELS.COMPLETION.google.default);
-			const model = genAI.getGenerativeModel(
-			{
-				model: selectedModelName
-			});
-			const imageParts = this.prepareMediaParts(options.images, 'image/png');
-			const videoParts = this.prepareMediaParts(options.videos, 'video/mp4');
-			const contents = this.buildGeminiContents(prompt, options, imageParts, videoParts);
-			const textPrompt = {
-				contents,
-				generationConfig:
-				{
-					temperature: 0
-				},
-			};
-			if (options.streaming)
-			{
-				return await this.handleGeminiStreaming(model, textPrompt, options);
-			}
-			else
-			{
-				const result = await model.generateContent(textPrompt);
-				return result;
-			}
-		}
-		catch (error)
-		{
-			if (error.name === 'AbortError') throw error;
-			if (attempt < maxRetries)
-			{
-				const delay = this.calculateRetryDelay(attempt);
-				console.warn(`Google API error (attempt ${attempt + 1}/${maxRetries}): ${error.message}. Retrying in ${delay / 1000}s...`);
-				await this.wait(delay);
-				return this.generateWithGemini(apiKey, prompt, options, attempt + 1);
-			}
-			throw new Error(`Google API error after ${maxRetries} attempts: ${error.message}`);
 		}
 	},
 	prepareMediaParts(mediaURLs, defaultMimeType)
@@ -92,70 +41,7 @@ const AiService = {
 				};
 			});
 	},
-	buildGeminiContents(prompt, options, imageParts, videoParts)
-	{
-		let contents = [];
-		if (options.messages && Array.isArray(options.messages))
-		{
-			options.messages.forEach(msg =>
-			{
-				let parts = [];
-				if (msg.content)
-				{
-					parts.push(
-					{
-						text: msg.content
-					});
-				}
-				if (msg.role === "user")
-				{
-					parts.push(...imageParts, ...videoParts);
-				}
-				contents.push(
-				{
-					role: msg.role === "assistant" ? "model" : msg.role,
-					parts: parts
-				});
-			});
-		}
-		else
-		{
-			contents.push(
-			{
-				role: "user",
-				parts: [
-				{
-					text: prompt
-				}, ...imageParts, ...videoParts]
-			});
-		}
-		return contents;
-	},
-	async handleGeminiStreaming(model, textPrompt, options)
-	{
-		const result = await model.generateContentStream(textPrompt);
-		let accumulatedText = '';
-		for await (const chunk of result.stream)
-		{
-			if (options.abortSignal?.aborted)
-			{
-				throw new DOMException('Aborted', 'AbortError');
-			}
-			const content = CONFIG.API.CONFIG.COMPLETION.google.extractStreamContent(chunk);
-			if (content)
-			{
-				accumulatedText += content;
-				options.onProgress?.(accumulatedText);
-			}
-		}
-		return {
-			response:
-			{
-				text: () => accumulatedText
-			}
-		};
-	},
-	async generateWithOtherModels(apiKey, prompt, model, options, attempt)
+	async complete(apiKey, prompt, model, options, attempt)
 	{
 		const maxRetries = StorageService.load('exponential_retry', 4);
 		const config = CONFIG.API.CONFIG.COMPLETION[model];
@@ -188,7 +74,7 @@ const AiService = {
 					const delay = this.calculateRetryDelay(attempt);
 					console.warn(`${model} API error (attempt ${attempt + 1}/${maxRetries}): ${response.status} - ${errorText}. Retrying in ${delay / 1000}s...`);
 					await this.wait(delay);
-					return this.generateWithOtherModels(apiKey, prompt, model, options, attempt + 1);
+					return this.complete(apiKey, prompt, model, options, attempt + 1);
 				}
 				throw new Error(`API request failed after ${maxRetries} attempts: ${response.status} - ${errorText}`);
 			}
@@ -210,7 +96,7 @@ const AiService = {
 				const delay = this.calculateRetryDelay(attempt);
 				console.warn(`Fetch error (attempt ${attempt + 1}/${maxRetries}): ${error.message}. Retrying in ${delay / 1000}s...`);
 				await this.wait(delay);
-				return this.generateWithOtherModels(apiKey, prompt, model, options, attempt + 1);
+				return this.complete(apiKey, prompt, model, options, attempt + 1);
 			}
 			throw new Error(`API request failed after ${maxRetries} attempts: ${error.message}`);
 		}
