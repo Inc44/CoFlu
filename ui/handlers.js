@@ -145,6 +145,7 @@ const UIHandlers = {
 				if (!prompt.trim()) return;
 				const generationOptions = {
 					streaming: StorageService.load('streaming_enabled', true),
+					audios: Object.values(state.audioUploader.getAudios()),
 					images: Object.values(state.imageUploader.getImages()),
 					videos: Object.values(state.videoUploader.getVideos()),
 					abortSignal: state.abortController.signal,
@@ -203,6 +204,7 @@ const UIHandlers = {
 				const selectedModel = elements.apiModelSelect.value;
 				const currentModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === StorageService.load(`${selectedModel}_model`, CONFIG.API.MODELS.COMPLETION[selectedModel].default));
 				StorageService.save('selected_api_model', selectedModel);
+				UIState.updateAudioUploadVisibility(currentModelDetails);
 				UIState.updateImageUploadVisibility(currentModelDetails);
 				UIState.updateVideoUploadVisibility(currentModelDetails);
 			});
@@ -215,6 +217,7 @@ const UIHandlers = {
 			const selectedModel = elements.apiModelSelect.value;
 			const selectedModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === elements.modelSelects[selectedModel].value);
 			StorageService.save('selected_api_model', selectedModel);
+			UIState.updateAudioUploadVisibility(selectedModelDetails);
 			UIState.updateImageUploadVisibility(selectedModelDetails);
 			UIState.updateVideoUploadVisibility(selectedModelDetails);
 		});
@@ -229,6 +232,7 @@ const UIHandlers = {
 						const selectedModel = provider;
 						const selectedModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === select.value);
 						StorageService.save('selected_api_model', selectedModel);
+						UIState.updateAudioUploadVisibility(selectedModelDetails);
 						UIState.updateImageUploadVisibility(selectedModelDetails);
 						UIState.updateVideoUploadVisibility(selectedModelDetails);
 					});

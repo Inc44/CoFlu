@@ -124,6 +124,12 @@ const AiService = {
 						content = content.concat(msg.content);
 					}
 				}
+				if (options.audios?.length > 0)
+				{
+					const audioContent = options.audios.map(dataURL => (
+					{}));
+					content = content.concat(audioContent);
+				}
 				if (options.images?.length > 0 && model !== 'anthropic')
 				{
 					const imageContent = options.images.map(dataURL => (
@@ -135,18 +141,6 @@ const AiService = {
 						},
 					}));
 					content = content.concat(imageContent);
-				}
-				if (options.videos?.length > 0)
-				{
-					const videoContent = options.videos.map(dataURL => (
-					{
-						type: 'image_url',
-						image_url:
-						{
-							url: dataURL
-						},
-					}));
-					content = content.concat(videoContent);
 				}
 				if (options.images?.length > 0 && model === 'anthropic')
 				{
@@ -167,6 +161,18 @@ const AiService = {
 					});
 					content = content.concat(imageContent);
 				}
+				if (options.videos?.length > 0)
+				{
+					const videoContent = options.videos.map(dataURL => (
+					{
+						type: 'image_url',
+						image_url:
+						{
+							url: dataURL
+						},
+					}));
+					content = content.concat(videoContent);
+				}
 				return {
 					role: msg.role,
 					content: content.length === 1 ? content[0].text : content
@@ -180,9 +186,9 @@ const AiService = {
 				role: "user",
 				content: prompt
 			}];
-			if ((options.images && options.images.length > 0) || (options.videos && options.videos.length > 0))
+			if ((options.audios && options.audios.length > 0) || (options.images && options.images.length > 0) || (options.videos && options.videos.length > 0))
 			{
-				messages = this.formatMessagesWithImages(prompt, options.images, options.videos, model);
+				messages = this.formatMessagesWithMedia(prompt, options.audios, options.images, options.videos, model);
 			}
 		}
 		let requestBody = {
@@ -227,9 +233,9 @@ const AiService = {
 			...config.additionalHeaders,
 		};
 	},
-	formatMessagesWithImages(prompt, images = [], videos = [], model)
+	formatMessagesWithMedia(prompt, audios = [], images = [], videos = [], model)
 	{
-		if (images.length === 0 && videos.length == 0)
+		if (audios.length === 0 && images.length === 0 && videos.length === 0)
 		{
 			return [
 			{

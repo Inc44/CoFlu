@@ -1,5 +1,7 @@
 // ui/components.js
 const UIComponents = {
+	AudioUploader: class
+	{},
 	ImageUploader: class
 	{
 		constructor(element, options = {})

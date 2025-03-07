@@ -7,6 +7,7 @@ class App
 		this.state = {
 			abortController: null,
 			transcribeAbortController: null,
+			audioUploader: null,
 			imageUploader: null,
 			videoUploader: null
 		};
@@ -17,6 +18,7 @@ class App
 		return {
 			apiModelSelect: document.getElementById('apiModel'),
 			audioFile: document.getElementById('audioFile'),
+			audioUploadInput: document.getElementById('audioUploadInput'),
 			cleanupToggle: document.getElementById('cleanupToggle'),
 			compareBtn: document.getElementById('compareBtn'),
 			customPromptContainer: document.getElementById('customPromptContainer'),
@@ -69,6 +71,11 @@ class App
 		{
 			UIHandlers.setupModelSelectionHandler(this.elements);
 		}
+		this.state.audioUploader = new UIComponents.AudioUploader(this.elements.audioUploadInput,
+		{
+			displayElement: document.getElementById('audioList'),
+			getApiModel: () => this.elements.apiModelSelect.value
+		});
 		this.state.imageUploader = new UIComponents.ImageUploader(this.elements.imageUploadInput,
 		{
 			displayElement: document.getElementById('imageList'),
@@ -333,6 +340,7 @@ class App
 			const currentModelDetails = CONFIG.API.MODELS.COMPLETION[currentModel]?.options.find(m => m.name === StorageService.load(`${currentModel}_model`, CONFIG.API.MODELS.COMPLETION[currentModel].default));
 			if (currentModelDetails)
 			{
+				UIState.updateAudioUploadVisibility(currentModelDetails);
 				UIState.updateImageUploadVisibility(currentModelDetails);
 				UIState.updateVideoUploadVisibility(currentModelDetails);
 			}

@@ -43,6 +43,14 @@ const UIState = {
 			wideToggle.checked = isWideMode;
 		}
 	},
+	updateAudioUploadVisibility(modelDetails)
+	{
+		const audioUploadCard = document.querySelector('.card:has(#audioList)');
+		if (audioUploadCard)
+		{
+			audioUploadCard.style.display = modelDetails.audio ? 'block' : 'none';
+		}
+	},
 	updateImageUploadVisibility(modelDetails)
 	{
 		const imageUploadCard = document.querySelector('.card:has(#imageList)');

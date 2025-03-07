@@ -7,6 +7,7 @@ class ChatApp
 		this.state = {
 			messages: [],
 			abortController: null,
+			audioUploader: null,
 			imageUploader: null,
 			videoUploader: null,
 			isStreaming: false,
@@ -21,6 +22,8 @@ class ChatApp
 	{
 		return {
 			apiModelSelect: document.getElementById('apiModel'),
+			audioList: document.getElementById('audioList'),
+			audioUploadInput: document.getElementById('audioUploadInput'),
 			chatContainer: document.getElementById('chatContainer'),
 			cleanChatBtn: document.getElementById('cleanChat'),
 			exportSettingsBtn: document.getElementById('exportSettings'),
@@ -47,6 +50,11 @@ class ChatApp
 	}
 	async initializeComponents()
 	{
+		this.state.audioUploader = new UIComponents.AudioUploader(this.elements.audioUploadInput,
+		{
+			displayElement: this.elements.audioList,
+			getApiModel: () => this.elements.apiModelSelect.value
+		});
 		this.state.imageUploader = new UIComponents.ImageUploader(this.elements.imageUploadInput,
 		{
 			displayElement: this.elements.imageList,
@@ -67,6 +75,7 @@ class ChatApp
 			const currentModelDetails = CONFIG.API.MODELS.COMPLETION[currentModel]?.options.find(m => m.name === StorageService.load(`${currentModel}_model`, CONFIG.API.MODELS.COMPLETION[currentModel].default));
 			if (currentModelDetails)
 			{
+				UIState.updateAudioUploadVisibility(currentModelDetails);
 				UIState.updateImageUploadVisibility(currentModelDetails);
 				UIState.updateVideoUploadVisibility(currentModelDetails);
 			}
@@ -93,6 +102,7 @@ class ChatApp
 				const selectedModel = this.elements.apiModelSelect.value;
 				const currentModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === StorageService.load(`${selectedModel}_model`, CONFIG.API.MODELS.COMPLETION[selectedModel].default));
 				StorageService.save('selected_api_model', selectedModel);
+				UIState.updateAudioUploadVisibility(currentModelDetails);
 				UIState.updateImageUploadVisibility(currentModelDetails);
 				UIState.updateVideoUploadVisibility(currentModelDetails);
 				this.loadMessages();
@@ -128,6 +138,7 @@ class ChatApp
 		this.elements.sendMessageBtn.style.backgroundColor = 'red';
 		try
 		{
+			const audioURLs = Object.values(this.state.audioUploader.getAudios());
 			const imageURLs = Object.values(this.state.imageUploader.getImages());
 			const videoURLs = Object.values(this.state.videoUploader.getVideos());
 			const streamingEnabled = StorageService.load('streaming_enabled', true);
@@ -140,6 +151,7 @@ class ChatApp
 			const aiResponse = await AiService.generate("", model,
 			{
 				messages: messages,
+				audios: audioURLs,
 				images: imageURLs,
 				videos: videoURLs,
 				abortSignal: this.state.abortController.signal,
@@ -222,6 +234,7 @@ class ChatApp
 		this.state.messages = [];
 		this.displayMessages();
 		this.saveMessages();
+		this.state.audioUploader.clear();
 		this.state.imageUploader.clear();
 		this.state.videoUploader.clear();
 	}
