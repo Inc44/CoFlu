@@ -138,13 +138,16 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟡 Fix stop button not stopping in chat.
 - 🟡 Implement real-time update for import/export settings.
 - 🟢 Correct spacing between uploader containers when hidden.
+- 🟢 Fix HTML not sanitized.
 - 🟢 Fix edit message size in chat.
+- 🟢 Fix italic text appearing on render and in HTML elements.
 - 🟢 Other bugs have not been found yet.
 
 ## TODOs
 
 - 🔴 Add support for local LLMs via Ollama.js for offline and independent use.
 - 🔴 Adjust transcription size limits: 40 MB for Groq.
+- 🔴 Allow custom models and save config to settings.
 - 🔴 Allow disabling of thinking tokens (`<think>` for DeepSeek, Groq, and SambaNova; `"thinking"` for Claude).
 - 🔴 Allow saving of images and videos attached to chat.
 - 🔴 Create online storage for large videos (up to 2 GB) for Gemini.
@@ -168,12 +171,24 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🔴 Support login via Google, Microsoft, and GitHub for syncing.
 - 🔴 Support multiple chat sessions.
 - 🟡 Add `transcription.html` and transcription proofreading options.
+- 🟡 Add copy prompt button.
+- 🟡 Add multiple prompt selections.
+- 🟡 Add search prompt library.
 - 🟡 Explore other models on www.minimax.io and lambdalabs.com.
 - 🟡 Provide an option to enable high-cost models (gpt-4.5, o1, opus-3).
-- 🟢 Consider adding new default prompts, such as: *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
+- 🟢 Add GPT-4.5 and Grok-3.
+- 🟢 Add Hyperbolic AI as a model provider endpoint.
+- 🟢 Consider adding new default prompts, such as:
+	- *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
+    - *"Adhere to ASD-STE100 Simplified Technical English."*
+    - *"Do not use try, except, raise, or print."*
+    - *"Reduce repetition and variable name length."*
+    - *"Remove all docstrings and comments."*
+    - *"Rewrite the code to enhance scalability, readability, and performance."*
 - 🟢 Improve LaTeX handling by replacing punctuation inside separate text macros.
 - 🟢 Include Cerebras if approved.
 - 🟢 Remove max tokens.
+- 🟢 Test old models Gemini Exp 1121 and 1114.
 - 🟢 Verify supported upload formats.
 
 ## License
