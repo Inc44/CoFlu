@@ -26,23 +26,23 @@ window.CONFIG = {
 					options: [
 					{
 						name: "o3-mini",
-						max_tokens: 200000,
+						max_tokens: 100000,
 						reasoning_effort: "low",
 						image: false
 					},
 					{
 						name: "o1-mini",
-						max_tokens: 128000,
+						max_tokens: 65536,
 						image: false
 					},
 					{
 						name: "o1-mini-2024-09-12",
-						max_tokens: 128000,
+						max_tokens: 65536,
 						image: false
 					},
 					{
 						name: "o3-mini-2025-01-31",
-						max_tokens: 200000,
+						max_tokens: 100000,
 						reasoning_effort: "low",
 						image: false
 					},
@@ -114,19 +114,8 @@ window.CONFIG = {
 				},
 				anthropic:
 				{
-					default: "claude-3-7-sonnet-20250219",
+					default: "claude-3-5-haiku-20241022",
 					options: [
-					{
-						name: "claude-3-7-sonnet-20250219",
-						max_tokens: 128000,
-						thinking: true,
-						image: true
-					},
-					{
-						name: "claude-3-5-sonnet-20241022",
-						max_tokens: 8192,
-						image: true
-					},
 					{
 						name: "claude-3-5-haiku-20241022",
 						max_tokens: 8192,
@@ -496,6 +485,74 @@ window.CONFIG = {
 						name: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
 						max_tokens: 32768,
 						image: false
+					}]
+				}
+			},
+			COMPLETION_HIGH_COST:
+			{
+				openai:
+				{
+					default: "gpt-4.5-preview",
+					options: [
+					{
+						name: "gpt-4.5-preview",
+						max_tokens: 16834,
+						image: true
+					},
+					{
+						name: "gpt-4.5-preview-2025-02-27",
+						max_tokens: 16834,
+						image: true
+					},
+					{
+						name: "o1",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						image: true
+					},
+					{
+						name: "o1-2024-12-17",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						image: true
+					},
+					{
+						name: "o1-preview",
+						max_tokens: 32768,
+						reasoning_effort: "low",
+						image: false
+					},
+					{
+						name: "o1-preview-2024-09-12",
+						max_tokens: 32768,
+						reasoning_effort: "low",
+						image: false
+					}]
+				},
+				anthropic:
+				{
+					default: "claude-3-7-sonnet-20250219",
+					options: [
+					{
+						name: "claude-3-7-sonnet-20250219",
+						max_tokens: 128000,
+						thinking: true,
+						image: true
+					},
+					{
+						name: "claude-3-opus-20240229",
+						max_tokens: 4096,
+						image: true
+					},
+					{
+						name: "claude-3-5-sonnet-20241022",
+						max_tokens: 8192,
+						image: true
+					},
+					{
+						name: "claude-3-5-sonnet-20240620",
+						max_tokens: 8192,
+						image: true
 					}]
 				}
 			},
