@@ -106,124 +106,118 @@ const AiService = {
 		let messages = [];
 		if (options.messages && Array.isArray(options.messages))
 		{
-			messages = options.messages.map(msg =>
-			{
-				let content = [];
-				if (msg.content)
+			messages = options.messages.slice(0, -1)
+				.map(msg => (
 				{
-					if (typeof msg.content === 'string')
-					{
-						content.push(
-						{
-							type: 'text',
-							text: msg.content
-						});
-					}
-					else if (Array.isArray(msg.content))
-					{
-						content = content.concat(msg.content);
-					}
-				}
-				if (options.audios?.length > 0)
-				{
-					if (model === 'sambanova')
-					{
-						const audioContent = options.audios.map(dataURL =>
-						{
-							return {
-								type: 'audio_content',
-								audio_content:
-								{
-									content: dataURL
-								}
-							};
-						});
-						content = content.concat(audioContent);
-					}
-					else
-					{
-						const audioContent = options.audios.map(dataURL =>
-						{
-							const base64Data = dataURL.split(',')[1];
-							const mimeType = 'audio/mp3' || dataURL.match(/^data:(.*?);base64,/)
-								?.[1];
-							if (mimeType.startsWith('audio/mpeg'))
-							{
-								mimeType = 'audio/mp3';
-							}
-							return {
-								type: 'input_audio',
-								input_audio:
-								{
-									data: base64Data,
-									format: mimeType.split('/')[1]
-								}
-							};
-						});
-						content = content.concat(audioContent);
-					}
-				}
-				if (options.images?.length > 0 && model !== 'anthropic')
-				{
-					const imageContent = options.images.map(dataURL => (
-					{
-						type: 'image_url',
-						image_url:
-						{
-							url: dataURL
-						},
-					}));
-					content = content.concat(imageContent);
-				}
-				if (options.images?.length > 0 && model === 'anthropic')
-				{
-					const imageContent = options.images.map(dataURL =>
-					{
-						const base64Data = dataURL.split(',')[1];
-						const mimeType = dataURL.match(/^data:(.*?);base64,/)
-							?.[1] || 'image/png';
-						return {
-							type: 'image',
-							source:
-							{
-								type: "base64",
-								media_type: mimeType,
-								data: base64Data
-							}
-						};
-					});
-					content = content.concat(imageContent);
-				}
-				if (options.videos?.length > 0)
-				{
-					const videoContent = options.videos.map(dataURL => (
-					{
-						type: 'image_url',
-						image_url:
-						{
-							url: dataURL
-						},
-					}));
-					content = content.concat(videoContent);
-				}
-				return {
 					role: msg.role,
-					content: content.length === 1 ? content[0].text : content
-				};
-			});
+					content: (typeof msg.content === 'string') ? msg.content : msg.content.map(item => item.text)
+						.join(""),
+				}));
 		}
-		else
+		let currentUserMessage = {
+			role: "user",
+			content: []
+		};
+		if (options.messages && options.messages.length > 0)
 		{
-			messages = [
+			currentUserMessage = options.messages[options.messages.length - 1];
+		}
+		let textContent = prompt;
+		if (currentUserMessage && currentUserMessage.content)
+		{
+			textContent = typeof currentUserMessage.content === 'string' ? currentUserMessage.content : currentUserMessage.content.map(item => item.text)
+				.join("");
+		}
+		let content = [
+		{
+			type: 'text',
+			text: textContent
+		}];
+		if (options.audios?.length > 0)
+		{
+			if (model === 'sambanova')
 			{
-				role: "user",
-				content: prompt
-			}];
-			if ((options.audios && options.audios.length > 0) || (options.images && options.images.length > 0) || (options.videos && options.videos.length > 0))
+				const audioContent = options.audios.map(dataURL => (
+				{
+					type: 'audio_content',
+					audio_content:
+					{
+						content: dataURL
+					}
+				}));
+				content = content.concat(audioContent);
+			}
+			else
 			{
-				messages = this.formatMessagesWithMedia(prompt, options.audios, options.images, options.videos, model);
+				const audioContent = options.audios.map(dataURL =>
+				{
+					const base64Data = dataURL.split(',')[1];
+					let mimeType = dataURL.match(/^data:(.*?);base64,/)
+						?.[1] || 'audio/mp3';
+					if (mimeType.startsWith('audio/mpeg'))
+					{
+						mimeType = 'audio/mp3';
+					}
+					return {
+						type: 'input_audio',
+						input_audio:
+						{
+							data: base64Data,
+							format: mimeType.split('/')[1]
+						}
+					};
+				});
+				content = content.concat(audioContent);
 			}
 		}
+		if (options.images?.length > 0)
+		{
+			if (model === 'anthropic')
+			{
+				const imageContent = options.images.map(dataURL =>
+				{
+					const base64Data = dataURL.split(',')[1];
+					const mimeType = dataURL.match(/^data:(.*?);base64,/)
+						?.[1] || 'image/png';
+					return {
+						type: 'image',
+						source:
+						{
+							type: "base64",
+							media_type: mimeType,
+							data: base64Data
+						}
+					};
+				});
+				content = content.concat(imageContent);
+			}
+			else
+			{
+				const imageContent = options.images.map(dataURL => (
+				{
+					type: 'image_url',
+					image_url:
+					{
+						url: dataURL
+					}
+				}));
+				content = content.concat(imageContent);
+			}
+		}
+		if (options.videos?.length > 0)
+		{
+			const videoContent = options.videos.map(dataURL => (
+			{
+				type: 'image_url',
+				image_url:
+				{
+					url: dataURL
+				}
+			}));
+			content = content.concat(videoContent);
+		}
+		currentUserMessage.content = content;
+		messages.push(currentUserMessage);
 		let requestBody = {
 			model: selectedModel.name,
 			messages,
