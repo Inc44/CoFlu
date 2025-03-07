@@ -548,40 +548,33 @@ window.CONFIG = {
 					},
 					extractContent: data =>
 					{
-						const textParts = [];
+						const parts = [];
 						for (const item of data.content)
 						{
-							switch (item?.type)
+							if (item?.type === 'text' && item.text)
 							{
-								case 'text':
-									if (item.text)
-									{
-										textParts.push(item.text);
-									}
-									break;
-								case 'thinking':
-									if (item.thinking)
-									{
-										textParts.push(item.thinking + "\n");
-									}
-									break;
+								parts.push(item.text);
+							}
+							if (item?.type === 'thinking' && item.thinking)
+							{
+								parts.push(item.thinking + "\n");
 							}
 						}
-						return textParts.join('\n')
+						return parts.join('\n')
 							.trim();
 					},
 					extractStreamContent: data =>
 					{
-						const delta = data?.delta;
-						switch (delta.type)
+						if (data?.delta?.text) return data.delta.text;
+						if (data?.delta?.thinking) return data.delta.thinking;
+						if (data?.delta?.type)
 						{
-							case 'text_delta':
-								return delta.text;
-							case 'thinking_delta':
-								return delta.thinking;
-							case 'signature_delta':
-								return "\n\n";
+							const d = data.delta;
+							if (d.type === 'text_delta') return d.text || '';
+							if (d.type === 'thinking_delta') return d.thinking || '';
+							if (d.type === 'signature_delta') return "\n\n";
 						}
+						return '';
 					}
 				},
 				deepseek:
@@ -591,17 +584,17 @@ window.CONFIG = {
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data =>
 					{
-						const message = data.choices[0].message;
-						const textParts = [];
-						if (message.reasoning_content)
+						const msg = data.choices[0].message;
+						const parts = [];
+						if (msg.reasoning_content)
 						{
-							textParts.push(message.reasoning_content + "\n");
+							parts.push(msg.reasoning_content + "\n");
 						}
-						if (message.content)
+						if (msg.content)
 						{
-							textParts.push(message.content);
+							parts.push(msg.content);
 						}
-						return textParts.join('\n')
+						return parts.join('\n')
 							.trim();
 					},
 					extractStreamContent: data => data.choices[0]?.delta?.reasoning_content || data.choices[0]?.delta?.content,
@@ -645,17 +638,17 @@ window.CONFIG = {
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data =>
 					{
-						const message = data.choices[0].message;
-						const textParts = [];
-						if (message.reasoning)
+						const msg = data.choices[0].message;
+						const parts = [];
+						if (msg.reasoning)
 						{
-							textParts.push(message.reasoning + "\n");
+							parts.push(msg.reasoning + "\n");
 						}
-						if (message.content)
+						if (msg.content)
 						{
-							textParts.push(message.content);
+							parts.push(msg.content);
 						}
-						return textParts.join('\n')
+						return parts.join('\n')
 							.trim();
 					},
 					extractStreamContent: data => data.choices[0]?.delta?.reasoning || data.choices[0]?.delta?.content
@@ -894,7 +887,7 @@ window.CONFIG = {
 				{
 					max: 1,
 					size: 25
-				},
+				}
 			}
 		}
 	},

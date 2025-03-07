@@ -2,57 +2,32 @@
 const StorageService = {
 	save(key, value)
 	{
-		try
+		if (typeof value === 'object')
 		{
-			if (typeof value === 'object')
-			{
-				localStorage.setItem(key, JSON.stringify(value));
-			}
-			else
-			{
-				localStorage.setItem(key, value);
-			}
-			return true;
+			localStorage.setItem(key, JSON.stringify(value));
 		}
-		catch (error)
+		else
 		{
-			console.error('Error saving to localStorage:', error);
-			return false;
+			localStorage.setItem(key, value);
 		}
+		return true;
 	},
-	load(key, defaultValue = null)
+	load(key, defValue = null)
 	{
-		try
+		const value = localStorage.getItem(key);
+		if (value === null) return defValue;
+		if (value === 'true') return true;
+		if (value === 'false') return false;
+		if (value.startsWith('{') || value.startsWith('['))
 		{
-			const value = localStorage.getItem(key);
-			if (value === null) return defaultValue;
-			try
-			{
-				return JSON.parse(value);
-			}
-			catch
-			{
-				return value;
-			}
+			return JSON.parse(value);
 		}
-		catch (error)
-		{
-			console.error('Error loading from localStorage:', error);
-			return defaultValue;
-		}
+		return value;
 	},
 	remove(key)
 	{
-		try
-		{
-			localStorage.removeItem(key);
-			return true;
-		}
-		catch (error)
-		{
-			console.error('Error removing from localStorage:', error);
-			return false;
-		}
+		localStorage.removeItem(key);
+		return true;
 	}
 };
 window.StorageService = StorageService;

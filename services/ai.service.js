@@ -5,33 +5,26 @@ const AiService = {
 		const apiKey = StorageService.load(CONFIG.API.KEYS[model]);
 		if (!apiKey)
 		{
-			throw new Error(`Please enter your ${model} API key.`);
+			alert(`Please enter your ${model} API key.`);
+			return;
 		}
-		try
+		if (options.task === 'transcribe')
 		{
-			if (options.task === 'transcribe')
-			{
-				return await this.transcribe(options.file, options.language, apiKey);
-			}
-			if (model)
-			{
-				return await this.complete(apiKey, prompt, model, options, 0);
-			}
+			return await this.transcribe(options.file, options.language, apiKey);
 		}
-		catch (error)
+		if (model)
 		{
-			console.error('Generation error:', error);
-			throw error;
+			return await this.complete(apiKey, prompt, model, options, 0);
 		}
 	},
-	prepareMediaParts(mediaURLs, defaultMimeType)
+	prepMediaParts(mediaURLs, defaultType)
 	{
 		return (mediaURLs || [])
 			.map(dataURL =>
 			{
 				const base64Data = dataURL.split(',')[1];
 				const mimeType = dataURL.match(/^data:(.*?);base64,/)
-					?.[1] || defaultMimeType;
+					?.[1] || defaultType;
 				return {
 					inlineData:
 					{
@@ -47,66 +40,52 @@ const AiService = {
 		const config = CONFIG.API.CONFIG.COMPLETION[model];
 		if (!config)
 		{
-			throw new Error(`Configuration not found for model: ${model}`);
+			alert(`Config not found for model: ${model}`);
+			return;
 		}
-		const selectedModelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
-		const selectedModel = CONFIG.API.MODELS.COMPLETION[model].options.find(m => m.name === selectedModelName);
-		if (!selectedModel)
+		const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
+		const modelConfig = CONFIG.API.MODELS.COMPLETION[model].options.find(m => m.name === modelName);
+		if (!modelConfig)
 		{
-			throw new Error(`Model ${selectedModelName} not found in configuration.`);
+			alert(`Model ${modelName} not found in config.`);
+			return;
 		}
-		const requestBody = this.buildRequestBody(prompt, model, selectedModel, options);
-		const headers = this.buildRequestHeaders(apiKey, config);
-		try
+		const reqBody = this.buildReqBody(prompt, model, modelConfig, options);
+		const headers = this.buildHeaders(apiKey, config);
+		const response = await fetch(config.url,
 		{
-			const response = await fetch(config.url,
-			{
-				method: 'POST',
-				headers,
-				body: JSON.stringify(requestBody),
-				signal: options.abortSignal,
-			});
-			if (!response.ok)
-			{
-				const errorText = await response.text();
-				if (attempt < maxRetries)
-				{
-					const delay = this.calculateRetryDelay(attempt);
-					console.warn(`${model} API error (attempt ${attempt + 1}/${maxRetries}): ${response.status} - ${errorText}. Retrying in ${delay / 1000}s...`);
-					await this.wait(delay);
-					return this.complete(apiKey, prompt, model, options, attempt + 1);
-				}
-				throw new Error(`API request failed after ${maxRetries} attempts: ${response.status} - ${errorText}`);
-			}
-			if (options.streaming)
-			{
-				return await this.handleStreamingResponse(response, model, options.onProgress);
-			}
-			else
-			{
-				const jsonResponse = await response.json();
-				return jsonResponse;
-			}
-		}
-		catch (error)
+			method: 'POST',
+			headers,
+			body: JSON.stringify(reqBody),
+			signal: options.abortSignal,
+		});
+		if (!response.ok)
 		{
-			if (error.name === 'AbortError') throw error;
+			const errText = await response.text();
 			if (attempt < maxRetries)
 			{
-				const delay = this.calculateRetryDelay(attempt);
-				console.warn(`Fetch error (attempt ${attempt + 1}/${maxRetries}): ${error.message}. Retrying in ${delay / 1000}s...`);
+				const delay = this.calcRetryDelay(attempt);
 				await this.wait(delay);
 				return this.complete(apiKey, prompt, model, options, attempt + 1);
 			}
-			throw new Error(`API request failed after ${maxRetries} attempts: ${error.message}`);
+			alert(`API request failed: ${response.status} - ${errText}`);
+			return;
+		}
+		if (options.streaming)
+		{
+			return await this.handleStreamResponse(response, model, options.onProgress);
+		}
+		else
+		{
+			return await response.json();
 		}
 	},
-	buildRequestBody(prompt, model, selectedModel, options)
+	buildReqBody(prompt, model, modelConfig, options)
 	{
-		let messages = [];
+		let msgs = [];
 		if (options.messages && Array.isArray(options.messages))
 		{
-			messages = options.messages.map(msg =>
+			msgs = options.messages.map(msg =>
 			{
 				let content = [];
 				if (msg.content)
@@ -132,7 +111,7 @@ const AiService = {
 		}
 		else
 		{
-			messages = [
+			msgs = [
 			{
 				role: "user",
 				content: prompt
@@ -140,48 +119,48 @@ const AiService = {
 		}
 		if (options.audios?.length > 0 || options.images?.length > 0 || options.videos?.length > 0)
 		{
-			let currentUserMessageIndex = messages.findIndex(m => m.role === 'user');
-			for (let i = messages.length - 1; i >= 0; --i)
+			let userMsgIdx = msgs.findIndex(m => m.role === 'user');
+			for (let i = msgs.length - 1; i >= 0; --i)
 			{
-				if (messages[i].role == "user")
+				if (msgs[i].role == "user")
 				{
-					currentUserMessageIndex = i;
+					userMsgIdx = i;
 					break;
 				}
 			}
-			if (currentUserMessageIndex === -1)
+			if (userMsgIdx === -1)
 			{
-				currentUserMessageIndex = messages.length;
-				messages.push(
+				userMsgIdx = msgs.length;
+				msgs.push(
 				{
 					role: "user",
 					content: []
 				});
 			}
 			let userContent = [];
-			if (typeof messages[currentUserMessageIndex].content === 'string')
+			if (typeof msgs[userMsgIdx].content === 'string')
 			{
 				userContent.push(
 				{
 					type: "text",
-					text: messages[currentUserMessageIndex].content
+					text: msgs[userMsgIdx].content
 				});
 			}
 			else
 			{
-				userContent = messages[currentUserMessageIndex].content;
+				userContent = msgs[userMsgIdx].content;
 			}
 			userContent = userContent.concat(this.buildMediaContent(options.audios, options.images, options.videos, model));
 			if (userContent.length === 1 && typeof userContent[0] === "object" && userContent[0].text != null)
 			{
-				messages[currentUserMessageIndex].content = userContent[0].text;
+				msgs[userMsgIdx].content = userContent[0].text;
 			}
 			else
 			{
-				messages[currentUserMessageIndex].content = userContent;
+				msgs[userMsgIdx].content = userContent;
 			}
 		}
-		messages = messages.filter(msg =>
+		msgs = msgs.filter(msg =>
 		{
 			if (typeof msg.content === 'string')
 			{
@@ -196,39 +175,39 @@ const AiService = {
 			}
 			return true;
 		});
-		let requestBody = {
-			model: selectedModel.name,
-			messages,
+		let reqBody = {
+			model: modelConfig.name,
+			messages: msgs,
 			stream: options.streaming,
 		};
-		if (!selectedModel.reasoning_effort && !selectedModel.thinking)
+		if (!modelConfig.reasoning_effort && !modelConfig.thinking)
 		{
-			requestBody.temperature = 0;
+			reqBody.temperature = 0;
 		}
-		if (selectedModel.reasoning_effort)
+		if (modelConfig.reasoning_effort)
 		{
-			requestBody.reasoning_effort = StorageService.load('reasoning_effort', 'low');
+			reqBody.reasoning_effort = StorageService.load('reasoning_effort', 'low');
 		}
-		if (selectedModel.thinking)
+		if (modelConfig.thinking)
 		{
 			const thinkingBudget = parseInt(StorageService.load('thinking', 0), 10);
 			if (thinkingBudget >= 1024)
 			{
-				requestBody.thinking = {
+				reqBody.thinking = {
 					type: "enabled",
 					budget_tokens: thinkingBudget
 				};
 			}
 			else
 			{
-				requestBody.temperature = 0;
+				reqBody.temperature = 0;
 			}
 		}
-		if (model !== 'openrouter' && model !== 'sambanova' && model !== 'together' && !selectedModel.reasoning_effort && selectedModel.name !== 'grok-2-1212')
+		if (model !== 'openrouter' && model !== 'sambanova' && model !== 'together' && !modelConfig.reasoning_effort && modelConfig.name !== 'grok-2-1212')
 		{
-			requestBody.max_tokens = selectedModel.max_tokens;
+			reqBody.max_tokens = modelConfig.max_tokens;
 		}
-		return requestBody;
+		return reqBody;
 	},
 	buildMediaContent(audios = [], images = [], videos = [], model)
 	{
@@ -301,10 +280,10 @@ const AiService = {
 			}));
 			mediaContent = mediaContent.concat(imageContent);
 		}
-		mediaContent = mediaContent.concat(this.createMediaContent(videos, "image_url", "url"));
+		mediaContent = mediaContent.concat(this.createMediaContent(videos, "image_url", "image_url"));
 		return mediaContent;
 	},
-	buildRequestHeaders(apiKey, config)
+	buildHeaders(apiKey, config)
 	{
 		return {
 			'Content-Type': 'application/json',
@@ -323,7 +302,7 @@ const AiService = {
 			},
 		}));
 	},
-	async handleStreamingResponse(response, model, onProgress)
+	async handleStreamResponse(response, model, onProgress)
 	{
 		const reader = response.body.getReader();
 		const decoder = new TextDecoder();
@@ -346,19 +325,12 @@ const AiService = {
 				{
 					const data = line.slice(6);
 					if (data === '[DONE]') continue;
-					try
+					const parsed = JSON.parse(data);
+					const content = CONFIG.API.CONFIG.COMPLETION[model].extractStreamContent(parsed);
+					if (content)
 					{
-						const parsed = JSON.parse(data);
-						const content = CONFIG.API.CONFIG.COMPLETION[model].extractStreamContent(parsed);
-						if (content)
-						{
-							accumulatedText += content;
-							onProgress?.(accumulatedText);
-						}
-					}
-					catch (e)
-					{
-						console.error('Error parsing streaming JSON:', e, 'Data:', data);
+						accumulatedText += content;
+						onProgress?.(accumulatedText);
 					}
 				}
 			}
@@ -373,17 +345,18 @@ const AiService = {
 			}]
 		};
 	},
-	async transcribe(file, language, apiKey, modelName, transcriptionModel, abortSignal)
+	async transcribe(file, language, apiKey, modelName, transModel, abortSignal)
 	{
 		const formData = new FormData();
 		formData.append('file', file);
 		formData.append('model', modelName);
 		formData.append('language', language);
 		formData.append('response_format', 'verbose_json');
-		const config = CONFIG.API.CONFIG.TRANSCRIPTION[transcriptionModel];
+		const config = CONFIG.API.CONFIG.TRANSCRIPTION[transModel];
 		if (!config)
 		{
-			throw new Error(`Configuration not found for transcription model: ${transcriptionModel}`);
+			alert(`Config not found for transcription model: ${transModel}`);
+			return;
 		}
 		const response = await fetch(config.url,
 		{
@@ -397,12 +370,13 @@ const AiService = {
 		});
 		if (!response.ok)
 		{
-			const errorText = await response.text();
-			throw new Error(`Transcription failed with status ${response.status}: ${errorText}`);
+			const errText = await response.text();
+			alert(`Transcription failed with status ${response.status}: ${errText}`);
+			return;
 		}
 		return await response.json();
 	},
-	calculateRetryDelay(attempt)
+	calcRetryDelay(attempt)
 	{
 		return Math.pow(2, attempt) * 1000;
 	},

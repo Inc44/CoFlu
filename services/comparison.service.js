@@ -1,8 +1,8 @@
 // services/comparison.service.js
 const ComparisonService = {
-	DIFF_EQUAL: 0,
-	DIFF_DELETION: -1,
-	DIFF_INSERTION: 1,
+	EQUAL: 0,
+	DEL: -1,
+	INS: 1,
 	compare(source = '', target = '', cleanup = true)
 	{
 		const dmp = new diff_match_patch();
@@ -13,21 +13,21 @@ const ComparisonService = {
 		}
 		return {
 			diffs,
-			stats: this.calculateStats(diffs),
+			stats: this.calcStats(diffs),
 			levenshtein: dmp.diff_levenshtein(diffs)
 		};
 	},
 	generateViews(diffs = [])
 	{
-		const numberedLinesEnabled = StorageService.load('numbered_lines_enabled', false);
-		let single = this.generateSingleColumnView(diffs);
-		let double = this.generateDoubleColumnView(diffs);
-		if (numberedLinesEnabled)
+		const numberedLines = StorageService.load('numbered_lines_enabled', false);
+		let single = this.genSingleView(diffs);
+		let double = this.genDoubleView(diffs);
+		if (numberedLines)
 		{
-			single = this.postProcessAddLineNumbers(single);
+			single = this.addLineNumbers(single);
 			double = {
-				left: this.postProcessAddLineNumbers(double.left),
-				right: this.postProcessAddLineNumbers(double.right)
+				left: this.addLineNumbers(double.left),
+				right: this.addLineNumbers(double.right)
 			};
 		}
 		return {
@@ -35,36 +35,36 @@ const ComparisonService = {
 			double
 		};
 	},
-	generateSingleColumnView(diffs = [])
+	genSingleView(diffs = [])
 	{
 		const htmlParts = [];
 		diffs.forEach(([type, text]) =>
 		{
-			const className = type === this.DIFF_EQUAL ? 'diff-equal' : type === this.DIFF_DELETION ? 'diff-deletion' : 'diff-insertion';
-			const escapedText = TextService.format.escape(text);
-			htmlParts.push(`<span class="${className}">${escapedText}</span>`);
+			const className = type === this.EQUAL ? 'diff-equal' : type === this.DEL ? 'diff-deletion' : 'diff-insertion';
+			const escText = TextService.format.escape(text);
+			htmlParts.push(`<span class="${className}">${escText}</span>`);
 		});
 		return htmlParts.join('');
 	},
-	generateDoubleColumnView(diffs = [])
+	genDoubleView(diffs = [])
 	{
 		const leftParts = [],
 			rightParts = [];
 		diffs.forEach(([type, text]) =>
 		{
-			const escapedText = TextService.format.escape(text);
-			if (type === this.DIFF_EQUAL)
+			const escText = TextService.format.escape(text);
+			if (type === this.EQUAL)
 			{
-				leftParts.push(`<span class="diff-equal">${escapedText}</span>`);
-				rightParts.push(`<span class="diff-equal">${escapedText}</span>`);
+				leftParts.push(`<span class="diff-equal">${escText}</span>`);
+				rightParts.push(`<span class="diff-equal">${escText}</span>`);
 			}
-			else if (type === this.DIFF_DELETION)
+			else if (type === this.DEL)
 			{
-				leftParts.push(`<span class="diff-deletion">${escapedText}</span>`);
+				leftParts.push(`<span class="diff-deletion">${escText}</span>`);
 			}
-			else if (type === this.DIFF_INSERTION)
+			else if (type === this.INS)
 			{
-				rightParts.push(`<span class="diff-insertion">${escapedText}</span>`);
+				rightParts.push(`<span class="diff-insertion">${escText}</span>`);
 			}
 		});
 		return {
@@ -72,9 +72,9 @@ const ComparisonService = {
 			right: rightParts.join('')
 		};
 	},
-	postProcessAddLineNumbers(html = '')
+	addLineNumbers(html = '')
 	{
-		let lineNumber = 1;
+		let lineNum = 1;
 		const lines = html.split('\n');
 		let newHtml = '';
 		for (let i = 0; i < lines.length; i++)
@@ -83,21 +83,21 @@ const ComparisonService = {
 			{
 				newHtml += '\n';
 			}
-			newHtml += `<span class="line-number">${lineNumber}</span>${lines[i]}`;
-			lineNumber++;
+			newHtml += `<span class="line-number">${lineNum}</span>${lines[i]}`;
+			lineNum++;
 		}
 		return newHtml;
 	},
-	calculateStats(diffs = [])
+	calcStats(diffs = [])
 	{
 		let added = 0,
 			removed = 0,
 			common = 0;
 		diffs.forEach(([type, text]) =>
 		{
-			if (type === this.DIFF_INSERTION) added += text.length;
-			else if (type === this.DIFF_DELETION) removed += text.length;
-			else if (type === this.DIFF_EQUAL) common += text.length;
+			if (type === this.INS) added += text.length;
+			else if (type === this.DEL) removed += text.length;
+			else if (type === this.EQUAL) common += text.length;
 		});
 		const total = added + removed + common;
 		if (total === 0)

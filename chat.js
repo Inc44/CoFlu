@@ -3,17 +3,17 @@ class ChatApp
 {
 	constructor()
 	{
-		this.elements = this.getElements();
+		this.els = this.getElements();
 		this.state = {
-			messages: [],
-			abortController: null,
+			msgs: [],
+			abortCtrl: null,
 			audioUploader: null,
 			imageUploader: null,
 			videoUploader: null,
 			isStreaming: false,
 		};
-		this.loadMessages();
-		this.selectedRenderer = StorageService.load('selected_renderer', 'katex');
+		this.loadMsgs();
+		this.renderer = StorageService.load('selected_renderer', 'katex');
 		this.throttleTimer = null;
 		this.throttleDelay = 1000;
 		this.accumulatedText = '';
@@ -21,168 +21,162 @@ class ChatApp
 	getElements()
 	{
 		return {
-			apiModelSelect: document.getElementById('apiModel'),
+			apiModel: document.getElementById('apiModel'),
 			audioList: document.getElementById('audioList'),
 			audioUploadInput: document.getElementById('audioUploadInput'),
-			chatContainer: document.getElementById('chatContainer'),
+			chatBox: document.getElementById('chatContainer'),
 			cleanChatBtn: document.getElementById('cleanChat'),
-			exportSettingsBtn: document.getElementById('exportSettings'),
+			exportBtn: document.getElementById('exportSettings'),
 			imageList: document.getElementById('imageList'),
 			imageUploadInput: document.getElementById('imageUploadInput'),
-			importSettingsBtn: document.getElementById('importSettings'),
-			messageInput: document.getElementById('messageInput'),
-			sendMessageBtn: document.getElementById('sendMessage'),
+			importBtn: document.getElementById('importSettings'),
+			msgInput: document.getElementById('messageInput'),
+			sendBtn: document.getElementById('sendMessage'),
 			videoList: document.getElementById('videoList'),
 			videoUploadInput: document.getElementById('videoUploadInput')
 		};
 	}
 	init()
 	{
-		this.setupEventListeners();
-		this.initializeComponents();
-		this.displayMessages();
-		this.updateInitialUI();
+		this.setupEvents();
+		this.initComponents();
+		this.displayMsgs();
+		this.updateUI();
 		const savedModel = StorageService.load('selected_api_model', 'openai');
-		if (this.elements.apiModelSelect)
+		if (this.els.apiModel)
 		{
-			this.elements.apiModelSelect.value = savedModel;
+			this.els.apiModel.value = savedModel;
 		}
 	}
-	async initializeComponents()
+	initComponents()
 	{
-		this.state.audioUploader = new UIComponents.AudioUploader(this.elements.audioUploadInput,
+		this.state.audioUploader = new UIComponents.AudioUploader(this.els.audioUploadInput,
 		{
-			displayElement: this.elements.audioList,
-			getApiModel: () => this.elements.apiModelSelect.value
+			displayElement: this.els.audioList,
+			getApiModel: () => this.els.apiModel.value
 		});
-		this.state.imageUploader = new UIComponents.ImageUploader(this.elements.imageUploadInput,
+		this.state.imageUploader = new UIComponents.ImageUploader(this.els.imageUploadInput,
 		{
-			displayElement: this.elements.imageList,
-			getApiModel: () => this.elements.apiModelSelect.value
+			displayElement: this.els.imageList,
+			getApiModel: () => this.els.apiModel.value
 		});
-		this.state.videoUploader = new UIComponents.VideoUploader(this.elements.videoUploadInput,
+		this.state.videoUploader = new UIComponents.VideoUploader(this.els.videoUploadInput,
 		{
-			displayElement: this.elements.videoList,
-			getApiModel: () => this.elements.apiModelSelect.value
+			displayElement: this.els.videoList,
+			getApiModel: () => this.els.apiModel.value
 		});
-		UIHandlers.setupModelSelectionHandler(this.elements);
+		UIHandlers.setupModelSelectionHandler(this.els);
 	}
-	updateInitialUI()
+	updateUI()
 	{
-		if (this.elements.apiModelSelect)
+		if (this.els.apiModel)
 		{
-			const currentModel = this.elements.apiModelSelect.value;
-			const currentModelDetails = CONFIG.API.MODELS.COMPLETION[currentModel]?.options.find(m => m.name === StorageService.load(`${currentModel}_model`, CONFIG.API.MODELS.COMPLETION[currentModel].default));
-			if (currentModelDetails)
+			const model = this.els.apiModel.value;
+			const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default));
+			if (details)
 			{
-				UIState.updateAudioUploadVisibility(currentModelDetails);
-				UIState.updateImageUploadVisibility(currentModelDetails);
-				UIState.updateVideoUploadVisibility(currentModelDetails);
+				UIState.updateAudioUploadVisibility(details);
+				UIState.updateImageUploadVisibility(details);
+				UIState.updateVideoUploadVisibility(details);
 			}
 		}
 	}
-	setupEventListeners()
+	setupEvents()
 	{
-		this.elements.cleanChatBtn.addEventListener('click', this.clearChat.bind(this));
-		this.elements.exportSettingsBtn.addEventListener('click', this.exportChat.bind(this));
-		this.elements.importSettingsBtn.addEventListener('click', this.importChat.bind(this));
-		this.elements.sendMessageBtn.addEventListener('click', this.sendMessage.bind(this));
-		this.elements.messageInput.addEventListener('keydown', (event) =>
+		this.els.cleanChatBtn.addEventListener('click', this.clearChat.bind(this));
+		this.els.exportBtn.addEventListener('click', this.exportChat.bind(this));
+		this.els.importBtn.addEventListener('click', this.importChat.bind(this));
+		this.els.sendBtn.addEventListener('click', this.sendMsg.bind(this));
+		this.els.msgInput.addEventListener('keydown', (event) =>
 		{
 			if (event.key === 'Enter' && !event.shiftKey)
 			{
 				event.preventDefault();
-				this.sendMessage();
+				this.sendMsg();
 			}
 		});
-		if (this.elements.apiModelSelect)
+		if (this.els.apiModel)
 		{
-			this.elements.apiModelSelect.addEventListener('change', () =>
+			this.els.apiModel.addEventListener('change', () =>
 			{
-				const selectedModel = this.elements.apiModelSelect.value;
-				const currentModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === StorageService.load(`${selectedModel}_model`, CONFIG.API.MODELS.COMPLETION[selectedModel].default));
-				StorageService.save('selected_api_model', selectedModel);
-				UIState.updateAudioUploadVisibility(currentModelDetails);
-				UIState.updateImageUploadVisibility(currentModelDetails);
-				UIState.updateVideoUploadVisibility(currentModelDetails);
-				this.loadMessages();
-				this.displayMessages();
+				const model = this.els.apiModel.value;
+				const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default));
+				StorageService.save('selected_api_model', model);
+				UIState.updateAudioUploadVisibility(details);
+				UIState.updateImageUploadVisibility(details);
+				UIState.updateVideoUploadVisibility(details);
+				this.loadMsgs();
+				this.displayMsgs();
 			});
 		}
 	}
-	loadMessages()
+	loadMsgs()
 	{
-		const savedMessages = StorageService.load('chat_history', []);
-		this.state.messages = savedMessages;
+		this.state.msgs = StorageService.load('chat_history', []);
 	}
-	saveMessages()
+	saveMsgs()
 	{
-		StorageService.save('chat_history', this.state.messages);
+		StorageService.save('chat_history', this.state.msgs);
 	}
-	async sendMessage()
+	async sendMsg()
 	{
-		const messageText = this.elements.messageInput.value.trim();
-		if (!messageText) return;
-		this.addUserMessage(messageText);
-		this.elements.messageInput.value = '';
-		const model = this.elements.apiModelSelect.value;
+		const text = this.els.msgInput.value.trim();
+		if (!text) return;
+		if (this.state.isStreaming || this.state.abortCtrl)
+		{
+			this.state.abortCtrl?.abort();
+			this.els.sendBtn.textContent = 'Send';
+			this.els.sendBtn.style.backgroundColor = '';
+			this.state.abortCtrl = null;
+			this.state.isStreaming = false;
+			return;
+		}
+		this.addUserMsg(text);
+		this.els.msgInput.value = '';
+		const model = this.els.apiModel.value;
 		const apiKey = StorageService.load(CONFIG.API.KEYS[model]);
 		if (!apiKey)
 		{
 			alert(`Please set your API key for ${model} in settings.`);
 			return;
 		}
-		this.state.abortController = new AbortController();
+		this.state.abortCtrl = new AbortController();
 		this.accumulatedText = '';
-		this.elements.sendMessageBtn.textContent = 'Stop';
-		this.elements.sendMessageBtn.style.backgroundColor = 'red';
-		try
+		this.els.sendBtn.textContent = 'Stop';
+		this.els.sendBtn.style.backgroundColor = 'red';
+		const audioURLs = Object.values(this.state.audioUploader.getAudios());
+		const imageURLs = Object.values(this.state.imageUploader.getImages());
+		const videoURLs = Object.values(this.state.videoUploader.getVideos());
+		const streaming = StorageService.load('streaming_enabled', true);
+		this.state.isStreaming = streaming;
+		const messages = this.state.msgs.map(msg => (
 		{
-			const audioURLs = Object.values(this.state.audioUploader.getAudios());
-			const imageURLs = Object.values(this.state.imageUploader.getImages());
-			const videoURLs = Object.values(this.state.videoUploader.getVideos());
-			const streamingEnabled = StorageService.load('streaming_enabled', true);
-			this.state.isStreaming = streamingEnabled;
-			const messages = this.state.messages.map(msg => (
+			role: msg.role,
+			content: msg.content
+		}));
+		const aiResponse = await AiService.generate("", model,
+		{
+			messages: messages,
+			audios: audioURLs,
+			images: imageURLs,
+			videos: videoURLs,
+			abortSignal: this.state.abortCtrl.signal,
+			streaming: this.state.isStreaming,
+			onProgress: (text) =>
 			{
-				role: msg.role,
-				content: msg.content
-			}));
-			const aiResponse = await AiService.generate("", model,
-			{
-				messages: messages,
-				audios: audioURLs,
-				images: imageURLs,
-				videos: videoURLs,
-				abortSignal: this.state.abortController.signal,
-				streaming: this.state.isStreaming,
-				onProgress: (text) =>
-				{
-					this.accumulatedText = text;
-					this.throttledDisplay();
-				}
-			});
-			if (!this.state.isStreaming)
-			{
-				let assistantContent = CONFIG.API.CONFIG.COMPLETION[model].extractContent(aiResponse);
-				this.addAssistantMessage(assistantContent);
+				this.accumulatedText = text;
+				this.throttledDisplay();
 			}
-		}
-		catch (error)
+		});
+		if (!this.state.isStreaming)
 		{
-			if (error.name !== 'AbortError')
-			{
-				console.error("Error sending message:", error);
-				alert("Failed to send message: " + error.message);
-			}
+			let content = CONFIG.API.CONFIG.COMPLETION[model].extractContent(aiResponse);
+			this.addAssistantMsg(content);
 		}
-		finally
-		{
-			this.elements.sendMessageBtn.textContent = 'Send';
-			this.elements.sendMessageBtn.style.backgroundColor = '';
-			this.state.abortController = null;
-			this.state.isStreaming = false;
-		}
+		this.els.sendBtn.textContent = 'Send';
+		this.els.sendBtn.style.backgroundColor = '';
+		this.state.abortCtrl = null;
+		this.state.isStreaming = false;
 	}
 	throttledDisplay()
 	{
@@ -190,164 +184,156 @@ class ChatApp
 		{
 			this.throttleTimer = setTimeout(() =>
 			{
-				this.updateAssistantMessage(this.accumulatedText);
-				this.displayMessages();
+				this.updateAssistantMsg(this.accumulatedText);
+				this.displayMsgs();
 				this.throttleTimer = null;
 			}, this.throttleDelay);
 		}
 	}
-	updateAssistantMessage(text)
+	updateAssistantMsg(text)
 	{
-		if (this.state.messages.length > 0 && this.state.messages[this.state.messages.length - 1].role === "assistant")
+		if (this.state.msgs.length > 0 && this.state.msgs[this.state.msgs.length - 1].role === "assistant")
 		{
-			this.state.messages[this.state.messages.length - 1].content = text;
+			this.state.msgs[this.state.msgs.length - 1].content = text;
 		}
 		else
 		{
-			this.addAssistantMessage(text);
+			this.addAssistantMsg(text);
 		}
-		this.displayMessages();
-		this.saveMessages();
+		this.displayMsgs();
+		this.saveMsgs();
 	}
-	addUserMessage(text)
+	addUserMsg(text)
 	{
-		this.state.messages.push(
+		this.state.msgs.push(
 		{
 			role: "user",
 			content: text
 		});
-		this.displayMessages();
-		this.saveMessages();
+		this.displayMsgs();
+		this.saveMsgs();
 	}
-	addAssistantMessage(text)
+	addAssistantMsg(text)
 	{
-		this.state.messages.push(
+		this.state.msgs.push(
 		{
 			role: "assistant",
 			content: text
 		});
-		this.displayMessages();
-		this.saveMessages();
+		this.displayMsgs();
+		this.saveMsgs();
 	}
 	clearChat()
 	{
-		this.state.messages = [];
-		this.displayMessages();
-		this.saveMessages();
+		this.state.msgs = [];
+		this.displayMsgs();
+		this.saveMsgs();
 		this.state.audioUploader.clear();
 		this.state.imageUploader.clear();
 		this.state.videoUploader.clear();
 	}
-	displayMessages()
+	displayMsgs()
 	{
-		this.elements.chatContainer.innerHTML = '';
-		this.state.messages.forEach((message, index) =>
+		this.els.chatBox.innerHTML = '';
+		this.state.msgs.forEach((msg, i) =>
 		{
-			const messageElement = this.createMessageElement(message, index);
-			this.elements.chatContainer.appendChild(messageElement);
+			const msgEl = this.createMsgElement(msg, i);
+			this.els.chatBox.appendChild(msgEl);
 		});
-		this.elements.chatContainer.scrollTop = this.elements.chatContainer.scrollHeight;
+		this.els.chatBox.scrollTop = this.els.chatBox.scrollHeight;
 	}
-	createMessageElement(message, index)
+	createMsgElement(msg, index)
 	{
-		const messageDiv = document.createElement('div');
-		messageDiv.classList.add('message');
-		messageDiv.classList.add(message.role === 'user' ? 'user-message' : 'assistant-message');
-		messageDiv.dataset.index = index;
-		const contentPara = document.createElement('p');
-		let contentText = message.content;
-		if (typeof contentText === 'string')
+		const msgDiv = document.createElement('div');
+		msgDiv.classList.add('message');
+		msgDiv.classList.add(msg.role === 'user' ? 'user-message' : 'assistant-message');
+		msgDiv.dataset.index = index;
+		const contentP = document.createElement('p');
+		let content = msg.content;
+		if (typeof content === 'string')
 		{
-			contentText = TextService.format.latex(contentText);
-			contentText = marked.parse(contentText);
+			content = TextService.format.latex(content);
+			content = marked.parse(content);
 		}
-		contentPara.innerHTML = contentText;
-		const buttonContainer = document.createElement('div');
-		buttonContainer.classList.add('message-buttons');
-		const copyButton = document.createElement('button');
-		copyButton.textContent = '📋';
-		copyButton.classList.add('copy-button', 'btn', 'btn-sm');
-		copyButton.addEventListener('click', () => this.copyMessage(index));
-		buttonContainer.appendChild(copyButton);
-		const editButton = document.createElement('button');
-		editButton.textContent = '✏️';
-		editButton.classList.add('edit-button', 'btn', 'btn-sm');
-		editButton.addEventListener('click', () => this.editMessage(index));
-		buttonContainer.appendChild(editButton);
-		const deleteButton = document.createElement('button');
-		deleteButton.textContent = '🗑️';
-		deleteButton.classList.add('delete-button', 'btn', 'btn-sm');
-		deleteButton.addEventListener('click', () => this.deleteMessage(index));
-		buttonContainer.appendChild(deleteButton);
-		messageDiv.appendChild(buttonContainer);
-		messageDiv.appendChild(contentPara);
+		contentP.innerHTML = content;
+		const btnBox = document.createElement('div');
+		btnBox.classList.add('message-buttons');
+		const copyBtn = document.createElement('button');
+		copyBtn.textContent = '📋';
+		copyBtn.classList.add('copy-button', 'btn', 'btn-sm');
+		copyBtn.addEventListener('click', () => this.copyMsg(index));
+		btnBox.appendChild(copyBtn);
+		const editBtn = document.createElement('button');
+		editBtn.textContent = '✏️';
+		editBtn.classList.add('edit-button', 'btn', 'btn-sm');
+		editBtn.addEventListener('click', () => this.editMsg(index));
+		btnBox.appendChild(editBtn);
+		const delBtn = document.createElement('button');
+		delBtn.textContent = '🗑️';
+		delBtn.classList.add('delete-button', 'btn', 'btn-sm');
+		delBtn.addEventListener('click', () => this.deleteMsg(index));
+		btnBox.appendChild(delBtn);
+		msgDiv.appendChild(btnBox);
+		msgDiv.appendChild(contentP);
 		setTimeout(() =>
 		{
-			this.renderMath(messageDiv);
+			this.renderMath(msgDiv);
 		}, 0);
-		return messageDiv;
+		return msgDiv;
 	}
-	editMessage(index)
+	editMsg(index)
 	{
-		const message = this.state.messages[index];
-		if (!message) return;
-		const messageDiv = this.elements.chatContainer.querySelector(`.message[data-index="${index}"]`);
-		if (!messageDiv) return;
-		const originalContent = message.content;
+		const msg = this.state.msgs[index];
+		if (!msg) return;
+		const msgDiv = this.els.chatBox.querySelector(`.message[data-index="${index}"]`);
+		if (!msgDiv) return;
+		const origContent = msg.content;
 		const textarea = document.createElement('textarea');
-		textarea.value = message.content;
+		textarea.value = msg.content;
 		textarea.classList.add('edit-textarea', 'form-control');
-		const buttonContainer = document.createElement('div');
-		buttonContainer.classList.add('edit-buttons');
-		const saveButton = document.createElement('button');
-		saveButton.textContent = '💾';
-		saveButton.classList.add('edit-button', 'btn', 'btn-sm');
-		saveButton.addEventListener('click', () => this.saveEditedMessage(index, textarea.value));
-		const cancelButton = document.createElement('button');
-		cancelButton.textContent = '❌';
-		cancelButton.classList.add('edit-button', 'btn', 'btn-sm');
-		cancelButton.addEventListener('click', () => this.cancelEdit(index, originalContent));
-		buttonContainer.appendChild(saveButton);
-		buttonContainer.appendChild(cancelButton);
-		messageDiv.innerHTML = '';
-		messageDiv.appendChild(textarea);
-		messageDiv.appendChild(buttonContainer);
+		const btnBox = document.createElement('div');
+		btnBox.classList.add('edit-buttons');
+		const saveBtn = document.createElement('button');
+		saveBtn.textContent = '💾';
+		saveBtn.classList.add('edit-button', 'btn', 'btn-sm');
+		saveBtn.addEventListener('click', () => this.saveEditedMsg(index, textarea.value));
+		const cancelBtn = document.createElement('button');
+		cancelBtn.textContent = '❌';
+		cancelBtn.classList.add('edit-button', 'btn', 'btn-sm');
+		cancelBtn.addEventListener('click', () => this.cancelEdit(index, origContent));
+		btnBox.appendChild(saveBtn);
+		btnBox.appendChild(cancelBtn);
+		msgDiv.innerHTML = '';
+		msgDiv.appendChild(textarea);
+		msgDiv.appendChild(btnBox);
 		textarea.focus();
 	}
-	saveEditedMessage(index, newText)
+	saveEditedMsg(index, newText)
 	{
-		this.state.messages[index].content = newText;
-		this.saveMessages();
-		this.displayMessages();
+		this.state.msgs[index].content = newText;
+		this.saveMsgs();
+		this.displayMsgs();
 	}
-	cancelEdit(index, originalContent)
+	cancelEdit(index, origContent)
 	{
-		this.state.messages[index].content = originalContent;
-		this.displayMessages();
+		this.state.msgs[index].content = origContent;
+		this.displayMsgs();
 	}
-	deleteMessage(index)
+	deleteMsg(index)
 	{
-		this.state.messages.splice(index, 1);
-		this.saveMessages();
-		this.displayMessages();
+		this.state.msgs.splice(index, 1);
+		this.saveMsgs();
+		this.displayMsgs();
 	}
-	copyMessage(index)
+	copyMsg(index)
 	{
-		const message = this.state.messages[index];
-		if (!message) return;
-		try
-		{
-			navigator.clipboard.writeText(message.content);
-		}
-		catch (err)
-		{
-			console.error('Failed to copy: ', err);
-			alert('Failed to copy message to clipboard.');
-		}
+		const msg = this.state.msgs[index];
+		if (!msg) return;
+		navigator.clipboard.writeText(msg.content);
 	}
 	renderMath(element)
 	{
-		if (this.selectedRenderer === 'katex')
+		if (this.renderer === 'katex')
 		{
 			renderMathInElement(element,
 			{
@@ -371,23 +357,22 @@ class ChatApp
 					left: '\(',
 					right: '\)',
 					display: false
-				}, ],
+				}],
 				throwOnError: false,
 				trust: true,
 				strict: false
 			});
 		}
-		else if (this.selectedRenderer === 'mathjax3')
+		else if (this.renderer === 'mathjax3')
 		{
-			MathJax.typesetPromise([element])
-				.catch(err => console.error("MathJax typesetting error:", err));
+			MathJax.typesetPromise([element]);
 		}
 	}
 	exportChat()
 	{
 		const chatHistory = StorageService.load('chat_history', []);
-		const chatHistoryJSON = JSON.stringify(chatHistory, null, 2);
-		const blob = new Blob([chatHistoryJSON],
+		const chatJSON = JSON.stringify(chatHistory, null, 2);
+		const blob = new Blob([chatJSON],
 		{
 			type: 'application/json'
 		});
@@ -408,31 +393,22 @@ class ChatApp
 		input.addEventListener('change', (event) =>
 		{
 			const file = event.target.files[0];
-			if (file)
+			if (!file) return;
+			const reader = new FileReader();
+			reader.onload = (e) =>
 			{
-				const reader = new FileReader();
-				reader.onload = (e) =>
+				const parsed = JSON.parse(e.target.result);
+				if (!Array.isArray(parsed))
 				{
-					try
-					{
-						const parsedHistory = JSON.parse(e.target.result);
-						if (!Array.isArray(parsedHistory))
-						{
-							throw new Error('Imported data is not a valid chat history array.');
-						}
-						StorageService.save('chat_history', parsedHistory);
-						this.loadMessages();
-						this.displayMessages();
-						alert('Chat history imported successfully!');
-					}
-					catch (error)
-					{
-						console.error('Error importing chat history:', error);
-						alert(`Error importing chat history: ${error.message}`);
-					}
-				};
-				reader.readAsText(file);
-			}
+					alert('Imported data is not a valid chat history array.');
+					return;
+				}
+				StorageService.save('chat_history', parsed);
+				this.loadMsgs();
+				this.displayMsgs();
+				alert('Chat history imported successfully!');
+			};
+			reader.readAsText(file);
 		});
 		input.click();
 	}

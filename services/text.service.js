@@ -52,7 +52,7 @@ const TextService = {
 		retab(text)
 		{
 			const lines = text.split('\n');
-			const processedLines = [];
+			const result = [];
 			for (const line of lines)
 			{
 				const match = line.match(/^(\s*)/);
@@ -65,14 +65,14 @@ const TextService = {
 					const tabsToAdd = Math.floor(spaceCount / 2);
 					const tabString = '\t'.repeat(tabsToAdd);
 					const trimmedLine = line.replace(/^(\s+)/, '');
-					processedLines.push(existingTabs + tabString + trimmedLine);
+					result.push(existingTabs + tabString + trimmedLine);
 				}
 				else
 				{
-					processedLines.push(line);
+					result.push(line);
 				}
 			}
-			return processedLines.join('\n');
+			return result.join('\n');
 		},
 		latex(text)
 		{
@@ -97,11 +97,10 @@ const TextService = {
 	},
 	async loadFile(file)
 	{
-		return new Promise((resolve, reject) =>
+		const reader = new FileReader();
+		return new Promise(resolve =>
 		{
-			const reader = new FileReader();
 			reader.onload = e => resolve(e.target.result);
-			reader.onerror = e => reject(e);
 			reader.readAsText(file);
 		});
 	}

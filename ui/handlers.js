@@ -1,27 +1,27 @@
 // ui/handlers.js
 const UIHandlers = {
-	setupTextAreaHandlers(elements)
+	setupTextAreaHandlers(els)
 	{
 		['source', 'target'].forEach(type =>
 		{
-			const textArea = elements[`${type}Text`];
+			const textArea = els[`${type}Text`];
 			textArea.addEventListener('input', () =>
 			{
 				TextService.updateStats(textArea, type);
 				StorageService.save(`${type}Text`, textArea.value);
 			});
 			const actions = {
-				[`clear${this.capitalize(type)}`]: () => this.clearTextArea(textArea, type),
-				[`copy${this.capitalize(type)}`]: () => navigator.clipboard.writeText(textArea.value),
-				[`uppercase${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.toUpperCase),
-				[`lowercase${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.toLowerCase),
-				[`dedupe${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.dedupe),
-				[`sort${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.sort),
-				[`unbold${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.unbold),
-				[`unspace${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.transform.unspace),
-				[`retab${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.format.retab),
-				[`latex${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.format.latex),
-				[`html${this.capitalize(type)}`]: () => this.transformText(textArea, type, TextService.format.html),
+				[`clear${this.cap(type)}`]: () => this.clearTextArea(textArea, type),
+				[`copy${this.cap(type)}`]: () => navigator.clipboard.writeText(textArea.value),
+				[`uppercase${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.toUpperCase),
+				[`lowercase${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.toLowerCase),
+				[`dedupe${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.dedupe),
+				[`sort${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.sort),
+				[`unbold${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.unbold),
+				[`unspace${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.unspace),
+				[`retab${this.cap(type)}`]: () => this.transform(textArea, type, TextService.format.retab),
+				[`latex${this.cap(type)}`]: () => this.transform(textArea, type, TextService.format.latex),
+				[`html${this.cap(type)}`]: () => this.transform(textArea, type, TextService.format.html),
 			};
 			Object.entries(actions)
 				.forEach(([id, action]) =>
@@ -31,7 +31,7 @@ const UIHandlers = {
 				});
 		});
 	},
-	capitalize(str)
+	cap(str)
 	{
 		return str.charAt(0)
 			.toUpperCase() + str.slice(1);
@@ -47,36 +47,36 @@ const UIHandlers = {
 				.style.display = 'none';
 		}
 	},
-	transformText(textArea, type, transformFunction)
+	transform(textArea, type, fn)
 	{
-		textArea.value = transformFunction(textArea.value);
+		textArea.value = fn(textArea.value);
 		TextService.updateStats(textArea, type);
 		StorageService.save(`${type}Text`, textArea.value);
 	},
-	setupFileUploaders(elements)
+	setupFileUploaders(els)
 	{
 		['source', 'target'].forEach(type =>
 		{
-			const fileInput = document.getElementById(`load${this.capitalize(type)}`);
+			const fileInput = document.getElementById(`load${this.cap(type)}`);
 			fileInput?.addEventListener('change', async (e) =>
 			{
 				const file = e.target.files[0];
 				if (file)
 				{
 					const content = await TextService.loadFile(file);
-					elements[`${type}Text`].value = content;
-					TextService.updateStats(elements[`${type}Text`], type);
+					els[`${type}Text`].value = content;
+					TextService.updateStats(els[`${type}Text`], type);
 					StorageService.save(`${type}Text`, content);
 				}
 			});
 		});
 	},
-	setupCompareButton(elements)
+	setupCompareButton(els)
 	{
-		elements.compareBtn.addEventListener('click', () =>
+		els.compareBtn.addEventListener('click', () =>
 		{
-			const comparison = ComparisonService.compare(elements.sourceText.value, elements.targetText.value);
-			const views = ComparisonService.generateViews(comparison.diffs);
+			const compare = ComparisonService.compare(els.sourceText.value, els.targetText.value);
+			const views = ComparisonService.generateViews(compare.diffs);
 			document.getElementById('singleColumnDiff')
 				.innerHTML = views.single;
 			document.getElementById('leftColumn')
@@ -84,185 +84,173 @@ const UIHandlers = {
 			document.getElementById('rightColumn')
 				.innerHTML = views.double.right;
 			document.getElementById('levenshtein')
-				.textContent = comparison.levenshtein;
+				.textContent = compare.levenshtein;
 			document.getElementById('commonPercentage')
-				.textContent = comparison.stats.commonPercentage;
+				.textContent = compare.stats.commonPercentage;
 			document.getElementById('differencePercentage')
-				.textContent = comparison.stats.differencePercentage;
+				.textContent = compare.stats.differencePercentage;
 			document.getElementById('commonSymbols')
-				.textContent = comparison.stats.commonSymbols;
+				.textContent = compare.stats.commonSymbols;
 			document.getElementById('differenceSymbols')
-				.textContent = comparison.stats.differenceSymbols;
+				.textContent = compare.stats.differenceSymbols;
 		});
 	},
-	setupSwitchButton(elements)
+	setupSwitchButton(els)
 	{
-		elements.switchBtn.addEventListener('click', () =>
+		els.switchBtn.addEventListener('click', () =>
 		{
-			[elements.sourceText.value, elements.targetText.value] = [elements.targetText.value, elements.sourceText.value];
-			TextService.updateStats(elements.sourceText, 'source');
-			TextService.updateStats(elements.targetText, 'target');
-			StorageService.save('sourceText', elements.sourceText.value);
-			StorageService.save('targetText', elements.targetText.value);
+			[els.sourceText.value, els.targetText.value] = [els.targetText.value, els.sourceText.value];
+			TextService.updateStats(els.sourceText, 'source');
+			TextService.updateStats(els.targetText, 'target');
+			StorageService.save('sourceText', els.sourceText.value);
+			StorageService.save('targetText', els.targetText.value);
 		});
 	},
-	calculateWPM(text, timeInSeconds)
+	calcWPM(text, secs)
 	{
-		const wordCount = text.trim()
+		const words = text.trim()
 			.split(/\s+/)
 			.length;
-		const minutes = timeInSeconds / 60;
-		return minutes > 0 ? Math.round(wordCount / minutes) : 0;
+		const mins = secs / 60;
+		return mins > 0 ? Math.round(words / mins) : 0;
 	},
-	setupGenerateButton(elements, state)
+	setupGenerateButton(els, state)
 	{
 		let startTime = null;
-		elements.generateTargetBtn.addEventListener('click', async () =>
+		els.genTargetBtn.addEventListener('click', async () =>
 		{
-			if (elements.generateTargetBtn.dataset.generating === 'true')
+			if (els.genTargetBtn.dataset.generating === 'true')
 			{
-				state.abortController?.abort();
+				state.abortCtrl?.abort();
+				UIState.setGenerating(false, els);
+				state.abortCtrl = null;
 				return;
 			}
-			try
+			UIState.setGenerating(true, els);
+			state.abortCtrl = new AbortController();
+			const model = StorageService.load('selected_api_model', 'openai');
+			const selectedPrompt = els.promptSelect.value;
+			const customPrompt = els.customPrompt.value;
+			let prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
+			prompt += "\n\n" + els.sourceText.value;
+			if (els.translateToggle.checked)
 			{
-				UIState.setGenerating(true, elements);
-				state.abortController = new AbortController();
-				const model = StorageService.load('selected_api_model', 'openai');
-				const selectedPrompt = elements.promptSelect.value;
-				const customPrompt = elements.customPromptInput.value;
-				let prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
-				prompt += "\n\n" + elements.sourceText.value;
-				if (elements.translationToggle.checked)
-				{
-					const targetLanguage = elements.languageSelect.value;
-					prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLanguage}.\n\n${prompt}`;
-				}
-				if (StorageService.load('no_bs_enabled', false))
-				{
-					prompt = `${CONFIG.UI.NO_BS_PROMPT}.\n\n${prompt}`;
-				}
-				if (!prompt.trim()) return;
-				const generationOptions = {
-					streaming: StorageService.load('streaming_enabled', true),
-					audios: Object.values(state.audioUploader.getAudios()),
-					images: Object.values(state.imageUploader.getImages()),
-					videos: Object.values(state.videoUploader.getVideos()),
-					abortSignal: state.abortController.signal,
-					onProgress: (text) =>
-					{
-						elements.targetText.value = text;
-						TextService.updateStats(elements.targetText, 'target');
-						StorageService.save('targetText', text);
-						elements.targetText.scrollTop = elements.targetText.scrollHeight;
-						const elapsedTimeInSeconds = (Date.now() - startTime) / 1000;
-						const wpm = this.calculateWPM(text, elapsedTimeInSeconds);
-						elements.wpmDisplay.textContent = wpm;
-					}
-				};
-				elements.targetText.value = '';
-				UIState.showWPM(elements);
-				startTime = Date.now();
-				const response = await AiService.generate(prompt, model, generationOptions);
-				if (!generationOptions.streaming)
-				{
-					const modelConfig = CONFIG.API.CONFIG.COMPLETION[model];
-					elements.targetText.value = modelConfig.extractContent(response);
-					TextService.updateStats(elements.targetText, 'target');
-					StorageService.save('targetText', elements.targetText.value);
-				}
+				const targetLang = els.langSelect.value;
+				prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}.\n\n${prompt}`;
 			}
-			catch (error)
+			if (StorageService.load('no_bs_enabled', false))
 			{
-				if (error.name !== 'AbortError')
+				prompt = `${CONFIG.UI.NO_BS_PROMPT}.\n\n${prompt}`;
+			}
+			if (!prompt.trim()) return;
+			const genOptions = {
+				streaming: StorageService.load('streaming_enabled', true),
+				audios: Object.values(state.audioUploader.getAudios()),
+				images: Object.values(state.imageUploader.getImages()),
+				videos: Object.values(state.videoUploader.getVideos()),
+				abortSignal: state.abortCtrl.signal,
+				onProgress: (text) =>
 				{
-					console.error('Generation error:', error);
-					alert('An error occurred during generation: ' + error.message);
+					els.targetText.value = text;
+					TextService.updateStats(els.targetText, 'target');
+					StorageService.save('targetText', text);
+					els.targetText.scrollTop = els.targetText.scrollHeight;
+					const elapsed = (Date.now() - startTime) / 1000;
+					const wpm = this.calcWPM(text, elapsed);
+					els.wpmDisplay.textContent = wpm;
 				}
-			}
-			finally
+			};
+			els.targetText.value = '';
+			UIState.showWPM(els);
+			startTime = Date.now();
+			const response = await AiService.generate(prompt, model, genOptions);
+			if (!genOptions.streaming)
 			{
-				UIState.setGenerating(false, elements);
-				state.abortController = null;
-				startTime = null;
+				const modelConfig = CONFIG.API.CONFIG.COMPLETION[model];
+				els.targetText.value = modelConfig.extractContent(response);
+				TextService.updateStats(els.targetText, 'target');
+				StorageService.save('targetText', els.targetText.value);
 			}
+			UIState.setGenerating(false, els);
+			state.abortCtrl = null;
+			startTime = null;
 		});
 	},
-	setupModelSelectionHandler(elements)
+	setupModelSelectionHandler(els)
 	{
-		if (elements.apiModelSelect)
+		if (els.apiModel)
 		{
-			elements.apiModelSelect.addEventListener('change', () =>
+			els.apiModel.addEventListener('change', () =>
 			{
-				const selectedModel = elements.apiModelSelect.value;
-				const currentModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === StorageService.load(`${selectedModel}_model`, CONFIG.API.MODELS.COMPLETION[selectedModel].default));
-				StorageService.save('selected_api_model', selectedModel);
-				UIState.updateAudioUploadVisibility(currentModelDetails);
-				UIState.updateImageUploadVisibility(currentModelDetails);
-				UIState.updateVideoUploadVisibility(currentModelDetails);
+				const model = els.apiModel.value;
+				const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default));
+				StorageService.save('selected_api_model', model);
+				UIState.updateAudioUploadVisibility(details);
+				UIState.updateImageUploadVisibility(details);
+				UIState.updateVideoUploadVisibility(details);
 			});
 		}
 	},
-	setupSettingsHandlers(elements)
+	setupSettingsHandlers(els)
 	{
-		elements.apiModelSelect?.addEventListener('change', () =>
+		els.apiModel?.addEventListener('change', () =>
 		{
-			const selectedModel = elements.apiModelSelect.value;
-			const selectedModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === elements.modelSelects[selectedModel].value);
-			StorageService.save('selected_api_model', selectedModel);
-			UIState.updateAudioUploadVisibility(selectedModelDetails);
-			UIState.updateImageUploadVisibility(selectedModelDetails);
-			UIState.updateVideoUploadVisibility(selectedModelDetails);
+			const model = els.apiModel.value;
+			const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === els.modelSelects[model].value);
+			StorageService.save('selected_api_model', model);
+			UIState.updateAudioUploadVisibility(details);
+			UIState.updateImageUploadVisibility(details);
+			UIState.updateVideoUploadVisibility(details);
 		});
-		if (elements.modelSelects)
+		if (els.modelSelects)
 		{
-			Object.entries(elements.modelSelects)
+			Object.entries(els.modelSelects)
 				.forEach(([provider, select]) =>
 				{
 					select?.addEventListener('change', () =>
 					{
-						elements.apiModelSelect.value = provider;
-						const selectedModel = provider;
-						const selectedModelDetails = CONFIG.API.MODELS.COMPLETION[selectedModel]?.options.find(m => m.name === select.value);
-						StorageService.save('selected_api_model', selectedModel);
-						UIState.updateAudioUploadVisibility(selectedModelDetails);
-						UIState.updateImageUploadVisibility(selectedModelDetails);
-						UIState.updateVideoUploadVisibility(selectedModelDetails);
+						els.apiModel.value = provider;
+						const model = provider;
+						const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === select.value);
+						StorageService.save('selected_api_model', model);
+						UIState.updateAudioUploadVisibility(details);
+						UIState.updateImageUploadVisibility(details);
+						UIState.updateVideoUploadVisibility(details);
 					});
 				});
 		}
-		const toggleSettings = {
+		const toggles = {
 			cleanupToggle: 'cleanup_enabled',
 			darkToggle: 'dark_enabled',
 			noBSToggle: 'no_bs_enabled',
-			streamingToggle: 'streaming_enabled',
-			translationToggle: 'translation_enabled',
+			streamToggle: 'streaming_enabled',
+			translateToggle: 'translation_enabled',
 			wideToggle: 'wide_enabled',
 		};
-		Object.entries(toggleSettings)
-			.forEach(([elementId, storageKey]) =>
+		Object.entries(toggles)
+			.forEach(([elemId, storeKey]) =>
 			{
-				elements[elementId]?.addEventListener('change', () =>
+				els[elemId]?.addEventListener('change', () =>
 				{
-					const value = elements[elementId].checked;
-					if (elementId === 'darkToggle')
+					const value = els[elemId].checked;
+					if (elemId === 'darkToggle')
 					{
 						UIState.updateTheme(value);
 					}
-					else if (elementId === 'wideToggle')
+					else if (elemId === 'wideToggle')
 					{
 						UIState.updateLayout(value);
 					}
-					StorageService.save(storageKey, value);
+					StorageService.save(storeKey, value);
 				});
 			});
-		elements.languageSelect?.addEventListener('change', () =>
+		els.langSelect?.addEventListener('change', () =>
 		{
-			StorageService.save('selected_language', elements.languageSelect.value);
+			StorageService.save('selected_language', els.langSelect.value);
 		});
-		elements.transcribeLanguage?.addEventListener('change', () =>
+		els.transcribeLang?.addEventListener('change', () =>
 		{
-			StorageService.save('transcribe_language', elements.transcribeLanguage.value);
+			StorageService.save('transcribe_language', els.transcribeLang.value);
 		});
 	},
 };

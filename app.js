@@ -3,10 +3,10 @@ class App
 {
 	constructor()
 	{
-		this.elements = this.getElements();
+		this.els = this.getElements();
 		this.state = {
-			abortController: null,
-			transcribeAbortController: null,
+			abortCtrl: null,
+			transcribeAbortCtrl: null,
 			audioUploader: null,
 			imageUploader: null,
 			videoUploader: null
@@ -16,230 +16,222 @@ class App
 	getElements()
 	{
 		return {
-			apiModelSelect: document.getElementById('apiModel'),
+			apiModel: document.getElementById('apiModel'),
 			audioFile: document.getElementById('audioFile'),
 			audioUploadInput: document.getElementById('audioUploadInput'),
 			cleanupToggle: document.getElementById('cleanupToggle'),
 			compareBtn: document.getElementById('compareBtn'),
-			customPromptContainer: document.getElementById('customPromptContainer'),
-			customPromptInput: document.getElementById('customPrompt'),
-			generateTargetBtn: document.getElementById('generateTarget'),
+			customPromptBox: document.getElementById('customPromptContainer'),
+			customPrompt: document.getElementById('customPrompt'),
+			genTargetBtn: document.getElementById('generateTarget'),
 			imageUploadInput: document.getElementById('imageUploadInput'),
-			languageSelect: document.getElementById('language'),
+			langSelect: document.getElementById('language'),
 			noBSToggle: document.getElementById('noBSToggle'),
-			printContainer: document.getElementById('printContainer'),
+			printBox: document.getElementById('printContainer'),
 			promptSelect: document.getElementById('promptSelect'),
-			renderMarkdownBtn: document.getElementById('renderMarkdownBtn'),
+			renderMdBtn: document.getElementById('renderMarkdownBtn'),
 			savePromptBtn: document.getElementById('savePrompt'),
 			sourceText: document.getElementById('sourceText'),
-			streamingToggle: document.getElementById('streamingToggle'),
+			streamToggle: document.getElementById('streamingToggle'),
 			switchBtn: document.getElementById('switchBtn'),
 			targetText: document.getElementById('targetText'),
 			transcribeBtn: document.getElementById('transcribeBtn'),
-			transcribeLanguage: document.getElementById('transcribeLanguage'),
-			translationToggle: document.getElementById('translationToggle'),
+			transcribeLang: document.getElementById('transcribeLanguage'),
+			translateToggle: document.getElementById('translationToggle'),
 			videoUploadInput: document.getElementById('videoUploadInput'),
-			wpmContainer: document.getElementById('wpm-container'),
+			wpmBox: document.getElementById('wpm-container'),
 			wpmDisplay: document.getElementById('wpm')
 		};
 	}
 	async init()
 	{
-		try
-		{
-			await this.initializeComponents();
-			this.loadSavedContent();
-			this.setupEventHandlers();
-			this.updateInitialUI();
-			this.setupErrorHandling();
-		}
-		catch (error)
-		{
-			console.error('Initialization error:', error);
-			alert('Error initializing application. Please refresh the page.');
-		}
+		await this.initComponents();
+		this.loadSavedContent();
+		this.setupEvents();
+		this.updateUI();
+		this.setupErrorHandling();
 	}
-	async initializeComponents()
+	async initComponents()
 	{
-		UIHandlers.setupTextAreaHandlers(this.elements);
-		UIHandlers.setupFileUploaders(this.elements);
+		UIHandlers.setupTextAreaHandlers(this.els);
+		UIHandlers.setupFileUploaders(this.els);
 		if (window.location.pathname.endsWith('settings.html'))
 		{
-			UIHandlers.setupSettingsHandlers(this.elements);
+			UIHandlers.setupSettingsHandlers(this.els);
 		}
 		else
 		{
-			UIHandlers.setupModelSelectionHandler(this.elements);
+			UIHandlers.setupModelSelectionHandler(this.els);
 		}
-		this.state.audioUploader = new UIComponents.AudioUploader(this.elements.audioUploadInput,
+		this.state.audioUploader = new UIComponents.AudioUploader(this.els.audioUploadInput,
 		{
 			displayElement: document.getElementById('audioList'),
-			getApiModel: () => this.elements.apiModelSelect.value
+			getApiModel: () => this.els.apiModel.value
 		});
-		this.state.imageUploader = new UIComponents.ImageUploader(this.elements.imageUploadInput,
+		this.state.imageUploader = new UIComponents.ImageUploader(this.els.imageUploadInput,
 		{
 			displayElement: document.getElementById('imageList'),
-			getApiModel: () => this.elements.apiModelSelect.value
+			getApiModel: () => this.els.apiModel.value
 		});
-		this.state.videoUploader = new UIComponents.VideoUploader(this.elements.videoUploadInput,
+		this.state.videoUploader = new UIComponents.VideoUploader(this.els.videoUploadInput,
 		{
 			displayElement: document.getElementById('videoList'),
-			getApiModel: () => this.elements.apiModelSelect.value
+			getApiModel: () => this.els.apiModel.value
 		});
 	}
 	loadSavedSettings()
 	{
 		const savedModel = StorageService.load('selected_api_model', 'openai');
-		if (this.elements.apiModelSelect)
+		if (this.els.apiModel)
 		{
-			this.elements.apiModelSelect.value = savedModel;
+			this.els.apiModel.value = savedModel;
 		}
-		const toggleSettings = {
+		const toggles = {
 			'cleanupToggle': ['cleanup_enabled', true],
 			'noBSToggle': ['no_bs_enabled', false],
-			'streamingToggle': ['streaming_enabled', true],
-			'translationToggle': ['translation_enabled', false]
+			'streamToggle': ['streaming_enabled', true],
+			'translateToggle': ['translation_enabled', false]
 		};
-		Object.entries(toggleSettings)
-			.forEach(([elementId, [storageKey, defaultValue]]) =>
+		Object.entries(toggles)
+			.forEach(([id, [key, def]]) =>
 			{
-				if (this.elements[elementId])
+				if (this.els[id])
 				{
-					const savedValue = StorageService.load(storageKey);
-					this.elements[elementId].checked = savedValue !== null ? savedValue === true : defaultValue;
+					const saved = StorageService.load(key);
+					this.els[id].checked = saved !== null ? saved === true : def;
 				}
 			});
-		if (this.elements.languageSelect)
+		if (this.els.langSelect)
 		{
-			this.elements.languageSelect.value = StorageService.load('selected_language', 'English');
+			this.els.langSelect.value = StorageService.load('selected_language', 'English');
 		}
-		if (this.elements.transcribeLanguage)
+		if (this.els.transcribeLang)
 		{
-			this.elements.transcribeLanguage.value = StorageService.load('transcribe_language', 'en');
+			this.els.transcribeLang.value = StorageService.load('transcribe_language', 'en');
 		}
 	}
 	loadSavedContent()
 	{
-		if (this.elements.sourceText)
+		if (this.els.sourceText)
 		{
-			this.elements.sourceText.value = StorageService.load('sourceText', '');
-			TextService.updateStats(this.elements.sourceText, 'source');
+			this.els.sourceText.value = StorageService.load('sourceText', '');
+			TextService.updateStats(this.els.sourceText, 'source');
 		}
-		if (this.elements.targetText)
+		if (this.els.targetText)
 		{
-			this.elements.targetText.value = StorageService.load('targetText', '');
-			TextService.updateStats(this.elements.targetText, 'target');
+			this.els.targetText.value = StorageService.load('targetText', '');
+			TextService.updateStats(this.els.targetText, 'target');
 		}
 		this.loadPrompts();
 	}
 	loadPrompts()
 	{
-		if (!this.elements.promptSelect) return;
+		if (!this.els.promptSelect) return;
 		const savedPrompts = StorageService.load('prompts', []);
-		this.elements.promptSelect.innerHTML = '';
+		this.els.promptSelect.innerHTML = '';
 		CONFIG.UI.STANDARD_PROMPTS.forEach(prompt =>
 		{
 			const option = document.createElement('option');
 			option.value = prompt;
 			option.textContent = prompt;
-			this.elements.promptSelect.appendChild(option);
+			this.els.promptSelect.appendChild(option);
 		});
-		savedPrompts.forEach((prompt, index) =>
+		savedPrompts.forEach((prompt, i) =>
 		{
 			const option = document.createElement('option');
 			option.value = prompt;
-			option.textContent = `Custom ${index + 1}: ${prompt.substring(0, 30)}...`;
-			this.elements.promptSelect.appendChild(option);
+			option.textContent = `Custom ${i+1}: ${prompt.substring(0, 30)}...`;
+			this.els.promptSelect.appendChild(option);
 		});
 		const customOption = document.createElement('option');
 		customOption.value = 'custom';
 		customOption.textContent = 'Custom prompt';
-		this.elements.promptSelect.appendChild(customOption);
-		if (this.elements.customPromptContainer)
+		this.els.promptSelect.appendChild(customOption);
+		if (this.els.customPromptBox)
 		{
-			this.elements.customPromptContainer.style.display = this.elements.promptSelect.value === 'custom' ? 'block' : 'none';
+			this.els.customPromptBox.style.display = this.els.promptSelect.value === 'custom' ? 'block' : 'none';
 		}
 	}
-	setupEventHandlers()
+	setupEvents()
 	{
-		UIHandlers.setupCompareButton(this.elements);
-		UIHandlers.setupSwitchButton(this.elements);
-		UIHandlers.setupGenerateButton(this.elements, this.state);
-		this.setupPromptHandlers();
-		this.setupMarkdownHandler();
-		this.setupTranscribeHandler();
-		if (this.elements.languageSelect)
+		UIHandlers.setupCompareButton(this.els);
+		UIHandlers.setupSwitchButton(this.els);
+		UIHandlers.setupGenerateButton(this.els, this.state);
+		this.setupPromptEvents();
+		this.setupMarkdownEvent();
+		this.setupTranscribeEvent();
+		if (this.els.langSelect)
 		{
-			this.elements.languageSelect.addEventListener('change', () =>
+			this.els.langSelect.addEventListener('change', () =>
 			{
-				StorageService.save('selected_language', this.elements.languageSelect.value);
+				StorageService.save('selected_language', this.els.langSelect.value);
 			});
 		}
 	}
-	setupPromptHandlers()
+	setupPromptEvents()
 	{
-		if (!this.elements.promptSelect) return;
-		this.elements.promptSelect.addEventListener('change', () =>
+		if (!this.els.promptSelect) return;
+		this.els.promptSelect.addEventListener('change', () =>
 		{
-			if (this.elements.customPromptContainer)
+			if (this.els.customPromptBox)
 			{
-				this.elements.customPromptContainer.style.display = this.elements.promptSelect.value === 'custom' ? 'block' : 'none';
+				this.els.customPromptBox.style.display = this.els.promptSelect.value === 'custom' ? 'block' : 'none';
 			}
 		});
-		if (this.elements.savePromptBtn)
+		if (this.els.savePromptBtn)
 		{
-			this.elements.savePromptBtn.addEventListener('click', () =>
+			this.els.savePromptBtn.addEventListener('click', () =>
 			{
-				const customPrompt = this.elements.customPromptInput?.value.trim();
-				if (!customPrompt)
+				const text = this.els.customPrompt?.value.trim();
+				if (!text)
 				{
 					alert('Please enter a custom prompt before saving.');
 					return;
 				}
 				const prompts = StorageService.load('prompts', []);
-				prompts.push(customPrompt);
+				prompts.push(text);
 				StorageService.save('prompts', prompts);
 				this.loadPrompts();
-				if (this.elements.customPromptInput)
+				if (this.els.customPrompt)
 				{
-					this.elements.customPromptInput.value = '';
+					this.els.customPrompt.value = '';
 				}
 				alert('Custom prompt saved!');
 			});
 		}
 	}
-	setupMarkdownHandler()
+	setupMarkdownEvent()
 	{
-		if (!this.elements.renderMarkdownBtn) return;
-		this.elements.renderMarkdownBtn.addEventListener('click', () =>
+		if (!this.els.renderMdBtn) return;
+		this.els.renderMdBtn.addEventListener('click', () =>
 		{
-			const sourceMarkdown = this.elements.sourceText?.value || '';
-			const targetMarkdown = this.elements.targetText?.value || '';
+			const srcMd = this.els.sourceText?.value || '';
+			const tgtMd = this.els.targetText?.value || '';
 			document.getElementById('leftColumn')
-				.innerHTML = marked.parse(sourceMarkdown);
+				.innerHTML = marked.parse(srcMd);
 			document.getElementById('rightColumn')
-				.innerHTML = marked.parse(targetMarkdown);
-			this.elements.printContainer.innerHTML = marked.parse(targetMarkdown);
+				.innerHTML = marked.parse(tgtMd);
+			this.els.printBox.innerHTML = marked.parse(tgtMd);
 			this.renderMath();
 		});
 	}
 	renderMath()
 	{
-		const selectedRenderer = StorageService.load('selected_renderer', 'katex');
+		const renderer = StorageService.load('selected_renderer', 'katex');
 		const elements = [
 			document.getElementById('leftColumn'),
 			document.getElementById('rightColumn'),
-			this.elements.printContainer,
-			this.elements.sourceText,
-			this.elements.targetText
+			this.els.printBox,
+			this.els.sourceText,
+			this.els.targetText
 		];
-		elements.forEach(element =>
+		elements.forEach(el =>
 		{
-			if (element)
+			if (el)
 			{
-				if (selectedRenderer === 'katex')
+				if (renderer === 'katex')
 				{
-					renderMathInElement(element,
+					renderMathInElement(el,
 					{
 						delimiters: [
 						{
@@ -261,88 +253,76 @@ class App
 							left: '\(',
 							right: '\)',
 							display: false
-						}, ],
+						}],
 						throwOnError: false,
 						trust: true,
 						strict: false
 					});
 				}
-				else if (selectedRenderer === 'mathjax3')
+				else if (renderer === 'mathjax3')
 				{
-					MathJax.typesetPromise([element])
-						.catch(err => console.error("MathJax typesetting error:", err));
+					MathJax.typesetPromise([el]);
 				}
 			}
 		});
 	}
-	setupTranscribeHandler()
+	setupTranscribeEvent()
 	{
-		if (!this.elements.transcribeBtn) return;
-		this.elements.transcribeBtn.addEventListener('click', async () =>
+		if (!this.els.transcribeBtn) return;
+		this.els.transcribeBtn.addEventListener('click', async () =>
 		{
-			if (this.elements.transcribeBtn.dataset.transcribing === 'true')
+			if (this.els.transcribeBtn.dataset.transcribing === 'true')
 			{
-				if (this.state.transcribeAbortController)
+				if (this.state.transcribeAbortCtrl)
 				{
-					this.state.transcribeAbortController.abort();
+					this.state.transcribeAbortCtrl.abort();
 				}
 				return;
 			}
-			try
+			const transModel = StorageService.load('selected_transcription_api_model', 'groq');
+			const apiKey = StorageService.load(CONFIG.API.KEYS[transModel]);
+			if (!apiKey)
 			{
-				const transcriptionModel = StorageService.load('selected_transcription_api_model', 'groq');
-				const apiKey = StorageService.load(CONFIG.API.KEYS[transcriptionModel]);
-				if (!apiKey)
-				{
-					throw new Error(`Please enter your ${transcriptionModel} API key.`);
-				}
-				const file = this.elements.audioFile?.files[0];
-				if (!file)
-				{
-					throw new Error("Please select an audio file.");
-				}
-				const limits = CONFIG.LIMITS.TRANSCRIPTION.AUDIO[transcriptionModel];
-				if (file.size / (1024 * 1024) > limits.size)
-				{
-					throw new Error(`Audio file exceeds the maximum size of ${limits.size}MB for ${transcriptionModel}.`);
-				}
-				UIState.setTranscribing(true, this.elements);
-				this.state.transcribeAbortController = new AbortController();
-				const selectedWhisperModel = StorageService.load(`${transcriptionModel}_whisper_model`, CONFIG.API.MODELS.TRANSCRIPTION[transcriptionModel].default);
-				const result = await AiService.transcribe(file, this.elements.transcribeLanguage.value, apiKey, selectedWhisperModel, transcriptionModel, this.state.transcribeAbortController.signal);
-				if (this.elements.sourceText)
-				{
-					this.elements.sourceText.value = result.text;
-					TextService.updateStats(this.elements.sourceText, 'source');
-					StorageService.save('sourceText', result.text);
-				}
+				alert(`Please enter your ${transModel} API key.`);
+				return;
 			}
-			catch (error)
+			const file = this.els.audioFile?.files[0];
+			if (!file)
 			{
-				if (error.name !== 'AbortError')
-				{
-					console.error('Transcription error:', error);
-					alert(error.message);
-				}
+				alert("Please select an audio file.");
+				return;
 			}
-			finally
+			const limits = CONFIG.LIMITS.TRANSCRIPTION.AUDIO[transModel];
+			if (file.size / (1024 * 1024) > limits.size)
 			{
-				UIState.setTranscribing(false, this.elements);
-				this.state.transcribeAbortController = null;
+				alert(`Audio file exceeds the maximum size of ${limits.size}MB for ${transModel}.`);
+				return;
 			}
+			UIState.setTranscribing(true, this.els);
+			this.state.transcribeAbortCtrl = new AbortController();
+			const whisperModel = StorageService.load(`${transModel}_whisper_model`, CONFIG.API.MODELS.TRANSCRIPTION[transModel].default);
+			const result = await AiService.transcribe(file, this.els.transcribeLang.value, apiKey, whisperModel, transModel, this.state.transcribeAbortCtrl.signal);
+			if (this.els.sourceText)
+			{
+				this.els.sourceText.value = result.text;
+				TextService.updateStats(this.els.sourceText, 'source');
+				StorageService.save('sourceText', result.text);
+			}
+			UIState.setTranscribing(false, this.els);
+			this.state.transcribeAbortCtrl = null;
 		});
 	}
-	updateInitialUI()
+	updateUI()
 	{
-		if (this.elements.apiModelSelect)
+		if (this.els.apiModel)
 		{
-			const currentModel = this.elements.apiModelSelect.value;
-			const currentModelDetails = CONFIG.API.MODELS.COMPLETION[currentModel]?.options.find(m => m.name === StorageService.load(`${currentModel}_model`, CONFIG.API.MODELS.COMPLETION[currentModel].default));
-			if (currentModelDetails)
+			const model = this.els.apiModel.value;
+			const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default));
+			if (details)
 			{
-				UIState.updateAudioUploadVisibility(currentModelDetails);
-				UIState.updateImageUploadVisibility(currentModelDetails);
-				UIState.updateVideoUploadVisibility(currentModelDetails);
+				UIState.updateAudioUploadVisibility(details);
+				UIState.updateImageUploadVisibility(details);
+				UIState.updateVideoUploadVisibility(details);
 			}
 		}
 	}
@@ -350,26 +330,18 @@ class App
 	{
 		window.onerror = (msg, url, lineNo, columnNo, error) =>
 		{
-			console.error('Global error:',
-			{
-				msg,
-				url,
-				lineNo,
-				columnNo,
-				error
-			});
 			alert('An unexpected error occurred. Please refresh the page and try again.');
 			return false;
 		};
 		window.addEventListener('beforeunload', () =>
 		{
-			if (this.elements.sourceText)
+			if (this.els.sourceText)
 			{
-				StorageService.save('sourceText', this.elements.sourceText.value);
+				StorageService.save('sourceText', this.els.sourceText.value);
 			}
-			if (this.elements.targetText)
+			if (this.els.targetText)
 			{
-				StorageService.save('targetText', this.elements.targetText.value);
+				StorageService.save('targetText', this.els.targetText.value);
 			}
 		});
 	}
@@ -377,9 +349,5 @@ class App
 document.addEventListener('DOMContentLoaded', () =>
 {
 	const app = new App();
-	app.init()
-		.catch(error =>
-		{
-			console.error('Application initialization error:', error);
-		});
+	app.init();
 });

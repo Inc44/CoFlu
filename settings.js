@@ -3,46 +3,46 @@ class SettingsApp
 {
 	constructor()
 	{
-		this.elements = this.getElements();
+		this.els = this.getElements();
 	}
 	getElements()
 	{
 		return {
-			apiKeyInput: document.getElementById('apiKey'),
-			apiModelSelect: document.getElementById('apiModel'),
-			batchRPMInput: document.getElementById('batchRPM'),
-			batchSizeInput: document.getElementById('batchSize'),
+			apiKey: document.getElementById('apiKey'),
+			apiModel: document.getElementById('apiModel'),
+			batchRPM: document.getElementById('batchRPM'),
+			batchSize: document.getElementById('batchSize'),
 			cleanupToggle: document.getElementById('cleanupToggle'),
 			darkToggle: document.getElementById('darkToggle'),
-			exponentialRetryInput: document.getElementById('exponentialRetry'),
-			exportSettingsBtn: document.getElementById('exportSettings'),
-			importSettingsBtn: document.getElementById('importSettings'),
-			languageSelect: document.getElementById('language'),
+			expRetry: document.getElementById('exponentialRetry'),
+			exportBtn: document.getElementById('exportSettings'),
+			importBtn: document.getElementById('importSettings'),
+			langSelect: document.getElementById('language'),
 			noBSToggle: document.getElementById('noBSToggle'),
 			numberedLinesToggle: document.getElementById('numberedLinesToggle'),
-			reasoningEffortContainer: document.getElementById('reasoningEffortContainer'),
-			reasoningEffortSelect: document.getElementById('reasoningEffort'),
+			reasoningBox: document.getElementById('reasoningEffortContainer'),
+			reasoningEffort: document.getElementById('reasoningEffort'),
 			rendererSelect: document.getElementById('renderer'),
-			saveSettingsBtn: document.getElementById('saveSettings'),
-			settingsTextArea: document.getElementById('settingsTextArea'),
-			streamingToggle: document.getElementById('streamingToggle'),
-			thinkingBudgetContainer: document.getElementById('thinkingBudgetContainer'),
-			thinkingBudgetNumber: document.getElementById('thinkingBudgetNumber'),
-			thinkingBudgetRange: document.getElementById('thinkingBudgetRange'),
-			transcribeLanguageSelect: document.getElementById('transcribeLanguage'),
-			transcriptionApiModelSelect: document.getElementById('transcriptionApiModel'),
+			saveBtn: document.getElementById('saveSettings'),
+			settingsText: document.getElementById('settingsTextArea'),
+			streamToggle: document.getElementById('streamingToggle'),
+			thinkingBox: document.getElementById('thinkingBudgetContainer'),
+			thinkingNum: document.getElementById('thinkingBudgetNumber'),
+			thinkingRange: document.getElementById('thinkingBudgetRange'),
+			transcribeLang: document.getElementById('transcribeLanguage'),
+			transcribeModel: document.getElementById('transcriptionApiModel'),
 			wideToggle: document.getElementById('wideToggle'),
-			whisperModelContainers:
+			whisperBoxes:
 			{
 				openai: document.getElementById('openaiWhisperModelContainer'),
 				groq: document.getElementById('groqWhisperModelContainer'),
 			},
-			whisperModelSelects:
+			whisperModels:
 			{
 				openai: document.getElementById('openaiWhisperModel'),
 				groq: document.getElementById('groqWhisperModel'),
 			},
-			modelContainers:
+			modelBoxes:
 			{
 				openai: document.getElementById('openaiModelContainer'),
 				anthropic: document.getElementById('anthropicModelContainer'),
@@ -75,290 +75,276 @@ class SettingsApp
 	init()
 	{
 		this.loadSettings();
-		this.setupEventListeners();
-		this.updateModelVisibility(this.elements.apiModelSelect.value);
-		this.updateTranscriptionModelVisibility(this.elements.transcriptionApiModelSelect.value);
+		this.setupEvents();
+		this.updateModelVisibility(this.els.apiModel.value);
+		this.updateTranscribeModelVisibility(this.els.transcribeModel.value);
 		this.updateThemeAndLayout();
-		this.syncThinkingBudgetInputs();
+		this.syncThinkingInputs();
 	}
 	updateThemeAndLayout()
 	{
-		UIState.updateTheme(this.elements.darkToggle.checked);
-		UIState.updateLayout(this.elements.wideToggle.checked);
+		UIState.updateTheme(this.els.darkToggle.checked);
+		UIState.updateLayout(this.els.wideToggle.checked);
 	}
 	loadSettings()
 	{
-		this.loadCheckboxSetting('cleanupToggle', 'cleanup_enabled', true);
-		this.loadCheckboxSetting('darkToggle', 'dark_enabled', true);
-		this.loadCheckboxSetting('noBSToggle', 'no_bs_enabled', false);
-		this.loadCheckboxSetting('numberedLinesToggle', 'numbered_lines_enabled', false);
-		this.loadCheckboxSetting('streamingToggle', 'streaming_enabled', true);
-		this.loadCheckboxSetting('wideToggle', 'wide_enabled', false);
-		this.loadInputSetting('apiKeyInput', CONFIG.API.KEYS[this.elements.apiModelSelect.value] || '', this.elements.apiModelSelect.value);
-		this.loadInputSetting('batchRPMInput', 'translation_batch_rpm', 0, 'number');
-		this.loadInputSetting('batchSizeInput', 'translation_batch_size', 10, 'number');
-		this.loadInputSetting('exponentialRetryInput', 'exponential_retry', 10, 'number');
-		this.loadInputSetting('languageSelect', 'selected_language', 'English');
-		this.loadInputSetting('transcribeLanguageSelect', 'transcribe_language', 'en');
-		this.loadSelectSetting('apiModelSelect', 'selected_api_model', 'openai');
-		this.loadSelectSetting('rendererSelect', 'selected_renderer', 'katex');
-		this.loadSelectSetting('transcriptionApiModelSelect', 'selected_transcription_api_model', 'groq');
-		if (this.elements.reasoningEffortSelect)
+		this.loadCheckbox('cleanupToggle', 'cleanup_enabled', true);
+		this.loadCheckbox('darkToggle', 'dark_enabled', true);
+		this.loadCheckbox('noBSToggle', 'no_bs_enabled', false);
+		this.loadCheckbox('numberedLinesToggle', 'numbered_lines_enabled', false);
+		this.loadCheckbox('streamToggle', 'streaming_enabled', true);
+		this.loadCheckbox('wideToggle', 'wide_enabled', false);
+		this.loadInput('apiKey', CONFIG.API.KEYS[this.els.apiModel.value] || '', this.els.apiModel.value);
+		this.loadInput('batchRPM', 'translation_batch_rpm', 0, 'number');
+		this.loadInput('batchSize', 'translation_batch_size', 10, 'number');
+		this.loadInput('expRetry', 'exponential_retry', 10, 'number');
+		this.loadInput('langSelect', 'selected_language', 'English');
+		this.loadInput('transcribeLang', 'transcribe_language', 'en');
+		this.loadSelect('apiModel', 'selected_api_model', 'openai');
+		this.loadSelect('rendererSelect', 'selected_renderer', 'katex');
+		this.loadSelect('transcribeModel', 'selected_transcription_api_model', 'groq');
+		if (this.els.reasoningEffort)
 		{
-			this.loadSelectSetting('reasoningEffortSelect', 'reasoning_effort', 'low');
+			this.loadSelect('reasoningEffort', 'reasoning_effort', 'low');
 		}
 		const thinkingBudget = parseInt(StorageService.load('thinking', 0), 10);
-		this.elements.thinkingBudgetRange.value = thinkingBudget;
-		this.elements.thinkingBudgetNumber.value = thinkingBudget;
+		this.els.thinkingRange.value = thinkingBudget;
+		this.els.thinkingNum.value = thinkingBudget;
 		this.loadModelOptions();
-		this.loadWhisperModelOptions();
-		this.updateModelVisibility(this.elements.apiModelSelect.value);
-		this.updateTranscriptionModelVisibility(this.elements.transcriptionApiModelSelect.value);
-		this.updateApiKeyLabel(this.elements.apiModelSelect.value);
-		this.displayCurrentSettings();
-		this.syncThinkingBudgetInputs();
+		this.loadWhisperOptions();
+		this.updateModelVisibility(this.els.apiModel.value);
+		this.updateTranscribeModelVisibility(this.els.transcribeModel.value);
+		this.updateApiKeyLabel(this.els.apiModel.value);
+		this.displaySettings();
+		this.syncThinkingInputs();
 	}
-	loadSelectSetting(elementKey, storageKey, defaultValue)
+	loadSelect(elemKey, storeKey, defValue)
 	{
-		if (this.elements[elementKey])
+		if (this.els[elemKey])
 		{
-			this.elements[elementKey].value = StorageService.load(storageKey, defaultValue);
+			this.els[elemKey].value = StorageService.load(storeKey, defValue);
 		}
 	}
-	loadInputSetting(elementKey, storageKey, defaultValue, type = 'text')
+	loadInput(elemKey, storeKey, defValue, type = 'text')
 	{
-		if (this.elements[elementKey])
+		if (this.els[elemKey])
 		{
-			let value = StorageService.load(storageKey, defaultValue);
+			let value = StorageService.load(storeKey, defValue);
 			if (type === 'number')
 			{
 				value = parseInt(value, 10);
 				if (isNaN(value))
 				{
-					value = defaultValue
+					value = defValue;
 				}
 			}
-			this.elements[elementKey].value = value;
+			this.els[elemKey].value = value;
 		}
 	}
-	loadCheckboxSetting(elementKey, storageKey, defaultValue)
+	loadCheckbox(elemKey, storeKey, defValue)
 	{
-		if (this.elements[elementKey])
+		if (this.els[elemKey])
 		{
-			this.elements[elementKey].checked = StorageService.load(storageKey, defaultValue);
+			this.els[elemKey].checked = StorageService.load(storeKey, defValue);
 		}
 	}
 	loadModelOptions()
 	{
 		Object.entries(CONFIG.API.MODELS.COMPLETION)
-			.forEach(([provider, modelConfig]) =>
+			.forEach(([provider, config]) =>
 			{
-				const modelSelect = this.elements.modelSelects[provider];
+				const modelSelect = this.els.modelSelects[provider];
 				if (modelSelect)
 				{
 					modelSelect.innerHTML = '';
-					modelConfig.options.forEach(model =>
+					config.options.forEach(model =>
 					{
 						const option = document.createElement('option');
 						option.value = model.name;
 						option.textContent = model.name;
 						modelSelect.appendChild(option);
 					});
-					modelSelect.value = StorageService.load(`${provider}_model`, modelConfig.default);
+					modelSelect.value = StorageService.load(`${provider}_model`, config.default);
 				}
 			});
 	}
-	loadWhisperModelOptions()
+	loadWhisperOptions()
 	{
 		Object.entries(CONFIG.API.MODELS.TRANSCRIPTION)
-			.forEach(([provider, modelConfig]) =>
+			.forEach(([provider, config]) =>
 			{
-				const modelSelect = this.elements.whisperModelSelects[provider];
+				const modelSelect = this.els.whisperModels[provider];
 				if (modelSelect)
 				{
 					modelSelect.innerHTML = '';
-					modelConfig.options.forEach(model =>
+					config.options.forEach(model =>
 					{
 						const option = document.createElement('option');
 						option.value = model.name;
 						option.textContent = model.name;
 						modelSelect.appendChild(option);
 					});
-					modelSelect.value = StorageService.load(`${provider}_whisper_model`, modelConfig.default);
+					modelSelect.value = StorageService.load(`${provider}_whisper_model`, config.default);
 				}
 			});
 	}
-	updateModelVisibility(selectedProvider)
+	updateModelVisibility(provider)
 	{
-		Object.values(this.elements.modelContainers)
-			.forEach(container =>
+		Object.values(this.els.modelBoxes)
+			.forEach(box =>
 			{
-				container?.classList.remove('active');
+				if (box) box.classList.remove('active');
 			});
-		const selectedContainer = this.elements.modelContainers[selectedProvider];
-		if (selectedContainer)
+		const selectedBox = this.els.modelBoxes[provider];
+		if (selectedBox)
 		{
-			selectedContainer.classList.add('active');
-			this.updateReasoningEffortVisibility(selectedProvider);
-			this.updateThinkingBudgetVisibility(selectedProvider)
+			selectedBox.classList.add('active');
+			this.updateReasoningVisibility(provider);
+			this.updateThinkingVisibility(provider);
 		}
 	}
-	updateTranscriptionModelVisibility(selectedProvider)
+	updateTranscribeModelVisibility(provider)
 	{
-		Object.values(this.elements.whisperModelContainers)
-			.forEach(container =>
+		Object.values(this.els.whisperBoxes)
+			.forEach(box =>
 			{
-				container.style.display = 'none';
+				box.style.display = 'none';
 			});
-		const selectedContainer = this.elements.whisperModelContainers[selectedProvider];
-		if (selectedContainer)
+		const selectedBox = this.els.whisperBoxes[provider];
+		if (selectedBox)
 		{
-			selectedContainer.style.display = 'block';
+			selectedBox.style.display = 'block';
 		}
 	}
-	updateReasoningEffortVisibility(selectedProvider)
+	updateReasoningVisibility(provider)
 	{
-		const modelSelect = this.elements.modelSelects[selectedProvider];
-		const selectedModelName = modelSelect ? modelSelect.value : null;
-		const selectedModelDetails = CONFIG.API.MODELS.COMPLETION[selectedProvider]?.options.find(m => m.name === selectedModelName);
-		if (selectedModelDetails && selectedModelDetails.reasoning_effort)
-		{
-			this.elements.reasoningEffortContainer.style.display = 'block';
-		}
-		else
-		{
-			this.elements.reasoningEffortContainer.style.display = 'none';
-		}
+		const modelSelect = this.els.modelSelects[provider];
+		const modelName = modelSelect ? modelSelect.value : null;
+		const modelDetails = CONFIG.API.MODELS.COMPLETION[provider]?.options.find(m => m.name === modelName);
+		this.els.reasoningBox.style.display = (modelDetails && modelDetails.reasoning_effort) ? 'block' : 'none';
 	}
-	updateThinkingBudgetVisibility(selectedProvider)
+	updateThinkingVisibility(provider)
 	{
-		const modelSelect = this.elements.modelSelects[selectedProvider];
-		const selectedModelName = modelSelect ? modelSelect.value : null;
-		const selectedModelDetails = CONFIG.API.MODELS.COMPLETION[selectedProvider]?.options.find(m => m.name === selectedModelName);
-		if (selectedModelDetails && selectedModelDetails.thinking)
-		{
-			this.elements.thinkingBudgetContainer.style.display = 'block';
-		}
-		else
-		{
-			this.elements.thinkingBudgetContainer.style.display = 'none';
-		}
+		const modelSelect = this.els.modelSelects[provider];
+		const modelName = modelSelect ? modelSelect.value : null;
+		const modelDetails = CONFIG.API.MODELS.COMPLETION[provider]?.options.find(m => m.name === modelName);
+		this.els.thinkingBox.style.display = (modelDetails && modelDetails.thinking) ? 'block' : 'none';
 	}
-	setupEventListeners()
+	setupEvents()
 	{
-		this.elements.apiKeyInput?.addEventListener('change', this.handleApiKeyChange.bind(this));
-		this.elements.apiModelSelect?.addEventListener('change', this.handleApiModelChange.bind(this));
-		this.elements.batchRPMInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'batchRPMInput', 'translation_batch_rpm', 0, 60000));
-		this.elements.batchSizeInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'batchSizeInput', 'translation_batch_size', 1, 60000));
-		this.elements.cleanupToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'cleanupToggle', 'cleanup_enabled'));
-		this.elements.darkToggle?.addEventListener('change', this.handleDarkToggleChange.bind(this));
-		this.elements.exponentialRetryInput?.addEventListener('change', this.handleNumericInputChange.bind(this, 'exponentialRetryInput', 'exponential_retry', 0));
-		this.elements.exportSettingsBtn?.addEventListener('click', this.exportSettings.bind(this));
-		this.elements.importSettingsBtn?.addEventListener('click', this.importSettings.bind(this));
-		this.elements.languageSelect?.addEventListener('change', this.handleLanguageChange.bind(this));
-		this.elements.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
-		this.elements.numberedLinesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'numberedLinesToggle', 'numbered_lines_enabled'));
-		this.elements.reasoningEffortSelect?.addEventListener('change', this.handleReasoningEffortChange.bind(this));
-		this.elements.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
-		this.elements.saveSettingsBtn?.addEventListener('click', this.saveSettings.bind(this));
-		this.elements.streamingToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'streamingToggle', 'streaming_enabled'));
-		this.elements.transcribeLanguageSelect?.addEventListener('change', this.handleTranscribeLanguageChange.bind(this));
-		this.elements.transcriptionApiModelSelect?.addEventListener('change', this.handleTranscriptionApiModelChange.bind(this));
-		this.elements.wideToggle?.addEventListener('change', this.handleWideToggleChange.bind(this));
-		this.elements.thinkingBudgetRange?.addEventListener('input', () =>
+		this.els.apiKey?.addEventListener('change', this.handleApiKeyChange.bind(this));
+		this.els.apiModel?.addEventListener('change', this.handleApiModelChange.bind(this));
+		this.els.batchRPM?.addEventListener('change', this.handleNumericChange.bind(this, 'batchRPM', 'translation_batch_rpm', 0, 60000));
+		this.els.batchSize?.addEventListener('change', this.handleNumericChange.bind(this, 'batchSize', 'translation_batch_size', 1, 60000));
+		this.els.cleanupToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'cleanupToggle', 'cleanup_enabled'));
+		this.els.darkToggle?.addEventListener('change', this.handleDarkToggleChange.bind(this));
+		this.els.expRetry?.addEventListener('change', this.handleNumericChange.bind(this, 'expRetry', 'exponential_retry', 0));
+		this.els.exportBtn?.addEventListener('click', this.exportSettings.bind(this));
+		this.els.importBtn?.addEventListener('click', this.importSettings.bind(this));
+		this.els.langSelect?.addEventListener('change', this.handleLangChange.bind(this));
+		this.els.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
+		this.els.numberedLinesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'numberedLinesToggle', 'numbered_lines_enabled'));
+		this.els.reasoningEffort?.addEventListener('change', this.handleReasoningChange.bind(this));
+		this.els.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
+		this.els.saveBtn?.addEventListener('click', this.saveSettings.bind(this));
+		this.els.streamToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'streamToggle', 'streaming_enabled'));
+		this.els.transcribeLang?.addEventListener('change', this.handleTranscribeLangChange.bind(this));
+		this.els.transcribeModel?.addEventListener('change', this.handleTranscribeModelChange.bind(this));
+		this.els.wideToggle?.addEventListener('change', this.handleWideToggleChange.bind(this));
+		this.els.thinkingRange?.addEventListener('input', () =>
 		{
-			this.elements.thinkingBudgetNumber.value = this.elements.thinkingBudgetRange.value;
-			this.handleThinkingBudgetChange();
+			this.els.thinkingNum.value = this.els.thinkingRange.value;
+			this.handleThinkingChange();
 		});
-		this.elements.thinkingBudgetNumber?.addEventListener('input', () =>
+		this.els.thinkingNum?.addEventListener('input', () =>
 		{
-			this.elements.thinkingBudgetRange.value = this.elements.thinkingBudgetNumber.value;
-			this.handleThinkingBudgetChange();
+			this.els.thinkingRange.value = this.els.thinkingNum.value;
+			this.handleThinkingChange();
 		});
-		Object.entries(this.elements.modelSelects)
+		Object.entries(this.els.modelSelects)
 			.forEach(([provider, select]) =>
 			{
 				select?.addEventListener('change', () =>
 				{
-					const selectedSubModel = select.value;
-					StorageService.save(`${provider}_model`, selectedSubModel);
-					this.updateReasoningEffortVisibility(provider);
-					this.updateThinkingBudgetVisibility(provider);
+					const selectedModel = select.value;
+					StorageService.save(`${provider}_model`, selectedModel);
+					this.updateReasoningVisibility(provider);
+					this.updateThinkingVisibility(provider);
 				});
 			});
-		Object.entries(this.elements.whisperModelSelects)
+		Object.entries(this.els.whisperModels)
 			.forEach(([provider, select]) =>
 			{
 				select?.addEventListener('change', () =>
 				{
-					const selectedWhisperSubModel = select.value;
-					StorageService.save(`${provider}_whisper_model`, selectedWhisperSubModel);
+					const selectedModel = select.value;
+					StorageService.save(`${provider}_whisper_model`, selectedModel);
 				});
 			});
 	}
 	handleApiModelChange()
 	{
-		const selectedModel = this.elements.apiModelSelect.value;
-		StorageService.save('selected_api_model', selectedModel);
-		this.updateApiKeyLabel(selectedModel);
-		this.updateModelVisibility(selectedModel);
-		this.elements.apiKeyInput.value = StorageService.load(CONFIG.API.KEYS[selectedModel] || '', '');
+		const model = this.els.apiModel.value;
+		StorageService.save('selected_api_model', model);
+		this.updateApiKeyLabel(model);
+		this.updateModelVisibility(model);
+		this.els.apiKey.value = StorageService.load(CONFIG.API.KEYS[model] || '', '');
 	}
-	handleTranscriptionApiModelChange()
+	handleTranscribeModelChange()
 	{
-		const selectedModel = this.elements.transcriptionApiModelSelect.value;
-		StorageService.save('selected_transcription_api_model', selectedModel);
-		this.updateTranscriptionModelVisibility(selectedModel);
+		const model = this.els.transcribeModel.value;
+		StorageService.save('selected_transcription_api_model', model);
+		this.updateTranscribeModelVisibility(model);
 	}
 	handleApiKeyChange()
 	{
-		const apiType = this.elements.apiModelSelect.value;
-		const apiKey = this.elements.apiKeyInput.value.trim();
+		const apiType = this.els.apiModel.value;
+		const apiKey = this.els.apiKey.value.trim();
 		StorageService.save(CONFIG.API.KEYS[apiType], apiKey);
 	}
-	handleToggleChange(elementKey, storageKey)
+	handleToggleChange(elemKey, storeKey)
 	{
-		StorageService.save(storageKey, this.elements[elementKey].checked);
+		StorageService.save(storeKey, this.els[elemKey].checked);
 	}
 	handleDarkToggleChange()
 	{
-		const isDarkMode = this.elements.darkToggle.checked;
-		UIState.updateTheme(isDarkMode);
-		StorageService.save('dark_enabled', isDarkMode);
+		const isDark = this.els.darkToggle.checked;
+		UIState.updateTheme(isDark);
+		StorageService.save('dark_enabled', isDark);
 	}
 	handleWideToggleChange()
 	{
-		const isWide = this.elements.wideToggle.checked;
+		const isWide = this.els.wideToggle.checked;
 		UIState.updateLayout(isWide);
 		StorageService.save('wide_enabled', isWide);
 	}
 	handleRendererChange()
 	{
-		StorageService.save('selected_renderer', this.elements.rendererSelect.value);
+		StorageService.save('selected_renderer', this.els.rendererSelect.value);
 	}
-	handleReasoningEffortChange()
+	handleReasoningChange()
 	{
-		StorageService.save('reasoning_effort', this.elements.reasoningEffortSelect.value);
+		StorageService.save('reasoning_effort', this.els.reasoningEffort.value);
 	}
-	handleThinkingBudgetChange()
+	handleThinkingChange()
 	{
-		const value = parseInt(this.elements.thinkingBudgetNumber.value, 10);
+		const value = parseInt(this.els.thinkingNum.value, 10);
 		StorageService.save('thinking', value);
 	}
-	handleLanguageChange()
+	handleLangChange()
 	{
-		StorageService.save('selected_language', this.elements.languageSelect.value);
+		StorageService.save('selected_language', this.els.langSelect.value);
 	}
-	handleTranscribeLanguageChange()
+	handleTranscribeLangChange()
 	{
-		StorageService.save('transcribe_language', this.elements.transcribeLanguageSelect.value);
+		StorageService.save('transcribe_language', this.els.transcribeLang.value);
 	}
-	handleNumericInputChange(elementKey, storageKey, min = null, max = null)
+	handleNumericChange(elemKey, storeKey, min = null, max = null)
 	{
-		let value = parseInt(this.elements[elementKey].value, 10);
+		let value = parseInt(this.els[elemKey].value, 10);
 		if (isNaN(value))
 		{
-			value = StorageService.load(storageKey, 0);
+			value = StorageService.load(storeKey, 0);
 		}
 		if (min !== null && value < min)
 		{
@@ -368,8 +354,8 @@ class SettingsApp
 		{
 			value = max;
 		}
-		this.elements[elementKey].value = value;
-		StorageService.save(storageKey, value);
+		this.els[elemKey].value = value;
+		StorageService.save(storeKey, value);
 	}
 	updateApiKeyLabel(model)
 	{
@@ -379,30 +365,30 @@ class SettingsApp
 			apiKeyLabel.textContent = CONFIG.UI.API_KEY_LABELS[model] || 'API Key:';
 		}
 	}
-	getCurrentSettings()
+	getSettings()
 	{
 		const settings = {
-			cleanup_enabled: this.elements.cleanupToggle.checked,
-			dark_enabled: this.elements.darkToggle.checked,
-			exponential_retry: parseInt(this.elements.exponentialRetryInput.value, 10),
-			no_bs_enabled: this.elements.noBSToggle.checked,
-			numbered_lines_enabled: this.elements.numberedLinesToggle.checked,
+			cleanup_enabled: this.els.cleanupToggle.checked,
+			dark_enabled: this.els.darkToggle.checked,
+			exponential_retry: parseInt(this.els.expRetry.value, 10),
+			no_bs_enabled: this.els.noBSToggle.checked,
+			numbered_lines_enabled: this.els.numberedLinesToggle.checked,
 			prompts: StorageService.load('prompts', []),
-			selected_api_model: this.elements.apiModelSelect.value,
-			selected_language: this.elements.languageSelect.value,
-			selected_renderer: this.elements.rendererSelect.value,
-			selected_transcription_api_model: this.elements.transcriptionApiModelSelect.value,
-			streaming_enabled: this.elements.streamingToggle.checked,
-			thinking: parseInt(this.elements.thinkingBudgetNumber.value, 10),
-			transcribe_language: this.elements.transcribeLanguageSelect.value,
-			translation_batch_rpm: parseInt(this.elements.batchRPMInput.value, 10),
-			translation_batch_size: parseInt(this.elements.batchSizeInput.value, 10),
+			selected_api_model: this.els.apiModel.value,
+			selected_language: this.els.langSelect.value,
+			selected_renderer: this.els.rendererSelect.value,
+			selected_transcription_api_model: this.els.transcribeModel.value,
+			streaming_enabled: this.els.streamToggle.checked,
+			thinking: parseInt(this.els.thinkingNum.value, 10),
+			transcribe_language: this.els.transcribeLang.value,
+			translation_batch_rpm: parseInt(this.els.batchRPM.value, 10),
+			translation_batch_size: parseInt(this.els.batchSize.value, 10),
 			translation_enabled: StorageService.load('translation_enabled', false),
-			wide_enabled: this.elements.wideToggle.checked
+			wide_enabled: this.els.wideToggle.checked
 		};
-		if (this.elements.reasoningEffortSelect)
+		if (this.els.reasoningEffort)
 		{
-			settings.reasoning_effort = this.elements.reasoningEffortSelect.value;
+			settings.reasoning_effort = this.els.reasoningEffort.value;
 		}
 		Object.entries(CONFIG.API.KEYS)
 			.forEach(([provider, key]) =>
@@ -410,25 +396,25 @@ class SettingsApp
 				settings[key] = StorageService.load(key, '');
 			});
 		Object.entries(CONFIG.API.MODELS.COMPLETION)
-			.forEach(([provider, modelConfig]) =>
+			.forEach(([provider, config]) =>
 			{
-				settings[`${provider}_model`] = this.elements.modelSelects[provider].value;
+				settings[`${provider}_model`] = this.els.modelSelects[provider].value;
 			});
 		Object.entries(CONFIG.API.MODELS.TRANSCRIPTION)
-			.forEach(([provider, modelConfig]) =>
+			.forEach(([provider, config]) =>
 			{
-				settings[`${provider}_whisper_model`] = this.elements.whisperModelSelects[provider].value;
+				settings[`${provider}_whisper_model`] = this.els.whisperModels[provider].value;
 			});
 		return settings;
 	}
-	displayCurrentSettings()
+	displaySettings()
 	{
-		const settings = this.getCurrentSettings();
-		this.elements.settingsTextArea.value = JSON.stringify(settings, null, 2);
+		const settings = this.getSettings();
+		this.els.settingsText.value = JSON.stringify(settings, null, 2);
 	}
 	exportSettings()
 	{
-		const settings = this.getCurrentSettings();
+		const settings = this.getSettings();
 		const settingsJSON = JSON.stringify(settings, null, 2);
 		const blob = new Blob([settingsJSON],
 		{
@@ -451,84 +437,68 @@ class SettingsApp
 		input.addEventListener('change', (event) =>
 		{
 			const file = event.target.files[0];
-			if (file)
+			if (!file) return;
+			const reader = new FileReader();
+			reader.onload = (e) =>
 			{
-				const reader = new FileReader();
-				reader.onload = (e) =>
+				let settings = e.target.result;
+				if (!settings.trim() || settings.trim() === '{}')
 				{
-					try
+					this.clearAllData();
+					alert('Data wiped successfully!');
+					this.loadSettings();
+					return;
+				}
+				settings = JSON.parse(settings);
+				if (typeof settings !== 'object' || settings === null)
+				{
+					alert('Invalid settings file: Not a JSON object.');
+					return;
+				}
+				this.els.settingsText.value = JSON.stringify(settings, null, 2);
+				Object.entries(settings)
+					.forEach(([key, value]) =>
 					{
-						let settings = e.target.result;
-						if (!settings.trim() || settings.trim() === '{}')
-						{
-							this.clearAllData();
-							alert('Data wiped successfully!');
-							this.loadSettings();
-							return;
-						}
-						settings = JSON.parse(settings);
-						if (typeof settings !== 'object' || settings === null)
-						{
-							throw new Error('Invalid settings file: Not a JSON object.');
-						}
-						this.elements.settingsTextArea.value = JSON.stringify(settings, null, 2);
-						Object.entries(settings)
-							.forEach(([key, value]) =>
-							{
-								StorageService.save(key, value);
-							});
-						this.loadSettings();
-						alert('Settings imported successfully!');
-					}
-					catch (error)
-					{
-						console.error('Error importing settings:', error);
-						alert(`Error importing settings: ${error.message}`);
-					}
-				};
-				reader.readAsText(file);
-			}
+						StorageService.save(key, value);
+					});
+				this.loadSettings();
+				alert('Settings imported successfully!');
+			};
+			reader.readAsText(file);
 		});
 		input.click();
 	}
 	saveSettings()
 	{
-		try
+		let settingsText = this.els.settingsText.value;
+		if (!settingsText.trim() || settingsText.trim() === '{}')
 		{
-			let settingsText = this.elements.settingsTextArea.value;
-			if (!settingsText.trim() || settingsText.trim() === '{}')
-			{
-				this.clearAllData();
-				alert('Data wiped successfully!');
-				this.loadSettings();
-				return;
-			}
-			const settings = JSON.parse(this.elements.settingsTextArea.value);
-			if (typeof settings !== 'object' || settings === null)
-			{
-				throw new Error('Invalid settings: Not a JSON object.');
-			}
-			Object.entries(settings)
-				.forEach(([key, value]) =>
-				{
-					StorageService.save(key, value);
-				});
+			this.clearAllData();
+			alert('Data wiped successfully!');
 			this.loadSettings();
-			alert('Settings saved successfully!');
+			return;
 		}
-		catch (error)
+		const settings = JSON.parse(settingsText);
+		if (typeof settings !== 'object' || settings === null)
 		{
-			console.error('Error saving settings:', error);
-			alert(`Error saving settings: ${error.message}`);
+			alert('Invalid settings: Not a JSON object.');
+			return;
 		}
+		Object.entries(settings)
+			.forEach(([key, value]) =>
+			{
+				StorageService.save(key, value);
+			});
+		this.loadSettings();
+		alert('Settings saved successfully!');
 	}
 	clearAllData()
 	{
 		localStorage.clear();
 	}
-	syncThinkingBudgetInputs()
+	syncThinkingInputs()
 	{
-		this.elements.thinkingBudgetNumber.value = this.elements.thinkingBudgetRange.value;
+		this.els.thinkingNum.value = this.els.thinkingRange.value;
 	}
 }
 document.addEventListener('DOMContentLoaded', () =>

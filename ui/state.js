@@ -1,35 +1,35 @@
 // ui/state.js
 const UIState = {
-	setGenerating(isGenerating, elements)
+	setGenerating(isGenerating, els)
 	{
-		elements.generateTargetBtn.style.backgroundColor = isGenerating ? 'red' : '';
-		elements.generateTargetBtn.textContent = isGenerating ? 'Stop Generating' : 'Generate';
-		elements.generateTargetBtn.dataset.generating = isGenerating;
+		els.genTargetBtn.style.backgroundColor = isGenerating ? 'red' : '';
+		els.genTargetBtn.textContent = isGenerating ? 'Stop Generating' : 'Generate';
+		els.genTargetBtn.dataset.generating = isGenerating;
 	},
-	setTranscribing(isTranscribing, elements)
+	setTranscribing(isTranscribing, els)
 	{
-		elements.transcribeBtn.style.backgroundColor = isTranscribing ? 'red' : '';
-		elements.transcribeBtn.textContent = isTranscribing ? 'Stop Transcribe' : 'Start Transcribe';
-		elements.transcribeBtn.dataset.transcribing = isTranscribing;
+		els.transcribeBtn.style.backgroundColor = isTranscribing ? 'red' : '';
+		els.transcribeBtn.textContent = isTranscribing ? 'Stop Transcribe' : 'Start Transcribe';
+		els.transcribeBtn.dataset.transcribing = isTranscribing;
 	},
-	setTranslating(isTranslating, elements)
+	setTranslating(isTranslating, els)
 	{
-		elements.translateBtn.style.backgroundColor = isTranslating ? 'red' : '';
-		elements.translateBtn.textContent = isTranslating ? 'Stop Translation' : 'Start Translation';
-		elements.translateBtn.dataset.translating = isTranslating;
+		els.translateBtn.style.backgroundColor = isTranslating ? 'red' : '';
+		els.translateBtn.textContent = isTranslating ? 'Stop Translation' : 'Start Translation';
+		els.translateBtn.dataset.translating = isTranslating;
 	},
-	updateTheme(isDarkMode)
+	updateTheme(isDark)
 	{
-		document.documentElement.setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
+		document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
 		const darkToggle = document.getElementById('darkToggle');
 		if (darkToggle)
 		{
-			darkToggle.checked = isDarkMode;
+			darkToggle.checked = isDark;
 		}
 	},
-	updateLayout(isWideMode)
+	updateLayout(isWide)
 	{
-		if (isWideMode)
+		if (isWide)
 		{
 			document.documentElement.classList.add('wide');
 		}
@@ -40,36 +40,36 @@ const UIState = {
 		const wideToggle = document.getElementById('wideToggle');
 		if (wideToggle)
 		{
-			wideToggle.checked = isWideMode;
+			wideToggle.checked = isWide;
 		}
 	},
 	updateAudioUploadVisibility(modelDetails)
 	{
-		const audioUploadCard = document.querySelector('.card:has(#audioList)');
-		if (audioUploadCard)
+		const audioCard = document.querySelector('.card:has(#audioList)');
+		if (audioCard)
 		{
-			audioUploadCard.style.display = modelDetails.audio ? 'block' : 'none';
+			audioCard.style.display = modelDetails.audio ? 'block' : 'none';
 		}
 	},
 	updateImageUploadVisibility(modelDetails)
 	{
-		const imageUploadCard = document.querySelector('.card:has(#imageList)');
-		if (imageUploadCard)
+		const imageCard = document.querySelector('.card:has(#imageList)');
+		if (imageCard)
 		{
-			imageUploadCard.style.display = modelDetails.image ? 'block' : 'none';
+			imageCard.style.display = modelDetails.image ? 'block' : 'none';
 		}
 	},
 	updateVideoUploadVisibility(modelDetails)
 	{
-		const videoUploadCard = document.querySelector('.card:has(#videoList)');
-		if (videoUploadCard)
+		const videoCard = document.querySelector('.card:has(#videoList)');
+		if (videoCard)
 		{
-			videoUploadCard.style.display = modelDetails.video ? 'block' : 'none';
+			videoCard.style.display = modelDetails.video ? 'block' : 'none';
 		}
 	},
-	showWPM(elements)
+	showWPM(els)
 	{
-		elements.wpmContainer.style.display = 'inline';
+		els.wpmBox.style.display = 'inline';
 	}
 };
 window.UIState = UIState;

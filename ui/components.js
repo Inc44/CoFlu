@@ -2,38 +2,38 @@
 const UIComponents = {
 	AudioUploader: class
 	{
-		constructor(element, options = {})
+		constructor(el, options = {})
 		{
-			this.element = element;
+			this.el = el;
 			this.options = options;
-			this.uploadedAudios = {};
-			this.setupEventListeners();
+			this.audios = {};
+			this.setupEvents();
 		}
-		setupEventListeners()
+		setupEvents()
 		{
-			this.element.addEventListener('change', (e) =>
+			this.el.addEventListener('change', (e) =>
 			{
-				this.handleAudioUpload(Array.from(e.target.files));
-				this.element.value = '';
+				this.handleUpload(Array.from(e.target.files));
+				this.el.value = '';
 			});
 		}
 		getTotalSize()
 		{
-			let totalSize = 0;
-			for (const filename in this.uploadedAudios)
+			let size = 0;
+			for (const filename in this.audios)
 			{
-				const dataURL = this.uploadedAudios[filename];
+				const dataURL = this.audios[filename];
 				const base64 = dataURL.split(',')[1];
-				const sizeInBytes = (base64.length * (3 / 4));
-				totalSize += sizeInBytes / (1024 * 1024);
+				const bytes = (base64.length * (3 / 4));
+				size += bytes / (1024 * 1024);
 			}
-			return totalSize;
+			return size;
 		}
-		async handleAudioUpload(files)
+		async handleUpload(files)
 		{
 			const apiModel = this.options.getApiModel?.() || 'google';
 			const limits = CONFIG.LIMITS.COMPLETION.AUDIO[apiModel];
-			if (files.length + Object.keys(this.uploadedAudios)
+			if (files.length + Object.keys(this.audios)
 				.length > limits.max)
 			{
 				alert(`Maximum ${limits.max} audios allowed for ${apiModel}`);
@@ -52,105 +52,97 @@ const UIComponents = {
 					alert(`Audio ${file.name} exceeds the maximum size of ${limits.size}MB.`);
 					continue;
 				}
-				const currentTotalSize = this.getTotalSize();
-				const potentialTotalSize = currentTotalSize + fileSizeMB;
-				if (potentialTotalSize > 20)
+				const totalSize = this.getTotalSize();
+				const newSize = totalSize + fileSizeMB;
+				if (newSize > 20)
 				{
-					alert(`Adding this image would exceed the 20MB total size limit for Gemini requests.`);
+					alert(`Adding this file would exceed the 20MB total size limit.`);
 					continue;
 				}
-				try
-				{
-					const dataUrl = await this.readFileAsDataURL(file);
-					this.uploadedAudios[file.name] = dataUrl;
-					this.updateAudioDisplay();
-				}
-				catch (error)
-				{
-					console.error('Error loading audio:', error);
-				}
+				const dataUrl = await this.readAsDataURL(file);
+				this.audios[file.name] = dataUrl;
+				this.updateDisplay();
 			}
 		}
-		readFileAsDataURL(file)
+		readAsDataURL(file)
 		{
-			return new Promise((resolve, reject) =>
+			return new Promise(resolve =>
 			{
 				const reader = new FileReader();
 				reader.onload = e => resolve(e.target.result);
-				reader.onerror = e => reject(e);
 				reader.readAsDataURL(file);
 			});
 		}
-		updateAudioDisplay()
+		updateDisplay()
 		{
 			if (!this.options.displayElement) return;
 			const container = this.options.displayElement;
 			container.innerHTML = '';
-			Object.entries(this.uploadedAudios)
+			Object.entries(this.audios)
 				.forEach(([filename, dataURL]) =>
 				{
-					const audioContainer = document.createElement('div');
-					audioContainer.className = 'audio-container d-flex align-items-center justify-content-between';
-					const audioFilename = document.createElement('div');
-					audioFilename.textContent = filename;
-					audioFilename.classList.add('audio-filename', "me-2");
-					const removeButton = document.createElement('button');
-					removeButton.className = 'btn btn-sm btn-danger remove-audio';
-					removeButton.textContent = 'X';
-					removeButton.onclick = () =>
+					const audioBox = document.createElement('div');
+					audioBox.className = 'audio-container d-flex align-items-center justify-content-between';
+					const nameEl = document.createElement('div');
+					nameEl.textContent = filename;
+					nameEl.classList.add('audio-filename', "me-2");
+					const removeBtn = document.createElement('button');
+					removeBtn.className = 'btn btn-sm btn-danger remove-audio';
+					removeBtn.textContent = 'X';
+					removeBtn.onclick = () =>
 					{
-						delete this.uploadedAudios[filename];
-						this.updateAudioDisplay();
+						delete this.audios[filename];
+						this.updateDisplay();
 					};
-					audioContainer.appendChild(audioFilename);
-					audioContainer.appendChild(removeButton);
-					container.appendChild(audioContainer);
+					audioBox.appendChild(nameEl);
+					audioBox.appendChild(removeBtn);
+					container.appendChild(audioBox);
 				});
 		}
 		getAudios()
 		{
-			return this.uploadedAudios;
+			return this.audios;
 		}
 		clear()
 		{
-			this.uploadedAudios = {};
-			this.updateAudioDisplay();
+			this.audios = {};
+			this.updateDisplay();
 		}
 	},
 	ImageUploader: class
 	{
-		constructor(element, options = {})
+		constructor(el, options = {})
 		{
-			this.element = element;
+			this.el = el;
 			this.options = options;
-			this.uploadedImages = {};
-			this.setupEventListeners();
+			this.images = {};
+			this.setupEvents();
 		}
-		setupEventListeners()
+		setupEvents()
 		{
-			this.element.addEventListener('change', (e) =>
+			this.el.addEventListener('change', (e) =>
 			{
-				this.handleImageUpload(Array.from(e.target.files));
-				this.element.value = '';
+				this.handleUpload(Array.from(e.target.files));
+				this.el.value = '';
 			});
 		}
 		getTotalSize()
 		{
-			let totalSize = 0;
-			for (const filename in this.uploadedImages)
+			let size = 0;
+			for (const filename in this.images)
 			{
-				const dataURL = this.uploadedImages[filename];
+				const dataURL = this.images[filename];
 				const base64 = dataURL.split(',')[1];
-				const sizeInBytes = (base64.length * (3 / 4));
-				totalSize += sizeInBytes / (1024 * 1024);
+				const bytes = (base64.length * (3 / 4));
+				size += bytes / (1024 * 1024);
 			}
-			return totalSize;
+			return size;
 		}
-		async handleImageUpload(files)
+		async handleUpload(files)
 		{
 			const apiModel = this.options.getApiModel?.() || 'openai';
 			const limits = CONFIG.LIMITS.COMPLETION.IMAGE[apiModel];
-			if (files.length + Object.keys(this.uploadedImages)
+			if (files.length + Object.keys(this.images)
 				.length > limits.max)
 			{
 				alert(`Maximum ${limits.max} images allowed for ${apiModel}`);
@@ -169,106 +161,98 @@ const UIComponents = {
 					alert(`Image ${file.name} exceeds the maximum size of ${limits.size}MB.`);
 					continue;
 				}
-				const currentTotalSize = this.getTotalSize();
-				const potentialTotalSize = currentTotalSize + fileSizeMB;
-				if (potentialTotalSize > 20)
+				const totalSize = this.getTotalSize();
+				const newSize = totalSize + fileSizeMB;
+				if (newSize > 20)
 				{
-					alert(`Adding this image would exceed the 20MB total size limit for Gemini requests.`);
+					alert(`Adding this image would exceed the 20MB total size limit.`);
 					continue;
 				}
-				try
-				{
-					const dataUrl = await this.readFileAsDataURL(file);
-					this.uploadedImages[file.name] = dataUrl;
-					this.updateImageDisplay();
-				}
-				catch (error)
-				{
-					console.error('Error loading image:', error);
-				}
+				const dataUrl = await this.readAsDataURL(file);
+				this.images[file.name] = dataUrl;
+				this.updateDisplay();
 			}
 		}
-		readFileAsDataURL(file)
+		readAsDataURL(file)
 		{
-			return new Promise((resolve, reject) =>
+			return new Promise(resolve =>
 			{
 				const reader = new FileReader();
 				reader.onload = e => resolve(e.target.result);
-				reader.onerror = e => reject(e);
 				reader.readAsDataURL(file);
 			});
 		}
-		updateImageDisplay()
+		updateDisplay()
 		{
 			if (!this.options.displayElement) return;
 			const container = this.options.displayElement;
 			container.innerHTML = '';
-			Object.entries(this.uploadedImages)
+			Object.entries(this.images)
 				.forEach(([filename, dataURL]) =>
 				{
-					const imageContainer = document.createElement('div');
-					imageContainer.className = 'image-container';
+					const imgBox = document.createElement('div');
+					imgBox.className = 'image-container';
 					const img = document.createElement('img');
 					img.src = dataURL;
 					img.alt = filename;
 					img.title = filename;
-					const removeButton = document.createElement('button');
-					removeButton.className = 'btn btn-sm btn-danger remove-image';
-					removeButton.textContent = 'X';
-					removeButton.onclick = () =>
+					const removeBtn = document.createElement('button');
+					removeBtn.className = 'btn btn-sm btn-danger remove-image';
+					removeBtn.textContent = 'X';
+					removeBtn.onclick = () =>
 					{
-						delete this.uploadedImages[filename];
-						this.updateImageDisplay();
+						delete this.images[filename];
+						this.updateDisplay();
 					};
-					imageContainer.appendChild(img);
-					imageContainer.appendChild(removeButton);
-					container.appendChild(imageContainer);
+					imgBox.appendChild(img);
+					imgBox.appendChild(removeBtn);
+					container.appendChild(imgBox);
 				});
 		}
 		getImages()
 		{
-			return this.uploadedImages;
+			return this.images;
 		}
 		clear()
 		{
-			this.uploadedImages = {};
-			this.updateImageDisplay();
+			this.images = {};
+			this.updateDisplay();
 		}
 	},
 	VideoUploader: class
 	{
-		constructor(element, options = {})
+		constructor(el, options = {})
 		{
-			this.element = element;
+			this.el = el;
 			this.options = options;
-			this.uploadedVideos = {};
-			this.setupEventListeners();
+			this.videos = {};
+			this.setupEvents();
 		}
-		setupEventListeners()
+		setupEvents()
 		{
-			this.element.addEventListener('change', (e) =>
+			this.el.addEventListener('change', (e) =>
 			{
-				this.handleVideoUpload(Array.from(e.target.files));
-				this.element.value = '';
+				this.handleUpload(Array.from(e.target.files));
+				this.el.value = '';
 			});
 		}
 		getTotalSize()
 		{
-			let totalSize = 0;
-			for (const filename in this.uploadedVideos)
+			let size = 0;
+			for (const filename in this.videos)
 			{
-				const dataURL = this.uploadedVideos[filename];
+				const dataURL = this.videos[filename];
 				const base64 = dataURL.split(',')[1];
-				const sizeInBytes = (base64.length * (3 / 4));
-				totalSize += sizeInBytes / (1024 * 1024);
+				const bytes = (base64.length * (3 / 4));
+				size += bytes / (1024 * 1024);
 			}
-			return totalSize;
+			return size;
 		}
-		async handleVideoUpload(files)
+		async handleUpload(files)
 		{
 			const apiModel = this.options.getApiModel?.() || 'google';
 			const limits = CONFIG.LIMITS.COMPLETION.VIDEO[apiModel];
-			if (files.length + Object.keys(this.uploadedVideos)
+			if (files.length + Object.keys(this.videos)
 				.length > limits.max)
 			{
 				alert(`Maximum ${limits.max} videos allowed for ${apiModel}`);
@@ -287,72 +271,64 @@ const UIComponents = {
 					alert(`Video ${file.name} exceeds the maximum size of ${limits.size}MB.`);
 					continue;
 				}
-				const currentTotalSize = this.getTotalSize();
-				const potentialTotalSize = currentTotalSize + fileSizeMB;
-				if (potentialTotalSize > 20)
+				const totalSize = this.getTotalSize();
+				const newSize = totalSize + fileSizeMB;
+				if (newSize > 20)
 				{
-					alert(`Adding this video would exceed the 20MB total size limit for Gemini requests.`);
+					alert(`Adding this video would exceed the 20MB total size limit.`);
 					continue;
 				}
-				try
-				{
-					const dataUrl = await this.readFileAsDataURL(file);
-					this.uploadedVideos[file.name] = dataUrl;
-					this.updateVideoDisplay();
-				}
-				catch (error)
-				{
-					console.error('Error loading video:', error);
-				}
+				const dataUrl = await this.readAsDataURL(file);
+				this.videos[file.name] = dataUrl;
+				this.updateDisplay();
 			}
 		}
-		readFileAsDataURL(file)
+		readAsDataURL(file)
 		{
-			return new Promise((resolve, reject) =>
+			return new Promise(resolve =>
 			{
 				const reader = new FileReader();
 				reader.onload = e => resolve(e.target.result);
-				reader.onerror = e => reject(e);
 				reader.readAsDataURL(file);
 			});
 		}
-		updateVideoDisplay()
+		updateDisplay()
 		{
 			if (!this.options.displayElement) return;
 			const container = this.options.displayElement;
 			container.innerHTML = '';
-			Object.entries(this.uploadedVideos)
+			Object.entries(this.videos)
 				.forEach(([filename, dataURL]) =>
 				{
-					const videoContainer = document.createElement('div');
-					videoContainer.className = 'video-container';
+					const videoBox = document.createElement('div');
+					videoBox.className = 'video-container';
 					const video = document.createElement('video');
 					video.src = dataURL;
 					video.controls = false;
 					video.muted = true;
 					video.loop = true;
 					video.pause();
-					const removeButton = document.createElement('button');
-					removeButton.className = 'btn btn-sm btn-danger remove-video';
-					removeButton.textContent = 'X';
-					removeButton.onclick = () =>
+					const removeBtn = document.createElement('button');
+					removeBtn.className = 'btn btn-sm btn-danger remove-video';
+					removeBtn.textContent = 'X';
+					removeBtn.onclick = () =>
 					{
-						delete this.uploadedVideos[filename];
-						this.updateVideoDisplay();
+						delete this.videos[filename];
+						this.updateDisplay();
 					};
-					videoContainer.appendChild(video);
-					videoContainer.appendChild(removeButton);
-					container.appendChild(videoContainer);
+					videoBox.appendChild(video);
+					videoBox.appendChild(removeBtn);
+					container.appendChild(videoBox);
 				});
 		}
 		getVideos()
 		{
-			return this.uploadedVideos;
+			return this.videos;
 		}
 		clear()
 		{
-			this.uploadedVideos = {};
-			this.updateVideoDisplay();
+			this.videos = {};
+			this.updateDisplay();
 		}
 	}
 };
