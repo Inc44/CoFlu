@@ -1,7 +1,128 @@
 // ui/components.js
 const UIComponents = {
 	AudioUploader: class
-	{},
+	{
+		constructor(element, options = {})
+		{
+			this.element = element;
+			this.options = options;
+			this.uploadedAudios = {};
+			this.setupEventListeners();
+		}
+		setupEventListeners()
+		{
+			this.element.addEventListener('change', (e) =>
+			{
+				this.handleAudioUpload(Array.from(e.target.files));
+				this.element.value = '';
+			});
+		}
+		getTotalSize()
+		{
+			let totalSize = 0;
+			for (const filename in this.uploadedAudios)
+			{
+				const dataURL = this.uploadedAudios[filename];
+				const byteString = atob(dataURL.split(',')[1]);
+				const sizeInBytes = byteString.length;
+				totalSize += sizeInBytes / (1024 * 1024);
+			}
+			return totalSize;
+		}
+		async handleAudioUpload(files)
+		{
+			const apiModel = this.options.getApiModel?.() || 'google';
+			const limits = CONFIG.LIMITS.COMPLETION.AUDIO[apiModel];
+			if (files.length + Object.keys(this.uploadedAudios)
+				.length > limits.max)
+			{
+				alert(`Maximum ${limits.max} audios allowed for ${apiModel}`);
+				return;
+			}
+			for (const file of files)
+			{
+				if (!file.type.startsWith('audio/'))
+				{
+					alert('Only audio files are allowed.');
+					continue;
+				}
+				const fileSizeMB = file.size / (1024 * 1024);
+				if (fileSizeMB > limits.size)
+				{
+					alert(`Audio ${file.name} exceeds the maximum size of ${limits.size}MB.`);
+					continue;
+				}
+				if (apiModel === 'google')
+				{
+					const currentTotalSize = this.getTotalSize();
+					const potentialTotalSize = currentTotalSize + fileSizeMB;
+					if (potentialTotalSize > 20)
+					{
+						alert(`Adding this image would exceed the 20MB total size limit for Gemini requests.`);
+						continue;
+					}
+				}
+				try
+				{
+					const dataUrl = await this.readFileAsDataURL(file);
+					this.uploadedAudios[file.name] = dataUrl;
+					this.updateAudioDisplay();
+				}
+				catch (error)
+				{
+					console.error('Error loading audio:', error);
+				}
+			}
+		}
+		readFileAsDataURL(file)
+		{
+			return new Promise((resolve, reject) =>
+			{
+				const reader = new FileReader();
+				reader.onload = e => resolve(e.target.result);
+				reader.onerror = e => reject(e);
+				reader.readAsDataURL(file);
+			});
+		}
+		updateAudioDisplay()
+		{
+			if (!this.options.displayElement) return;
+			const container = this.options.displayElement;
+			container.innerHTML = '';
+			Object.entries(this.uploadedAudios)
+				.forEach(([filename, dataURL]) =>
+				{
+					const audioContainer = document.createElement('div');
+					audioContainer.className = 'audio-container';
+					const audio = document.createElement('audio');
+					audio.src = dataURL;
+					audio.controls = false;
+					audio.muted = true;
+					audio.loop = true;
+					audio.pause();
+					const removeButton = document.createElement('button');
+					removeButton.className = 'btn btn-sm btn-danger remove-audio';
+					removeButton.textContent = 'X';
+					removeButton.onclick = () =>
+					{
+						delete this.uploadedAudios[filename];
+						this.updateAudioDisplay();
+					};
+					audioContainer.appendChild(audio);
+					audioContainer.appendChild(removeButton);
+					container.appendChild(audioContainer);
+				});
+		}
+		getAudios()
+		{
+			return this.uploadedAudios;
+		}
+		clear()
+		{
+			this.uploadedAudios = {};
+			this.updateAudioDisplay();
+		}
+	},
 	ImageUploader: class
 	{
 		constructor(element, options = {})
