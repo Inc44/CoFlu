@@ -57,9 +57,39 @@ window.CONFIG = {
 						image: true
 					},
 					{
+						name: "gpt-4o-audio-preview",
+						max_tokens: 2048,
+						audio: true,
+						image: false
+					},
+					{
+						name: "gpt-4o-mini-audio-preview-2024-12-17",
+						max_tokens: 2048,
+						audio: true,
+						image: true
+					},
+					{
+						name: "gpt-4o-mini-audio-preview",
+						max_tokens: 2048,
+						audio: true,
+						image: true
+					},
+					{
 						name: "gpt-4o-mini-2024-07-18",
 						max_tokens: 16383,
 						image: true
+					},
+					{
+						name: "gpt-4o-audio-preview-2024-12-17",
+						max_tokens: 2048,
+						audio: true,
+						image: false
+					},
+					{
+						name: "gpt-4o-audio-preview-2024-10-01",
+						max_tokens: 2048,
+						audio: true,
+						image: false
 					},
 					{
 						name: "gpt-4o-2024-11-20",
@@ -125,33 +155,39 @@ window.CONFIG = {
 					{
 						name: "gemini-exp-1206",
 						max_tokens: 8192,
+						audio: true,
 						image: true,
 						video: true
 					},
 					{
 						name: "gemini-2.0-flash-001",
 						max_tokens: 8192,
+						audio: true,
 						image: true,
 						video: true
 					},
 					{
 						name: "gemini-2.0-flash-lite-preview-02-05",
 						max_tokens: 8192,
+						audio: true,
 						image: true
 					},
 					{
 						name: "gemini-2.0-pro-exp-02-05",
 						max_tokens: 8192,
+						audio: true,
 						image: true
 					},
 					{
 						name: "gemini-2.0-flash-thinking-exp-01-21",
 						max_tokens: 65536,
+						audio: true,
 						image: true
 					},
 					{
 						name: "gemini-2.0-flash-exp",
 						max_tokens: 8192,
+						audio: true,
 						image: true,
 						video: true
 					}]
@@ -439,6 +475,12 @@ window.CONFIG = {
 						name: "Llama-3.2-90B-Vision-Instruct",
 						max_tokens: 4096,
 						image: true
+					},
+					{
+						name: "Qwen2-Audio-7B-Instruct",
+						max_tokens: 8192,
+						audio: true,
+						image: false
 					}]
 				},
 				together:
@@ -664,6 +706,64 @@ window.CONFIG = {
 	{
 		COMPLETION:
 		{
+			AUDIO:
+			{
+				openai:
+				{
+					max: 100,
+					size: 100
+				},
+				anthropic:
+				{
+					max: 0,
+					size: 0
+				},
+				deepseek:
+				{
+					max: 0,
+					size: 0
+				},
+				google:
+				{
+					max: 100,
+					size: 100
+				},
+				x:
+				{
+					max: 0,
+					size: 0
+				},
+				groq:
+				{
+					max: 0,
+					size: 0
+				},
+				lambda:
+				{
+					max: 0,
+					size: 0
+				},
+				openrouter:
+				{
+					max: 0,
+					size: 0
+				},
+				alibaba:
+				{
+					max: 0,
+					size: 0
+				},
+				sambanova:
+				{
+					max: 100,
+					size: 100
+				},
+				together:
+				{
+					max: 0,
+					size: 0
+				}
+			},
 			IMAGE:
 			{
 				openai:
