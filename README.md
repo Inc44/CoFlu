@@ -152,7 +152,6 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🔴 Possibly add image diff.
 - 🔴 Provide an option to display tokens instead of words.
 - 🔴 Refactor and rewrite the entire codebase.
-- 🔴 Rewrite Gemini without relying on Google Generative AI.
 - 🔴 Support YouTube video transcription.
 - 🔴 Support login via Google, Microsoft, and GitHub for syncing.
 - 🔴 Support multiple chat sessions.
@@ -160,7 +159,6 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟡 Add audio input support for ChatGPT, Gemini, Qwen, and SambaNova.
 - 🟡 Explore other models on www.minimax.io and lambdalabs.com.
 - 🟡 Provide an option to enable high-cost models (gpt-4.5, o1, opus-3).
-- 🟡 Rewrite Gemini for OpenAI compatibility.
 - 🟢 Consider adding new default prompts, such as: *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
 - 🟢 Improve LaTeX handling by replacing punctuation inside separate text macros.
 - 🟢 Include Cerebras if approved.
