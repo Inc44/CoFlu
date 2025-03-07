@@ -1,4 +1,7 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css");
+:root {
+--bs-border-color-translucent: unset;
+}
 html[data-bs-theme="light"] body {
 background-color: rgb(199, 195, 189);
 color: black;
@@ -162,6 +165,7 @@ height: 100%;
 display: inline-block;
 color: white;
 }
+#audioList,
 #imageList,
 #videoList {
 display: flex;
@@ -264,7 +268,7 @@ margin-top: 0.25rem;
 display: flex;
 gap: 1rem;
 }
-#thinkingBudgetRange { 
+#thinkingBudgetRange {
 height: unset;
 }
 #thinkingBudgetNumber {
@@ -275,6 +279,12 @@ display: inline-block;
 margin-right: 0.5rem;
 min-width: 2.5rem;
 user-select: none;
+}
+.audio-container {
+border-radius: 0.5rem;
+border: 0.1rem solid var(--bs-border-color);
+margin: 0.5rem;
+padding: 0.5rem;
 }
 @media print {
 * {

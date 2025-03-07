@@ -290,8 +290,8 @@ const AiService = {
 				const audioContent = audios.map(dataURL =>
 				{
 					const base64Data = dataURL.split(',')[1];
-					const mimeType = 'audio/mp3' || dataURL.match(/^data:(.*?);base64,/)
-						?.[1];
+					mimeType = dataURL.match(/^data:(.*?);base64,/)
+						?.[1] || 'audio/wav';
 					if (mimeType.startsWith('audio/mpeg'))
 					{
 						mimeType = 'audio/mp3';

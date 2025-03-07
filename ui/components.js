@@ -23,8 +23,8 @@ const UIComponents = {
 			for (const filename in this.uploadedAudios)
 			{
 				const dataURL = this.uploadedAudios[filename];
-				const byteString = atob(dataURL.split(',')[1]);
-				const sizeInBytes = byteString.length;
+				const base64 = dataURL.split(',')[1];
+				const sizeInBytes = (base64.length * (3 / 4));
 				totalSize += sizeInBytes / (1024 * 1024);
 			}
 			return totalSize;
@@ -93,13 +93,10 @@ const UIComponents = {
 				.forEach(([filename, dataURL]) =>
 				{
 					const audioContainer = document.createElement('div');
-					audioContainer.className = 'audio-container';
-					const audio = document.createElement('audio');
-					audio.src = dataURL;
-					audio.controls = false;
-					audio.muted = true;
-					audio.loop = true;
-					audio.pause();
+					audioContainer.className = 'audio-container d-flex align-items-center justify-content-between';
+					const audioFilename = document.createElement('div');
+					audioFilename.textContent = filename;
+					audioFilename.classList.add('audio-filename', "me-2");
 					const removeButton = document.createElement('button');
 					removeButton.className = 'btn btn-sm btn-danger remove-audio';
 					removeButton.textContent = 'X';
@@ -108,7 +105,7 @@ const UIComponents = {
 						delete this.uploadedAudios[filename];
 						this.updateAudioDisplay();
 					};
-					audioContainer.appendChild(audio);
+					audioContainer.appendChild(audioFilename);
 					audioContainer.appendChild(removeButton);
 					container.appendChild(audioContainer);
 				});
@@ -146,8 +143,8 @@ const UIComponents = {
 			for (const filename in this.uploadedImages)
 			{
 				const dataURL = this.uploadedImages[filename];
-				const byteString = atob(dataURL.split(',')[1]);
-				const sizeInBytes = byteString.length;
+				const base64 = dataURL.split(',')[1];
+				const sizeInBytes = (base64.length * (3 / 4));
 				totalSize += sizeInBytes / (1024 * 1024);
 			}
 			return totalSize;
@@ -267,8 +264,8 @@ const UIComponents = {
 			for (const filename in this.uploadedVideos)
 			{
 				const dataURL = this.uploadedVideos[filename];
-				const byteString = atob(dataURL.split(',')[1]);
-				const sizeInBytes = byteString.length;
+				const base64 = dataURL.split(',')[1];
+				const sizeInBytes = (base64.length * (3 / 4));
 				totalSize += sizeInBytes / (1024 * 1024);
 			}
 			return totalSize;
