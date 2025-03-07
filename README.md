@@ -121,15 +121,19 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 
 ## Bugs
 
+- 🔴 Adjust upload limits based on platform constraints, e.g., SambaNova (~20MB) and Google (>100MB).
 - 🔴 Fix CORS for Groq's 40MB audio upload.
 - 🔴 Fix chat reasoning not showing.
 - 🔴 Fix max_completion_tokens for O models and max_tokens for others.
 - 🔴 Fix reasoning in OpenRouter as `{"max_tokens": 100000}` is not used.
+- 🟡 Expand supported audio formats for Google and Gemini.
 - 🟡 Fix JSON file input causing `[object Object]` to be saved.
 - 🟡 Fix Qwen Vision failure.
 - 🟡 Fix SUS key validation.
+- 🟡 Fix smartphone layout issues where uploaded audio and rendered LaTeX extend beyond the screen.
 - 🟡 Fix stop button not stopping in chat.
 - 🟡 Implement real-time update for import/export settings.
+- 🟢 Correct spacing between uploader containers when hidden.
 - 🟢 Other bugs have not been found yet.
 
 ## TODOs
@@ -139,6 +143,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🔴 Allow disabling of thinking tokens (`<think>` for DeepSeek, Groq, and SambaNova; `"thinking"` for Claude).
 - 🔴 Allow saving of images and videos attached to chat.
 - 🔴 Create online storage for large videos (up to 2 GB) for Gemini.
+- 🔴 Enable container-level selection to improve contextual translation at the cost of layout preservation.
 - 🔴 Enable editing of custom prompts:
 	- 🔴 Include a delete button for custom prompts.
 	- 🟡 When selecting a custom prompt, a text input field should reappear, similar to adding a new prompt.
@@ -146,6 +151,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🔴 Extend document support to additional formats, including PDFs, for both input and translation.
 - 🔴 Generate pages from HTML templates.
 - 🔴 Implement history for index, chat, and translation.
+- 🔴 Integrate popular translation engines, such as Google, Bing, DeepL, Yandex, Baidu, and Papago.
 - 🔴 Modify the word counter.
 - 🔴 Possibly add TTS tools.
 - 🔴 Possibly add an OCR tool based on "Extract the text elements described by the user from the picture and return the result formatted as a JSON in the following format: {name_of_element: [value]}".
@@ -156,12 +162,12 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🔴 Support login via Google, Microsoft, and GitHub for syncing.
 - 🔴 Support multiple chat sessions.
 - 🟡 Add `transcription.html` and transcription proofreading options.
-- 🟡 Add audio input support for ChatGPT, Gemini, Qwen, and SambaNova.
 - 🟡 Explore other models on www.minimax.io and lambdalabs.com.
 - 🟡 Provide an option to enable high-cost models (gpt-4.5, o1, opus-3).
 - 🟢 Consider adding new default prompts, such as: *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
 - 🟢 Improve LaTeX handling by replacing punctuation inside separate text macros.
 - 🟢 Include Cerebras if approved.
+- 🟢 Verify supported upload formats.
 
 ## License
 

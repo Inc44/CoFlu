@@ -52,15 +52,12 @@ const UIComponents = {
 					alert(`Audio ${file.name} exceeds the maximum size of ${limits.size}MB.`);
 					continue;
 				}
-				if (apiModel === 'google')
+				const currentTotalSize = this.getTotalSize();
+				const potentialTotalSize = currentTotalSize + fileSizeMB;
+				if (potentialTotalSize > 20)
 				{
-					const currentTotalSize = this.getTotalSize();
-					const potentialTotalSize = currentTotalSize + fileSizeMB;
-					if (potentialTotalSize > 20)
-					{
-						alert(`Adding this image would exceed the 20MB total size limit for Gemini requests.`);
-						continue;
-					}
+					alert(`Adding this image would exceed the 20MB total size limit for Gemini requests.`);
+					continue;
 				}
 				try
 				{
@@ -172,15 +169,12 @@ const UIComponents = {
 					alert(`Image ${file.name} exceeds the maximum size of ${limits.size}MB.`);
 					continue;
 				}
-				if (apiModel === 'google')
+				const currentTotalSize = this.getTotalSize();
+				const potentialTotalSize = currentTotalSize + fileSizeMB;
+				if (potentialTotalSize > 20)
 				{
-					const currentTotalSize = this.getTotalSize();
-					const potentialTotalSize = currentTotalSize + fileSizeMB;
-					if (potentialTotalSize > 20)
-					{
-						alert(`Adding this image would exceed the 20MB total size limit for Gemini requests.`);
-						continue;
-					}
+					alert(`Adding this image would exceed the 20MB total size limit for Gemini requests.`);
+					continue;
 				}
 				try
 				{
@@ -293,15 +287,12 @@ const UIComponents = {
 					alert(`Video ${file.name} exceeds the maximum size of ${limits.size}MB.`);
 					continue;
 				}
-				if (apiModel === 'google')
+				const currentTotalSize = this.getTotalSize();
+				const potentialTotalSize = currentTotalSize + fileSizeMB;
+				if (potentialTotalSize > 20)
 				{
-					const currentTotalSize = this.getTotalSize();
-					const potentialTotalSize = currentTotalSize + fileSizeMB;
-					if (potentialTotalSize > 20)
-					{
-						alert(`Adding this video would exceed the 20MB total size limit for Gemini requests.`);
-						continue;
-					}
+					alert(`Adding this video would exceed the 20MB total size limit for Gemini requests.`);
+					continue;
 				}
 				try
 				{
