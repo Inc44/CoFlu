@@ -106,118 +106,96 @@ const AiService = {
 		let messages = [];
 		if (options.messages && Array.isArray(options.messages))
 		{
-			messages = options.messages.slice(0, -1)
-				.map(msg => (
-				{
-					role: msg.role,
-					content: (typeof msg.content === 'string') ? msg.content : msg.content.map(item => item.text)
-						.join(""),
-				}));
-		}
-		let currentUserMessage = {
-			role: "user",
-			content: []
-		};
-		if (options.messages && options.messages.length > 0)
-		{
-			currentUserMessage = options.messages[options.messages.length - 1];
-		}
-		let textContent = prompt;
-		if (currentUserMessage && currentUserMessage.content)
-		{
-			textContent = typeof currentUserMessage.content === 'string' ? currentUserMessage.content : currentUserMessage.content.map(item => item.text)
-				.join("");
-		}
-		let content = [
-		{
-			type: 'text',
-			text: textContent
-		}];
-		if (options.audios?.length > 0)
-		{
-			if (model === 'sambanova')
+			messages = options.messages.map(msg =>
 			{
-				const audioContent = options.audios.map(dataURL => (
+				let content = [];
+				if (msg.content)
 				{
-					type: 'audio_content',
-					audio_content:
+					if (typeof msg.content === 'string')
 					{
-						content: dataURL
-					}
-				}));
-				content = content.concat(audioContent);
-			}
-			else
-			{
-				const audioContent = options.audios.map(dataURL =>
-				{
-					const base64Data = dataURL.split(',')[1];
-					let mimeType = dataURL.match(/^data:(.*?);base64,/)
-						?.[1] || 'audio/mp3';
-					if (mimeType.startsWith('audio/mpeg'))
-					{
-						mimeType = 'audio/mp3';
-					}
-					return {
-						type: 'input_audio',
-						input_audio:
+						content.push(
 						{
-							data: base64Data,
-							format: mimeType.split('/')[1]
-						}
-					};
-				});
-				content = content.concat(audioContent);
-			}
-		}
-		if (options.images?.length > 0)
-		{
-			if (model === 'anthropic')
-			{
-				const imageContent = options.images.map(dataURL =>
-				{
-					const base64Data = dataURL.split(',')[1];
-					const mimeType = dataURL.match(/^data:(.*?);base64,/)
-						?.[1] || 'image/png';
-					return {
-						type: 'image',
-						source:
-						{
-							type: "base64",
-							media_type: mimeType,
-							data: base64Data
-						}
-					};
-				});
-				content = content.concat(imageContent);
-			}
-			else
-			{
-				const imageContent = options.images.map(dataURL => (
-				{
-					type: 'image_url',
-					image_url:
-					{
-						url: dataURL
+							type: 'text',
+							text: msg.content
+						});
 					}
-				}));
-				content = content.concat(imageContent);
-			}
-		}
-		if (options.videos?.length > 0)
-		{
-			const videoContent = options.videos.map(dataURL => (
-			{
-				type: 'image_url',
-				image_url:
-				{
-					url: dataURL
+					else if (Array.isArray(msg.content))
+					{
+						content = content.concat(msg.content);
+					}
 				}
-			}));
-			content = content.concat(videoContent);
+				return {
+					role: msg.role,
+					content: content.length === 1 ? content[0].text : content
+				};
+			});
 		}
-		currentUserMessage.content = content;
-		messages.push(currentUserMessage);
+		else
+		{
+			messages = [
+			{
+				role: "user",
+				content: prompt
+			}];
+		}
+		if (options.audios?.length > 0 || options.images?.length > 0 || options.videos?.length > 0)
+		{
+			let currentUserMessageIndex = messages.findIndex(m => m.role === 'user');
+			for (let i = messages.length - 1; i >= 0; --i)
+			{
+				if (messages[i].role == "user")
+				{
+					currentUserMessageIndex = i;
+					break;
+				}
+			}
+			if (currentUserMessageIndex === -1)
+			{
+				currentUserMessageIndex = messages.length;
+				messages.push(
+				{
+					role: "user",
+					content: []
+				});
+			}
+			let userContent = [];
+			if (typeof messages[currentUserMessageIndex].content === 'string')
+			{
+				userContent.push(
+				{
+					type: "text",
+					text: messages[currentUserMessageIndex].content
+				});
+			}
+			else
+			{
+				userContent = messages[currentUserMessageIndex].content;
+			}
+			userContent = userContent.concat(this.buildMediaContent(options.audios, options.images, options.videos, model));
+			if (userContent.length === 1 && typeof userContent[0] === "object" && userContent[0].text != null)
+			{
+				messages[currentUserMessageIndex].content = userContent[0].text;
+			}
+			else
+			{
+				messages[currentUserMessageIndex].content = userContent;
+			}
+		}
+		messages = messages.filter(msg =>
+		{
+			if (typeof msg.content === 'string')
+			{
+				return msg.content.trim() !== '';
+			}
+			if (Array.isArray(msg.content))
+			{
+				if (msg.content.length > 0 && typeof msg.content[0] === "object" && msg.content[0].text != null)
+				{
+					return msg.content[0].text.trim() != '';
+				}
+			}
+			return true;
+		});
 		let requestBody = {
 			model: selectedModel.name,
 			messages,
@@ -252,31 +230,21 @@ const AiService = {
 		}
 		return requestBody;
 	},
-	buildRequestHeaders(apiKey, config)
-	{
-		return {
-			'Content-Type': 'application/json',
-			[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
-			...config.additionalHeaders,
-		};
-	},
-	formatMessagesWithMedia(prompt, audios = [], images = [], videos = [], model)
+	buildMediaContent(audios = [], images = [], videos = [], model)
 	{
 		let mediaContent = [];
 		if (audios.length > 0)
 		{
 			if (model === 'sambanova')
 			{
-				const audioContent = audios.map(dataURL =>
+				const audioContent = audios.map(dataURL => (
 				{
-					return {
-						type: 'audio_content',
-						audio_content:
-						{
-							content: dataURL
-						}
-					};
-				});
+					type: 'audio_content',
+					audio_content:
+					{
+						content: dataURL
+					},
+				}));
 				mediaContent = mediaContent.concat(audioContent);
 			}
 			else
@@ -284,8 +252,8 @@ const AiService = {
 				const audioContent = audios.map(dataURL =>
 				{
 					const base64Data = dataURL.split(',')[1];
-					mimeType = dataURL.match(/^data:(.*?);base64,/)
-						?.[1] || 'audio/wav';
+					let mimeType = dataURL.match(/^data:(.*?);base64,/)
+						?.[1] || 'audio/mp3';
 					if (mimeType.startsWith('audio/mpeg'))
 					{
 						mimeType = 'audio/mp3';
@@ -296,7 +264,7 @@ const AiService = {
 						{
 							data: base64Data,
 							format: mimeType.split('/')[1]
-						}
+						},
 					};
 				});
 				mediaContent = mediaContent.concat(audioContent);
@@ -313,10 +281,10 @@ const AiService = {
 					type: 'image',
 					source:
 					{
-						type: "base64",
+						type: 'base64',
 						media_type: mimeType,
 						data: base64Data
-					}
+					},
 				};
 			});
 			mediaContent = mediaContent.concat(imageContent);
@@ -333,27 +301,27 @@ const AiService = {
 			}));
 			mediaContent = mediaContent.concat(imageContent);
 		}
-		if (videos.length > 0)
+		mediaContent = mediaContent.concat(this.createMediaContent(videos, "image_url", "url"));
+		return mediaContent;
+	},
+	buildRequestHeaders(apiKey, config)
+	{
+		return {
+			'Content-Type': 'application/json',
+			[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
+			...config.additionalHeaders,
+		};
+	},
+	createMediaContent(mediaItems, typeKey, urlKey)
+	{
+		return mediaItems.map(dataURL => (
 		{
-			const videoContent = videos.map(dataURL => (
+			type: typeKey,
+			[urlKey]:
 			{
-				type: 'image_url',
-				image_url:
-				{
-					url: dataURL
-				}
-			}));
-			mediaContent = mediaContent.concat(videoContent);
-		}
-		return [
-		{
-			role: "user",
-			content: [...mediaContent,
-			{
-				type: "text",
-				text: prompt
-			}]
-		}];
+				url: dataURL
+			},
+		}));
 	},
 	async handleStreamingResponse(response, model, onProgress)
 	{
