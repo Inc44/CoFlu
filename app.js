@@ -227,42 +227,40 @@ class App
 		];
 		elements.forEach(el =>
 		{
-			if (el)
+			if (!el) return;
+			if (renderer === 'katex')
 			{
-				if (renderer === 'katex')
+				renderMathInElement(el,
 				{
-					renderMathInElement(el,
+					delimiters: [
 					{
-						delimiters: [
-						{
-							left: '$$',
-							right: '$$',
-							display: true
-						},
-						{
-							left: '$',
-							right: '$',
-							display: false
-						},
-						{
-							left: '\[',
-							right: '\]',
-							display: true
-						},
-						{
-							left: '\(',
-							right: '\)',
-							display: false
-						}],
-						throwOnError: false,
-						trust: true,
-						strict: false
-					});
-				}
-				else if (renderer === 'mathjax3')
-				{
-					MathJax.typesetPromise([el]);
-				}
+						left: '$$',
+						right: '$$',
+						display: true
+					},
+					{
+						left: '$',
+						right: '$',
+						display: false
+					},
+					{
+						left: '\[',
+						right: '\]',
+						display: true
+					},
+					{
+						left: '\(',
+						right: '\)',
+						display: false
+					}],
+					throwOnError: false,
+					trust: true,
+					strict: false
+				});
+			}
+			else if (renderer === 'mathjax3')
+			{
+				MathJax.typesetPromise([el]);
 			}
 		});
 	}
@@ -314,16 +312,19 @@ class App
 	}
 	updateUI()
 	{
-		if (this.els.apiModel)
+		if (!this.els.apiModel) return;
+		const model = this.els.apiModel.value;
+		const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
+		let details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === modelName);
+		if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
 		{
-			const model = this.els.apiModel.value;
-			const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default));
-			if (details)
-			{
-				UIState.updateAudioUploadVisibility(details);
-				UIState.updateImageUploadVisibility(details);
-				UIState.updateVideoUploadVisibility(details);
-			}
+			details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(m => m.name === modelName);
+		}
+		if (details)
+		{
+			UIState.updateAudioUploadVisibility(details);
+			UIState.updateImageUploadVisibility(details);
+			UIState.updateVideoUploadVisibility(details);
 		}
 	}
 	setupErrorHandling()

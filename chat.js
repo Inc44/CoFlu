@@ -69,16 +69,19 @@ class ChatApp
 	}
 	updateUI()
 	{
-		if (this.els.apiModel)
+		if (!this.els.apiModel) return;
+		const model = this.els.apiModel.value;
+		const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
+		let details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === modelName);
+		if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
 		{
-			const model = this.els.apiModel.value;
-			const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default));
-			if (details)
-			{
-				UIState.updateAudioUploadVisibility(details);
-				UIState.updateImageUploadVisibility(details);
-				UIState.updateVideoUploadVisibility(details);
-			}
+			details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(m => m.name === modelName);
+		}
+		if (details)
+		{
+			UIState.updateAudioUploadVisibility(details);
+			UIState.updateImageUploadVisibility(details);
+			UIState.updateVideoUploadVisibility(details);
 		}
 	}
 	setupEvents()
@@ -100,11 +103,19 @@ class ChatApp
 			this.els.apiModel.addEventListener('change', () =>
 			{
 				const model = this.els.apiModel.value;
-				const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default));
+				const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
+				let details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === modelName);
+				if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
+				{
+					details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(m => m.name === modelName);
+				}
 				StorageService.save('selected_api_model', model);
-				UIState.updateAudioUploadVisibility(details);
-				UIState.updateImageUploadVisibility(details);
-				UIState.updateVideoUploadVisibility(details);
+				if (details)
+				{
+					UIState.updateAudioUploadVisibility(details);
+					UIState.updateImageUploadVisibility(details);
+					UIState.updateVideoUploadVisibility(details);
+				}
 				this.loadMsgs();
 				this.displayMsgs();
 			});

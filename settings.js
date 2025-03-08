@@ -16,6 +16,7 @@ class SettingsApp
 			darkToggle: document.getElementById('darkToggle'),
 			expRetry: document.getElementById('exponentialRetry'),
 			exportBtn: document.getElementById('exportSettings'),
+			highCostToggle: document.getElementById('highCostToggle'),
 			importBtn: document.getElementById('importSettings'),
 			langSelect: document.getElementById('language'),
 			noBSToggle: document.getElementById('noBSToggle'),
@@ -90,6 +91,7 @@ class SettingsApp
 	{
 		this.loadCheckbox('cleanupToggle', 'cleanup_enabled', true);
 		this.loadCheckbox('darkToggle', 'dark_enabled', true);
+		this.loadCheckbox('highCostToggle', 'high_cost_enabled', false);
 		this.loadCheckbox('noBSToggle', 'no_bs_enabled', false);
 		this.loadCheckbox('numberedLinesToggle', 'numbered_lines_enabled', false);
 		this.loadCheckbox('streamToggle', 'streaming_enabled', true);
@@ -150,23 +152,35 @@ class SettingsApp
 	}
 	loadModelOptions()
 	{
+		const isHighCostEnabled = StorageService.load('high_cost_enabled', false);
 		Object.entries(CONFIG.API.MODELS.COMPLETION)
 			.forEach(([provider, config]) =>
 			{
 				const modelSelect = this.els.modelSelects[provider];
-				if (modelSelect)
+				if (!modelSelect) return;
+				modelSelect.innerHTML = '';
+				this.addModelsToSelect(modelSelect, config.options);
+				if (isHighCostEnabled && CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider])
 				{
-					modelSelect.innerHTML = '';
-					config.options.forEach(model =>
-					{
-						const option = document.createElement('option');
-						option.value = model.name;
-						option.textContent = model.name;
-						modelSelect.appendChild(option);
-					});
-					modelSelect.value = StorageService.load(`${provider}_model`, config.default);
+					const highCostConfig = CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider];
+					this.addModelsToSelect(modelSelect, highCostConfig.options, true);
 				}
+				modelSelect.value = StorageService.load(`${provider}_model`, config.default);
 			});
+	}
+	addModelsToSelect(select, models, isHighCost = false)
+	{
+		models.forEach(model =>
+		{
+			const option = document.createElement('option');
+			option.value = model.name;
+			option.textContent = isHighCost ? `${model.name} ($15+/1M)` : model.name;
+			if (isHighCost)
+			{
+				option.className = 'high-cost-model';
+			}
+			select.appendChild(option);
+		});
 	}
 	loadWhisperOptions()
 	{
@@ -174,18 +188,16 @@ class SettingsApp
 			.forEach(([provider, config]) =>
 			{
 				const modelSelect = this.els.whisperModels[provider];
-				if (modelSelect)
+				if (!modelSelect) return;
+				modelSelect.innerHTML = '';
+				config.options.forEach(model =>
 				{
-					modelSelect.innerHTML = '';
-					config.options.forEach(model =>
-					{
-						const option = document.createElement('option');
-						option.value = model.name;
-						option.textContent = model.name;
-						modelSelect.appendChild(option);
-					});
-					modelSelect.value = StorageService.load(`${provider}_whisper_model`, config.default);
-				}
+					const option = document.createElement('option');
+					option.value = model.name;
+					option.textContent = model.name;
+					modelSelect.appendChild(option);
+				});
+				modelSelect.value = StorageService.load(`${provider}_whisper_model`, config.default);
 			});
 	}
 	updateModelVisibility(provider)
@@ -220,15 +232,24 @@ class SettingsApp
 	{
 		const modelSelect = this.els.modelSelects[provider];
 		const modelName = modelSelect ? modelSelect.value : null;
-		const modelDetails = CONFIG.API.MODELS.COMPLETION[provider]?.options.find(m => m.name === modelName);
+		const modelDetails = this.getModelDetails(provider, modelName);
 		this.els.reasoningBox.style.display = (modelDetails && modelDetails.reasoning_effort) ? 'block' : 'none';
 	}
 	updateThinkingVisibility(provider)
 	{
 		const modelSelect = this.els.modelSelects[provider];
 		const modelName = modelSelect ? modelSelect.value : null;
-		const modelDetails = CONFIG.API.MODELS.COMPLETION[provider]?.options.find(m => m.name === modelName);
+		const modelDetails = this.getModelDetails(provider, modelName);
 		this.els.thinkingBox.style.display = (modelDetails && modelDetails.thinking) ? 'block' : 'none';
+	}
+	getModelDetails(provider, modelName)
+	{
+		let modelDetails = CONFIG.API.MODELS.COMPLETION[provider]?.options.find(m => m.name === modelName);
+		if (!modelDetails && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider])
+		{
+			modelDetails = CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider].options.find(m => m.name === modelName);
+		}
+		return modelDetails;
 	}
 	setupEvents()
 	{
@@ -240,6 +261,7 @@ class SettingsApp
 		this.els.darkToggle?.addEventListener('change', this.handleDarkToggleChange.bind(this));
 		this.els.expRetry?.addEventListener('change', this.handleNumericChange.bind(this, 'expRetry', 'exponential_retry', 0));
 		this.els.exportBtn?.addEventListener('click', this.exportSettings.bind(this));
+		this.els.highCostToggle?.addEventListener('change', this.handleHighCostToggleChange.bind(this));
 		this.els.importBtn?.addEventListener('click', this.importSettings.bind(this));
 		this.els.langSelect?.addEventListener('change', this.handleLangChange.bind(this));
 		this.els.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
@@ -251,6 +273,12 @@ class SettingsApp
 		this.els.transcribeLang?.addEventListener('change', this.handleTranscribeLangChange.bind(this));
 		this.els.transcribeModel?.addEventListener('change', this.handleTranscribeModelChange.bind(this));
 		this.els.wideToggle?.addEventListener('change', this.handleWideToggleChange.bind(this));
+		this.setupThinkingEvents();
+		this.setupModelSelectEvents();
+		this.setupWhisperModelEvents();
+	}
+	setupThinkingEvents()
+	{
 		this.els.thinkingRange?.addEventListener('input', () =>
 		{
 			this.els.thinkingNum.value = this.els.thinkingRange.value;
@@ -261,6 +289,9 @@ class SettingsApp
 			this.els.thinkingRange.value = this.els.thinkingNum.value;
 			this.handleThinkingChange();
 		});
+	}
+	setupModelSelectEvents()
+	{
 		Object.entries(this.els.modelSelects)
 			.forEach(([provider, select]) =>
 			{
@@ -272,6 +303,9 @@ class SettingsApp
 					this.updateThinkingVisibility(provider);
 				});
 			});
+	}
+	setupWhisperModelEvents()
+	{
 		Object.entries(this.els.whisperModels)
 			.forEach(([provider, select]) =>
 			{
@@ -317,6 +351,15 @@ class SettingsApp
 		const isWide = this.els.wideToggle.checked;
 		UIState.updateLayout(isWide);
 		StorageService.save('wide_enabled', isWide);
+	}
+	handleHighCostToggleChange()
+	{
+		const isHighCostEnabled = this.els.highCostToggle.checked;
+		StorageService.save('high_cost_enabled', isHighCostEnabled);
+		this.loadModelOptions();
+		const provider = this.els.apiModel.value;
+		this.updateReasoningVisibility(provider);
+		this.updateThinkingVisibility(provider);
 	}
 	handleRendererChange()
 	{
@@ -371,6 +414,7 @@ class SettingsApp
 			cleanup_enabled: this.els.cleanupToggle.checked,
 			dark_enabled: this.els.darkToggle.checked,
 			exponential_retry: parseInt(this.els.expRetry.value, 10),
+			high_cost_enabled: this.els.highCostToggle.checked,
 			no_bs_enabled: this.els.noBSToggle.checked,
 			numbered_lines_enabled: this.els.numberedLinesToggle.checked,
 			prompts: StorageService.load('prompts', []),
@@ -390,22 +434,34 @@ class SettingsApp
 		{
 			settings.reasoning_effort = this.els.reasoningEffort.value;
 		}
+		this.addAPIKeySettings(settings);
+		this.addModelSettings(settings);
+		this.addWhisperSettings(settings);
+		return settings;
+	}
+	addAPIKeySettings(settings)
+	{
 		Object.entries(CONFIG.API.KEYS)
 			.forEach(([provider, key]) =>
 			{
 				settings[key] = StorageService.load(key, '');
 			});
+	}
+	addModelSettings(settings)
+	{
 		Object.entries(CONFIG.API.MODELS.COMPLETION)
 			.forEach(([provider, config]) =>
 			{
 				settings[`${provider}_model`] = this.els.modelSelects[provider].value;
 			});
+	}
+	addWhisperSettings(settings)
+	{
 		Object.entries(CONFIG.API.MODELS.TRANSCRIPTION)
 			.forEach(([provider, config]) =>
 			{
 				settings[`${provider}_whisper_model`] = this.els.whisperModels[provider].value;
 			});
-		return settings;
 	}
 	displaySettings()
 	{
