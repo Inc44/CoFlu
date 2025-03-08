@@ -175,8 +175,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟡 Add multiple prompt selections.
 - 🟡 Add search prompt library.
 - 🟡 Explore other models on www.minimax.io and lambdalabs.com.
-- 🟡 Provide an option to enable high-cost models (gpt-4.5, o1, opus-3).
-- 🟢 Add GPT-4.5 and Grok-3.
+- 🟢 Add Grok-3.
 - 🟢 Add Hyperbolic AI as a model provider endpoint.
 - 🟢 Consider adding new default prompts, such as:
 	- *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*

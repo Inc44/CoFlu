@@ -44,7 +44,12 @@ const AiService = {
 			return;
 		}
 		const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
-		const modelConfig = CONFIG.API.MODELS.COMPLETION[model].options.find(m => m.name === modelName);
+		let modelConfig;
+		modelConfig = CONFIG.API.MODELS.COMPLETION[model].options.find(m => m.name === modelName);
+		if (!modelConfig && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
+		{
+			modelConfig = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(m => m.name === modelName);
+		}
 		if (!modelConfig)
 		{
 			alert(`Model ${modelName} not found in config.`);
