@@ -53,6 +53,7 @@ class SettingsApp
 				groq: document.getElementById('groqModelContainer'),
 				lambda: document.getElementById('lambdaModelContainer'),
 				openrouter: document.getElementById('openrouterModelContainer'),
+				perplexity: document.getElementById('perplexityModelContainer'),
 				alibaba: document.getElementById('alibabaModelContainer'),
 				sambanova: document.getElementById('sambanovaModelContainer'),
 				together: document.getElementById('togetherModelContainer')
@@ -67,6 +68,7 @@ class SettingsApp
 				groq: document.getElementById('groqModel'),
 				lambda: document.getElementById('lambdaModel'),
 				openrouter: document.getElementById('openrouterModel'),
+				perplexity: document.getElementById('perplexityModel'),
 				alibaba: document.getElementById('alibabaModel'),
 				sambanova: document.getElementById('sambanovaModel'),
 				together: document.getElementById('togetherModel')

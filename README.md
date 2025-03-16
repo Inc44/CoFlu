@@ -36,6 +36,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 	- **Lambda:** LLaMA.
 	- **xAI:** The most based Grok.
 	- **OpenRouter:** Unsage Dolphin 3.0, Mistral, and `gpt-4o` extended output.
+	- **Perplexity:** Sonar Deep Research.
 	- **Alibaba:** `qwen-max`, `qwen-vl-max`, and others.
 	- **SambaNova:** Fastest full-size DeepSeek and LLaMAs.
 	- **Together.AI:** Qwens.
