@@ -185,13 +185,17 @@ const AiService = {
 			messages: msgs,
 			stream: options.streaming,
 		};
-		if (!modelConfig.reasoning_effort && !modelConfig.thinking)
+		if (!modelConfig.reasoning_effort && !modelConfig.search_context_size && !modelConfig.thinking)
 		{
 			reqBody.temperature = 0;
 		}
 		if (modelConfig.reasoning_effort)
 		{
 			reqBody.reasoning_effort = StorageService.load('reasoning_effort', 'low');
+		}
+		if (modelConfig.search_context_size)
+		{
+			reqBody.search_context_size = StorageService.load('search_context_size', 'low');
 		}
 		if (modelConfig.thinking)
 		{
