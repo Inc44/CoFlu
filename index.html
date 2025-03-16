@@ -1,309 +1,313 @@
 <!DOCTYPE html>
 <html lang="en\">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="CoFlu is a powerful text manipulation, generation, and comparison tool. It's designed for tasks like proofreading, editing, content creation, version control, and ensuring text consistency. CoFlu offers unique capabilities, including AI-powered text generation, audio transcription, and unprecedented layout-preserving .docx translation using LLMs.">
-		<title>CoFlu</title>
-		<link rel="icon" href="data:image/svg+xml,
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="CoFlu is a powerful text manipulation, generation, and comparison tool. It's designed for tasks like proofreading, editing, content creation, version control, and ensuring text consistency. CoFlu offers unique capabilities, including AI-powered text generation, audio transcription, and unprecedented layout-preserving .docx translation using LLMs.">
+	<title>CoFlu</title>
+	<link rel="icon" href="data:image/svg+xml,
 						<svg
 							xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'>
 							<text y='25rem' font-size='480'>📝</text>
 						</svg>">
-		<script>
-			const storedDarkMode = localStorage.getItem('dark_enabled');
-			const isDarkMode = storedDarkMode === 'true' || (storedDarkMode === null && true);
-			document.documentElement.setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
-			const storedWideMode = localStorage.getItem('wide_enabled');
-			const isWideMode = storedWideMode === 'true' || (storedWideMode === null && false);
-			if (isWideMode) {
-				document.documentElement.classList.add('wide');
-			}
-		</script>
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
-		<link href="styles.css" rel="stylesheet">
-		<script src="config.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/diff-match-patch/index.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/auto-render.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js"></script>
-		<script src="services/storage.service.js"></script>
-		<script src="services/text.service.js"></script>
-		<script src="services/comparison.service.js"></script>
-		<script src="services/ai.service.js"></script>
-		<script src="ui/components.js"></script>
-		<script src="ui/handlers.js"></script>
-		<script src="ui/state.js"></script>
-		<script src="app.js"></script>
-	</head>
-	<body>
-		<div id="printContainer"></div>
-		<div class="container" id="content">
-			<nav class="navbar">
-				<a id="homePage" href="index.html">📝 CoFlu</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="navbarNav">
-					<ul class="navbar-nav">
-						<li class="nav-item">
-							<a class="nav-link active" href="index.html">Main</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="chat.html">Chat</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="translate.html">Translator</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="settings.html">Settings</a>
-						</li>
-					</ul>
-				</div>
-			</nav>
-			<div class="row">
-				<div class="col-md-6">
-					<div class="card mb-3">
-						<div class="card-header">
-							<div class="upload-file">
-								<label for="loadSource" class="btn btn-sm input-file-label">Upload File</label>
-								<input type="file" id="loadSource" accept=".epub,.txt,.html,.htm,.css,.xml,.json" class="input-file" multiple>
-							</div>
-							<button class="btn btn-sm" id="clearSource">Clear</button>
-							<button class="btn btn-sm" id="copySource">Copy</button>
-							<button class="btn btn-sm" id="uppercaseSource">UPPERCASE</button>
-							<button class="btn btn-sm" id="lowercaseSource">lowercase</button>
-							<button class="btn btn-sm" id="dedupeSource">Dedupe</button>
-							<button class="btn btn-sm" id="sortSource">Sort</button>
-							<button class="btn btn-sm" id="unboldSource">Unbold</button>
-							<button class="btn btn-sm" id="unspaceSource">Unspace</button>
-							<button class="btn btn-sm" id="retabSource">Retab</button>
-							<button class="btn btn-sm" id="latexSource">LaTeX</button>
-							<button class="btn btn-sm" id="htmlSource">HTML</button>
+	<script>
+		const storedDarkMode = localStorage.getItem('dark_enabled');
+		const isDarkMode = storedDarkMode === 'true' || (storedDarkMode === null && true);
+		document.documentElement.setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
+		const storedWideMode = localStorage.getItem('wide_enabled');
+		const isWideMode = storedWideMode === 'true' || (storedWideMode === null && false);
+		if (isWideMode)
+		{
+			document.documentElement.classList.add('wide');
+		}
+	</script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+	<link href="styles.css" rel="stylesheet">
+	<script src="config.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/diff-match-patch/index.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/auto-render.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js"></script>
+	<script src="services/storage.service.js"></script>
+	<script src="services/text.service.js"></script>
+	<script src="services/comparison.service.js"></script>
+	<script src="services/ai.service.js"></script>
+	<script src="ui/components.js"></script>
+	<script src="ui/handlers.js"></script>
+	<script src="ui/state.js"></script>
+	<script src="app.js"></script>
+</head>
+
+<body>
+	<div id="printContainer"></div>
+	<div class="container" id="content">
+		<nav class="navbar">
+			<a id="homePage" href="index.html">📝 CoFlu</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav">
+					<li class="nav-item">
+						<a class="nav-link active" href="index.html">Main</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="chat.html">Chat</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="translate.html">Translator</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="settings.html">Settings</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="upload-file">
+							<label for="loadSource" class="btn btn-sm input-file-label">Upload File</label>
+							<input type="file" id="loadSource" accept=".epub,.txt,.html,.htm,.css,.xml,.json" class="input-file" multiple>
 						</div>
-						<div class="card-body"> Words: <span id="sourceWords">0</span>, Characters: <span id="sourceChars">0</span>
-							<p></p>
-							<textarea id="sourceText" class="form-control" rows="10" placeholder="Type / Paste Source Text"></textarea>
-						</div>
+						<button class="btn btn-sm" id="clearSource">Clear</button>
+						<button class="btn btn-sm" id="copySource">Copy</button>
+						<button class="btn btn-sm" id="uppercaseSource">UPPERCASE</button>
+						<button class="btn btn-sm" id="lowercaseSource">lowercase</button>
+						<button class="btn btn-sm" id="dedupeSource">Dedupe</button>
+						<button class="btn btn-sm" id="sortSource">Sort</button>
+						<button class="btn btn-sm" id="unboldSource">Unbold</button>
+						<button class="btn btn-sm" id="unspaceSource">Unspace</button>
+						<button class="btn btn-sm" id="retabSource">Retab</button>
+						<button class="btn btn-sm" id="latexSource">LaTeX</button>
+						<button class="btn btn-sm" id="htmlSource">HTML</button>
 					</div>
-				</div>
-				<div class="col-md-6">
-					<div class="card mb-3">
-						<div class="card-header">
-							<div class="upload-file">
-								<label for="loadTarget" class="btn btn-sm input-file-label">Upload File</label>
-								<input type="file" id="loadTarget" accept=".epub,.txt,.html,.htm,.css,.xml,.json" class="input-file" multiple>
-							</div>
-							<button class="btn btn-sm" id="clearTarget">Clear</button>
-							<button class="btn btn-sm" id="copyTarget">Copy</button>
-							<button class="btn btn-sm" id="uppercaseTarget">UPPERCASE</button>
-							<button class="btn btn-sm" id="lowercaseTarget">lowercase</button>
-							<button class="btn btn-sm" id="dedupeTarget">Dedupe</button>
-							<button class="btn btn-sm" id="sortTarget">Sort</button>
-							<button class="btn btn-sm" id="unboldTarget">Unbold</button>
-							<button class="btn btn-sm" id="unspaceTarget">Unspace</button>
-							<button class="btn btn-sm" id="retabTarget">Retab</button>
-							<button class="btn btn-sm" id="latexTarget">LaTeX</button>
-							<button class="btn btn-sm" id="htmlTarget">HTML</button>
-						</div>
-						<div class="card-body"> Words: <span id="targetWords">0</span>, Characters: <span id="targetChars">0</span>
-							<span id="wpm-container" style="display: none;">, WPM: <span id="wpm">0</span>
-							</span>
-							<p></p>
-							<textarea id="targetText" class="form-control" rows="10" placeholder="Type / Paste Target Text"></textarea>
-						</div>
+					<div class="card-body"> Words: <span id="sourceWords">0</span>, Characters: <span id="sourceChars">0</span>
+						<p></p>
+						<textarea id="sourceText" class="form-control" rows="10" placeholder="Type / Paste Source Text"></textarea>
 					</div>
 				</div>
 			</div>
-			<div class="row mt-3">
-				<div class="col-12 text-center">
-					<div class="button-group">
-						<button class="btn btn-lg" id="switchBtn">Switch</button>
-						<button class="btn btn-lg" id="compareBtn">Compare</button>
-						<button class="btn btn-lg" id="generateTarget">Generate</button>
-						<button class="btn btn-lg" id="renderMarkdownBtn">Render</button>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>AI</h5>
-							<div class="mb-3">
-								<label for="apiModel" class="form-label">API Model:</label>
-								<select class="form-select" id="apiModel">
-									<option value="openai">ChatGPT</option>
-									<option value="anthropic">Claude</option>
-									<option value="deepseek">DeepSeek</option>
-									<option value="google">Gemini</option>
-									<option value="x">Grok</option>
-									<option value="groq">Groq</option>
-									<option value="lambda">Lambda</option>
-									<option value="openrouter">OpenRouter</option>
-									<option value="alibaba">Qwen</option>
-									<option value="sambanova">SambaNova</option>
-									<option value="together">Together</option>
-								</select>
-							</div>
-							<div class="mb-3">
-								<label for="promptSelect" class="form-label">Select Prompt:</label>
-								<select class="form-select" id="promptSelect"></select>
-							</div>
-							<div class="mb-3" id="customPromptContainer">
-								<label for="customPrompt" class="form-label">Custom Prompt:</label>
-								<input type="text" class="form-control" id="customPrompt" placeholder="Type / Paste Custom Prompt">
-								<button class="btn" id="savePrompt">Save Prompt</button>
-							</div>
+			<div class="col-md-6">
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="upload-file">
+							<label for="loadTarget" class="btn btn-sm input-file-label">Upload File</label>
+							<input type="file" id="loadTarget" accept=".epub,.txt,.html,.htm,.css,.xml,.json" class="input-file" multiple>
 						</div>
+						<button class="btn btn-sm" id="clearTarget">Clear</button>
+						<button class="btn btn-sm" id="copyTarget">Copy</button>
+						<button class="btn btn-sm" id="uppercaseTarget">UPPERCASE</button>
+						<button class="btn btn-sm" id="lowercaseTarget">lowercase</button>
+						<button class="btn btn-sm" id="dedupeTarget">Dedupe</button>
+						<button class="btn btn-sm" id="sortTarget">Sort</button>
+						<button class="btn btn-sm" id="unboldTarget">Unbold</button>
+						<button class="btn btn-sm" id="unspaceTarget">Unspace</button>
+						<button class="btn btn-sm" id="retabTarget">Retab</button>
+						<button class="btn btn-sm" id="latexTarget">LaTeX</button>
+						<button class="btn btn-sm" id="htmlTarget">HTML</button>
+					</div>
+					<div class="card-body"> Words: <span id="targetWords">0</span>, Characters: <span id="targetChars">0</span>
+						<span id="wpm-container" style="display: none;">, WPM: <span id="wpm">0</span>
+						</span>
+						<p></p>
+						<textarea id="targetText" class="form-control" rows="10" placeholder="Type / Paste Target Text"></textarea>
 					</div>
 				</div>
 			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card" id="audioUploadCard">
-						<div class="card-body">
-							<h5>Audio Upload</h5>
-							<div id="audioList"></div>
-							<div class="upload-file">
-								<label for="audioUploadInput" class="btn btn-sm input-file-label">Upload File</label>
-								<input type="file" id="audioUploadInput" accept=".mp3,.wav" class="input-file" multiple>
-							</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12 text-center">
+				<div class="button-group">
+					<button class="btn btn-lg" id="switchBtn">Switch</button>
+					<button class="btn btn-lg" id="compareBtn">Compare</button>
+					<button class="btn btn-lg" id="generateTarget">Generate</button>
+					<button class="btn btn-lg" id="renderMarkdownBtn">Render</button>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>AI</h5>
+						<div class="mb-3">
+							<label for="apiModel" class="form-label">API Model:</label>
+							<select class="form-select" id="apiModel">
+								<option value="openai">ChatGPT</option>
+								<option value="anthropic">Claude</option>
+								<option value="deepseek">DeepSeek</option>
+								<option value="google">Gemini</option>
+								<option value="x">Grok</option>
+								<option value="groq">Groq</option>
+								<option value="lambda">Lambda</option>
+								<option value="openrouter">OpenRouter</option>
+								<option value="alibaba">Qwen</option>
+								<option value="sambanova">SambaNova</option>
+								<option value="together">Together</option>
+							</select>
 						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Image Upload</h5>
-							<div id="imageList"></div>
-							<div class="upload-file">
-								<label for="loadSource" class="btn btn-sm input-file-label">Upload File</label>
-								<input type="file" id="imageUploadInput" accept=".png,.jpg" class="input-file" multiple>
-							</div>
+						<div class="mb-3">
+							<label for="promptSelect" class="form-label">Select Prompt:</label>
+							<select class="form-select" id="promptSelect"></select>
 						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card" id="videoUploadCard">
-						<div class="card-body">
-							<h5>Video Upload</h5>
-							<div id="videoList"></div>
-							<div class="upload-file">
-								<label for="videoUploadInput" class="btn btn-sm input-file-label">Upload File</label>
-								<input type="file" id="videoUploadInput" accept=".mp4,.mov,.avi,.webm,.flv,.mpeg,.mpegps,.mpg,.3gpp,.quicktime,.wmv" class="input-file" multiple>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Transcribe</h5>
-							<div class="mb-3">
-								<label for="transcribeLanguage" class="form-label">Language:</label>
-								<select class="form-select" id="transcribeLanguage">
-									<option value="en">English</option>
-									<option value="fr">French</option>
-									<option value="de">German</option>
-									<option value="pl">Polish</option>
-									<option value="ru">Russian</option>
-									<option value="uk">Ukrainian</option>
-									<option value="ja">Japanese</option>
-									<option value="zh">Chinese</option>
-								</select>
-							</div>
-							<div class="mb-3">
-								<label for="audioFile" class="form-label">Audio File:</label>
-								<input type="file" id="audioFile" class="form-control" accept=".flac,.mp3,.mp4,.mpeg,.mpga,.m4a,.ogg,.wav,.webm">
-							</div>
-							<button class="btn btn-sm" id="transcribeBtn">Start Transcribe</button>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Translate</h5>
-							<div class="mb-3">
-								<label for="language" class="form-label">Language:</label>
-								<select class="form-select" id="language">
-									<option value="Chinese">Chinese</option>
-									<option value="English">English</option>
-									<option value="French">French</option>
-									<option value="German">German</option>
-									<option value="Japanese">Japanese</option>
-									<option value="Polish">Polish</option>
-									<option value="Russian">Russian</option>
-									<option value="Ukrainian">Ukrainian</option>
-								</select>
-							</div>
-							<div class="mb-3 form-check">
-								<input type="checkbox" class="form-check-input" id="translationToggle" checked>
-								<label class="form-check-label" for="translationToggle">Enable Translation</label>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Comparison Results</h5>
-							<p>Levenshtein: <span id="levenshtein">0</span>
-							</p>
-							<table class="table table-bordered">
-								<tr>
-									<th>Common (%)</th>
-									<th>Difference (%)</th>
-									<th>Common (symbols)</th>
-									<th>Difference (symbols)</th>
-								</tr>
-								<tr>
-									<td id="commonPercentage">0</td>
-									<td id="differencePercentage">0</td>
-									<td id="commonSymbols">0</td>
-									<td id="differenceSymbols">0</td>
-								</tr>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Single Column Diff View</h5>
-							<div id="singleColumnDiff"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Double Column Diff View</h5>
-							<div id="doubleColumnDiff">
-								<div class="diff-column" id="leftColumn"></div>
-								<div class="diff-column" id="rightColumn"></div>
-							</div>
+						<div class="mb-3" id="customPromptContainer">
+							<label for="customPrompt" class="form-label">Custom Prompt:</label>
+							<input type="text" class="form-control" id="customPrompt" placeholder="Type / Paste Custom Prompt">
+							<button class="btn" id="savePrompt">Save Prompt</button>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</body>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card" id="audioUploadCard">
+					<div class="card-body">
+						<h5>Audio Upload</h5>
+						<div id="audioList"></div>
+						<div class="upload-file">
+							<label for="audioUploadInput" class="btn btn-sm input-file-label">Upload File</label>
+							<input type="file" id="audioUploadInput" accept=".mp3,.wav" class="input-file" multiple>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Image Upload</h5>
+						<div id="imageList"></div>
+						<div class="upload-file">
+							<label for="loadSource" class="btn btn-sm input-file-label">Upload File</label>
+							<input type="file" id="imageUploadInput" accept=".png,.jpg" class="input-file" multiple>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card" id="videoUploadCard">
+					<div class="card-body">
+						<h5>Video Upload</h5>
+						<div id="videoList"></div>
+						<div class="upload-file">
+							<label for="videoUploadInput" class="btn btn-sm input-file-label">Upload File</label>
+							<input type="file" id="videoUploadInput" accept=".mp4,.mov,.avi,.webm,.flv,.mpeg,.mpegps,.mpg,.3gpp,.quicktime,.wmv" class="input-file" multiple>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Transcribe</h5>
+						<div class="mb-3">
+							<label for="transcribeLanguage" class="form-label">Language:</label>
+							<select class="form-select" id="transcribeLanguage">
+								<option value="en">English</option>
+								<option value="fr">French</option>
+								<option value="de">German</option>
+								<option value="pl">Polish</option>
+								<option value="ru">Russian</option>
+								<option value="uk">Ukrainian</option>
+								<option value="ja">Japanese</option>
+								<option value="zh">Chinese</option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label for="audioFile" class="form-label">Audio File:</label>
+							<input type="file" id="audioFile" class="form-control" accept=".flac,.mp3,.mp4,.mpeg,.mpga,.m4a,.ogg,.wav,.webm">
+						</div>
+						<button class="btn btn-sm" id="transcribeBtn">Start Transcribe</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Translate</h5>
+						<div class="mb-3">
+							<label for="language" class="form-label">Language:</label>
+							<select class="form-select" id="language">
+								<option value="Chinese">Chinese</option>
+								<option value="English">English</option>
+								<option value="French">French</option>
+								<option value="German">German</option>
+								<option value="Japanese">Japanese</option>
+								<option value="Polish">Polish</option>
+								<option value="Russian">Russian</option>
+								<option value="Ukrainian">Ukrainian</option>
+							</select>
+						</div>
+						<div class="mb-3 form-check">
+							<input type="checkbox" class="form-check-input" id="translationToggle" checked>
+							<label class="form-check-label" for="translationToggle">Enable Translation</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Comparison Results</h5>
+						<p>Levenshtein: <span id="levenshtein">0</span>
+						</p>
+						<table class="table table-bordered">
+							<tr>
+								<th>Common (%)</th>
+								<th>Difference (%)</th>
+								<th>Common (symbols)</th>
+								<th>Difference (symbols)</th>
+							</tr>
+							<tr>
+								<td id="commonPercentage">0</td>
+								<td id="differencePercentage">0</td>
+								<td id="commonSymbols">0</td>
+								<td id="differenceSymbols">0</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Single Column Diff View</h5>
+						<div id="singleColumnDiff"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Double Column Diff View</h5>
+						<div id="doubleColumnDiff">
+							<div class="diff-column" id="leftColumn"></div>
+							<div class="diff-column" id="rightColumn"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
 </html>

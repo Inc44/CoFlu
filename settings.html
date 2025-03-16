@@ -1,307 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="CoFlu is a powerful text manipulation, generation, and comparison tool. It's designed for tasks like proofreading, editing, content creation, version control, and ensuring text consistency. CoFlu offers unique capabilities, including AI-powered text generation, audio transcription, and unprecedented layout-preserving .docx translation using LLMs.">
-		<title>CoFlu Settings</title>
-		<link rel="icon" href="data:image/svg+xml,
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="CoFlu is a powerful text manipulation, generation, and comparison tool. It's designed for tasks like proofreading, editing, content creation, version control, and ensuring text consistency. CoFlu offers unique capabilities, including AI-powered text generation, audio transcription, and unprecedented layout-preserving .docx translation using LLMs.">
+	<title>CoFlu Settings</title>
+	<link rel="icon" href="data:image/svg+xml,
 						<svg
 							xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'>
 							<text y='25rem' font-size='480'>📝</text>
 						</svg>">
-		<script>
-			const storedDarkMode = localStorage.getItem('dark_enabled');
-			const isDarkMode = storedDarkMode === 'true' || (storedDarkMode === null && true);
-			document.documentElement.setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
-			const storedWideMode = localStorage.getItem('wide_enabled');
-			const isWideMode = storedWideMode === 'true' || (storedWideMode === null && false);
-			if (isWideMode) {
-				document.documentElement.classList.add('wide');
-			}
-		</script>
-		<link href="styles.css" rel="stylesheet">
-		<script src="config.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js"></script>
-		<script src="services/storage.service.js"></script>
-		<script src="ui/state.js"></script>
-		<script src="settings.js"></script>
-	</head>
-	<body>
-		<div class="container" id="content">
-			<nav class="navbar">
-				<a id="homePage" href="index.html">📝 CoFlu</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="navbarNav">
-					<ul class="navbar-nav">
-						<li class="nav-item">
-							<a class="nav-link" href="index.html">Main</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="chat.html">Chat</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="translate.html">Translator</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link active" href="settings.html">Settings</a>
-						</li>
-					</ul>
-				</div>
-			</nav>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>AI Settings</h5>
-							<div class="mb-3">
-								<label for="apiModel" class="form-label">API Model:</label>
-								<select class="form-select" id="apiModel">
-									<option value="openai">ChatGPT</option>
-									<option value="anthropic">Claude</option>
-									<option value="deepseek">DeepSeek</option>
-									<option value="google">Gemini</option>
-									<option value="x">Grok</option>
-									<option value="groq">Groq</option>
-									<option value="lambda">Lambda</option>
-									<option value="openrouter">OpenRouter</option>
-									<option value="alibaba">Qwen</option>
-									<option value="sambanova">SambaNova</option>
-									<option value="together">Together</option>
+	<script>
+		const storedDarkMode = localStorage.getItem('dark_enabled');
+		const isDarkMode = storedDarkMode === 'true' || (storedDarkMode === null && true);
+		document.documentElement.setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
+		const storedWideMode = localStorage.getItem('wide_enabled');
+		const isWideMode = storedWideMode === 'true' || (storedWideMode === null && false);
+		if (isWideMode)
+		{
+			document.documentElement.classList.add('wide');
+		}
+	</script>
+	<link href="styles.css" rel="stylesheet">
+	<script src="config.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="services/storage.service.js"></script>
+	<script src="ui/state.js"></script>
+	<script src="settings.js"></script>
+</head>
+
+<body>
+	<div class="container" id="content">
+		<nav class="navbar">
+			<a id="homePage" href="index.html">📝 CoFlu</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav">
+					<li class="nav-item">
+						<a class="nav-link" href="index.html">Main</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="chat.html">Chat</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="translate.html">Translator</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link active" href="settings.html">Settings</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>AI Settings</h5>
+						<div class="mb-3">
+							<label for="apiModel" class="form-label">API Model:</label>
+							<select class="form-select" id="apiModel">
+								<option value="openai">ChatGPT</option>
+								<option value="anthropic">Claude</option>
+								<option value="deepseek">DeepSeek</option>
+								<option value="google">Gemini</option>
+								<option value="x">Grok</option>
+								<option value="groq">Groq</option>
+								<option value="lambda">Lambda</option>
+								<option value="openrouter">OpenRouter</option>
+								<option value="alibaba">Qwen</option>
+								<option value="sambanova">SambaNova</option>
+								<option value="together">Together</option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label for="apiKey" class="form-label">API Key:</label>
+							<input type="password" class="form-control" id="apiKey" placeholder="Type / Paste API Key">
+						</div>
+						<div id="modelSelectionContainer">
+							<div class="mb-3 model-select" id="openaiModelContainer">
+								<label for="openaiModel" class="form-label">ChatGPT Model:</label>
+								<select class="form-select" id="openaiModel"></select>
+							</div>
+							<div class="mb-3 model-select" id="anthropicModelContainer">
+								<label for="anthropicModel" class="form-label">Claude Model:</label>
+								<select class="form-select" id="anthropicModel"></select>
+							</div>
+							<div class="mb-3 model-select" id="deepseekModelContainer">
+								<label for="deepseekModel" class="form-label">DeepSeek Model:</label>
+								<select class="form-select" id="deepseekModel"></select>
+							</div>
+							<div class="mb-3 model-select" id="googleModelContainer">
+								<label for="googleModel" class="form-label">Gemini Model:</label>
+								<select class="form-select" id="googleModel"></select>
+							</div>
+							<div class="mb-3 model-select" id="xModelContainer">
+								<label for="xModel" class="form-label">Grok Model:</label>
+								<select class="form-select" id="xModel"></select>
+							</div>
+							<div class="mb-3 model-select" id="groqModelContainer">
+								<label for="groqModel" class="form-label">Groq Model:</label>
+								<select class="form-select" id="groqModel"></select>
+							</div>
+							<div class="mb-3 model-select" id="lambdaModelContainer">
+								<label for="lambdaModel" class="form-label">Lambda Model:</label>
+								<select class="form-select" id="lambdaModel"></select>
+							</div>
+							<div class="mb-3 model-select" id="openrouterModelContainer">
+								<label for="openrouterModel" class="form-label">OpenRouter Model:</label>
+								<select class="form-select" id="openrouterModel"></select>
+							</div>
+							<div class="mb-3 model-select" id="alibabaModelContainer">
+								<label for="alibabaModel" class="form-label">Qwen Model:</label>
+								<select class="form-select" id="alibabaModel"></select>
+							</div>
+							<div class="mb-3 model-select" id="sambanovaModelContainer">
+								<label for="sambanovaModel" class="form-label">SambaNova Model:</label>
+								<select class="form-select" id="sambanovaModel"></select>
+							</div>
+							<div class="mb-3 model-select" id="togetherModelContainer">
+								<label for="togetherModel" class="form-label">Together Model:</label>
+								<select class="form-select" id="togetherModel"></select>
+							</div>
+							<div class="mb-3" id="reasoningEffortContainer" style="display: none;">
+								<label for="reasoningEffort" class="form-label">Reasoning Effort:</label>
+								<select class="form-select" id="reasoningEffort">
+									<option value="low">Low</option>
+									<option value="medium">Medium</option>
+									<option value="high">High</option>
 								</select>
 							</div>
-							<div class="mb-3">
-								<label for="apiKey" class="form-label">API Key:</label>
-								<input type="password" class="form-control" id="apiKey" placeholder="Type / Paste API Key">
-							</div>
-							<div id="modelSelectionContainer">
-								<div class="mb-3 model-select" id="openaiModelContainer">
-									<label for="openaiModel" class="form-label">ChatGPT Model:</label>
-									<select class="form-select" id="openaiModel"></select>
+							<div class="mb-3" id="thinkingBudgetContainer" style="display: none;">
+								<label for="thinkingBudget" class="form-label">Thinking Budget:</label>
+								<div id="thinkingBudgetContainer">
+									<input type="number" class="form-control" id="thinkingBudgetNumber" min="0" max="63999" step="1">
+									<input type="range" class="form-range" id="thinkingBudgetRange" min="0" max="63999" step="1">
 								</div>
-								<div class="mb-3 model-select" id="anthropicModelContainer">
-									<label for="anthropicModel" class="form-label">Claude Model:</label>
-									<select class="form-select" id="anthropicModel"></select>
-								</div>
-								<div class="mb-3 model-select" id="deepseekModelContainer">
-									<label for="deepseekModel" class="form-label">DeepSeek Model:</label>
-									<select class="form-select" id="deepseekModel"></select>
-								</div>
-								<div class="mb-3 model-select" id="googleModelContainer">
-									<label for="googleModel" class="form-label">Gemini Model:</label>
-									<select class="form-select" id="googleModel"></select>
-								</div>
-								<div class="mb-3 model-select" id="xModelContainer">
-									<label for="xModel" class="form-label">Grok Model:</label>
-									<select class="form-select" id="xModel"></select>
-								</div>
-								<div class="mb-3 model-select" id="groqModelContainer">
-									<label for="groqModel" class="form-label">Groq Model:</label>
-									<select class="form-select" id="groqModel"></select>
-								</div>
-								<div class="mb-3 model-select" id="lambdaModelContainer">
-									<label for="lambdaModel" class="form-label">Lambda Model:</label>
-									<select class="form-select" id="lambdaModel"></select>
-								</div>
-								<div class="mb-3 model-select" id="openrouterModelContainer">
-									<label for="openrouterModel" class="form-label">OpenRouter Model:</label>
-									<select class="form-select" id="openrouterModel"></select>
-								</div>
-								<div class="mb-3 model-select" id="alibabaModelContainer">
-									<label for="alibabaModel" class="form-label">Qwen Model:</label>
-									<select class="form-select" id="alibabaModel"></select>
-								</div>
-								<div class="mb-3 model-select" id="sambanovaModelContainer">
-									<label for="sambanovaModel" class="form-label">SambaNova Model:</label>
-									<select class="form-select" id="sambanovaModel"></select>
-								</div>
-								<div class="mb-3 model-select" id="togetherModelContainer">
-									<label for="togetherModel" class="form-label">Together Model:</label>
-									<select class="form-select" id="togetherModel"></select>
-								</div>
-								<div class="mb-3" id="reasoningEffortContainer" style="display: none;">
-									<label for="reasoningEffort" class="form-label">Reasoning Effort:</label>
-									<select class="form-select" id="reasoningEffort">
-										<option value="low">Low</option>
-										<option value="medium">Medium</option>
-										<option value="high">High</option>
-									</select>
-								</div>
-								<div class="mb-3" id="thinkingBudgetContainer" style="display: none;">
-									<label for="thinkingBudget" class="form-label">Thinking Budget:</label>
-									<div id="thinkingBudgetContainer">
-										<input type="number" class="form-control" id="thinkingBudgetNumber" min="0" max="63999" step="1">
-										<input type="range" class="form-range" id="thinkingBudgetRange" min="0" max="63999" step="1">
-									</div>
-								</div>
-								<div class="mb-3 form-check">
-									<input type="checkbox" class="form-check-input" id="streamingToggle" checked>
-									<label class="form-check-label" for="streamingToggle">Enable Streaming Response</label>
-								</div>
-								<div class="mb-3 form-check">
-									<input type="checkbox" class="form-check-input" id="highCostToggle" checked>
-									<label class="form-check-label" for="highCostToggle">Enable High-cost Models</label>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Appearance Settings</h5>
-							<div class="mb-3 form-check">
-								<input type="checkbox" class="form-check-input" id="darkToggle" checked>
-								<label class="form-check-label" for="darkToggle">Enable Dark Mode</label>
 							</div>
 							<div class="mb-3 form-check">
-								<input type="checkbox" class="form-check-input" id="numberedLinesToggle">
-								<label class="form-check-label" for="numberedLinesToggle">Enable Numbered Lines</label>
+								<input type="checkbox" class="form-check-input" id="streamingToggle" checked>
+								<label class="form-check-label" for="streamingToggle">Enable Streaming Response</label>
 							</div>
 							<div class="mb-3 form-check">
-								<input type="checkbox" class="form-check-input" id="wideToggle" checked>
-								<label class="form-check-label" for="wideToggle">Enable Wide Mode</label>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Comparison Settings</h5>
-							<div class="mb-3 form-check">
-								<input type="checkbox" class="form-check-input" id="cleanupToggle" checked>
-								<label class="form-check-label" for="cleanupToggle">Enable Semantic Cleanup</label>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Prompt Settings</h5>
-							<div class="mb-3 form-check">
-								<input type="checkbox" class="form-check-input" id="noBSToggle" checked>
-								<label class="form-check-label" for="noBSToggle">Enable No BS Prompt</label>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Rendering Settings</h5>
-							<div class="mb-3">
-								<select class="form-select" id="renderer">
-									<option value="katex">KaTeX</option>
-									<option value="mathjax3">MathJax3</option>
-								</select>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Transcription Settings</h5>
-							<div class="mb-3">
-								<label for="transcribeLanguage" class="form-label">Language:</label>
-								<select class="form-select" id="transcribeLanguage">
-									<option value="en">English</option>
-									<option value="fr">French</option>
-									<option value="de">German</option>
-									<option value="pl">Polish</option>
-									<option value="ru">Russian</option>
-									<option value="uk">Ukrainian</option>
-									<option value="ja">Japanese</option>
-									<option value="zh">Chinese</option>
-								</select>
-							</div>
-							<div class="mb-3">
-								<label for="transcriptionApiModel" class="form-label">API Model:</label>
-								<select class="form-select" id="transcriptionApiModel">
-									<option value="groq">Groq</option>
-									<option value="openai">OpenAI</option>
-								</select>
-							</div>
-							<div id="whisperModelSelectionContainer">
-								<div class="mb-3 model-select" id="openaiWhisperModelContainer">
-									<label for="openaiWhisperModel" class="form-label">OpenAI Whisper Model:</label>
-									<select class="form-select" id="openaiWhisperModel"></select>
-								</div>
-								<div class="mb-3 model-select" id="groqWhisperModelContainer">
-									<label for="groqWhisperModel" class="form-label">Groq Whisper Model:</label>
-									<select class="form-select" id="groqWhisperModel"></select>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Translation Settings</h5>
-							<div class="mb-3">
-								<label for="language" class="form-label">Language:</label>
-								<select class="form-select" id="language">
-									<option value="Chinese">Chinese</option>
-									<option value="English">English</option>
-									<option value="French">French</option>
-									<option value="German">German</option>
-									<option value="Japanese">Japanese</option>
-									<option value="Polish">Polish</option>
-									<option value="Russian">Russian</option>
-									<option value="Ukrainian">Ukrainian</option>
-								</select>
-							</div>
-							<div class="mb-3">
-								<label for="batchSize" class="form-label">Translation Batch Size (Speed Multiplier):</label>
-								<input type="number" id="batchSize" class="form-control" value="10" min="1" max="60000" step="1">
-								<small class="form-text text-muted">Faster but more prone to failure (changing is recommended for top-tier API keys only)</small>
-							</div>
-							<div class="mb-3">
-								<label for="batchRMP" class="form-label">Translation Batch RPM (Quota Slowdown):</label>
-								<input type="number" id="batchRPM" class="form-control" value="0" min="0" max="60000" step="1">
-								<small class="form-text text-muted">Maximum batches per minute (0 = unlimited, but it may cause errors)</small>
-							</div>
-							<div class="mb-3">
-								<label for="exponentialRetry" class="form-label">Exponential Retry:</label>
-								<input type="number" id="exponentialRetry" class="form-control" value="4" min="0" step="1">
-								<small class="form-text text-muted">Number of retry attempts for failed requests</small>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-body">
-							<h5>Import/Export Settings</h5>
-							<button class="btn btn-sm" id="importSettings">Import Settings</button>
-							<button class="btn btn-sm" id="exportSettings">Export Settings</button>
-							<button class="btn btn-sm" id="saveSettings">Save Settings</button>
-							<div class="card-body">
-								<textarea id="settingsTextArea" class="form-control" rows="10" placeholder="Type / Paste JSON Setting"></textarea>
+								<input type="checkbox" class="form-check-input" id="highCostToggle" checked>
+								<label class="form-check-label" for="highCostToggle">Enable High-cost Models</label>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</body>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Appearance Settings</h5>
+						<div class="mb-3 form-check">
+							<input type="checkbox" class="form-check-input" id="darkToggle" checked>
+							<label class="form-check-label" for="darkToggle">Enable Dark Mode</label>
+						</div>
+						<div class="mb-3 form-check">
+							<input type="checkbox" class="form-check-input" id="numberedLinesToggle">
+							<label class="form-check-label" for="numberedLinesToggle">Enable Numbered Lines</label>
+						</div>
+						<div class="mb-3 form-check">
+							<input type="checkbox" class="form-check-input" id="wideToggle" checked>
+							<label class="form-check-label" for="wideToggle">Enable Wide Mode</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Comparison Settings</h5>
+						<div class="mb-3 form-check">
+							<input type="checkbox" class="form-check-input" id="cleanupToggle" checked>
+							<label class="form-check-label" for="cleanupToggle">Enable Semantic Cleanup</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Prompt Settings</h5>
+						<div class="mb-3 form-check">
+							<input type="checkbox" class="form-check-input" id="noBSToggle" checked>
+							<label class="form-check-label" for="noBSToggle">Enable No BS Prompt</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Rendering Settings</h5>
+						<div class="mb-3">
+							<select class="form-select" id="renderer">
+								<option value="katex">KaTeX</option>
+								<option value="mathjax3">MathJax3</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Transcription Settings</h5>
+						<div class="mb-3">
+							<label for="transcribeLanguage" class="form-label">Language:</label>
+							<select class="form-select" id="transcribeLanguage">
+								<option value="en">English</option>
+								<option value="fr">French</option>
+								<option value="de">German</option>
+								<option value="pl">Polish</option>
+								<option value="ru">Russian</option>
+								<option value="uk">Ukrainian</option>
+								<option value="ja">Japanese</option>
+								<option value="zh">Chinese</option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label for="transcriptionApiModel" class="form-label">API Model:</label>
+							<select class="form-select" id="transcriptionApiModel">
+								<option value="groq">Groq</option>
+								<option value="openai">OpenAI</option>
+							</select>
+						</div>
+						<div id="whisperModelSelectionContainer">
+							<div class="mb-3 model-select" id="openaiWhisperModelContainer">
+								<label for="openaiWhisperModel" class="form-label">OpenAI Whisper Model:</label>
+								<select class="form-select" id="openaiWhisperModel"></select>
+							</div>
+							<div class="mb-3 model-select" id="groqWhisperModelContainer">
+								<label for="groqWhisperModel" class="form-label">Groq Whisper Model:</label>
+								<select class="form-select" id="groqWhisperModel"></select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Translation Settings</h5>
+						<div class="mb-3">
+							<label for="language" class="form-label">Language:</label>
+							<select class="form-select" id="language">
+								<option value="Chinese">Chinese</option>
+								<option value="English">English</option>
+								<option value="French">French</option>
+								<option value="German">German</option>
+								<option value="Japanese">Japanese</option>
+								<option value="Polish">Polish</option>
+								<option value="Russian">Russian</option>
+								<option value="Ukrainian">Ukrainian</option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label for="batchSize" class="form-label">Translation Batch Size (Speed Multiplier):</label>
+							<input type="number" id="batchSize" class="form-control" value="10" min="1" max="60000" step="1">
+							<small class="form-text text-muted">Faster but more prone to failure (changing is recommended for top-tier API keys only)</small>
+						</div>
+						<div class="mb-3">
+							<label for="batchRMP" class="form-label">Translation Batch RPM (Quota Slowdown):</label>
+							<input type="number" id="batchRPM" class="form-control" value="0" min="0" max="60000" step="1">
+							<small class="form-text text-muted">Maximum batches per minute (0 = unlimited, but it may cause errors)</small>
+						</div>
+						<div class="mb-3">
+							<label for="exponentialRetry" class="form-label">Exponential Retry:</label>
+							<input type="number" id="exponentialRetry" class="form-control" value="4" min="0" step="1">
+							<small class="form-text text-muted">Number of retry attempts for failed requests</small>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<h5>Import/Export Settings</h5>
+						<button class="btn btn-sm" id="importSettings">Import Settings</button>
+						<button class="btn btn-sm" id="exportSettings">Export Settings</button>
+						<button class="btn btn-sm" id="saveSettings">Save Settings</button>
+						<div class="card-body">
+							<textarea id="settingsTextArea" class="form-control" rows="10" placeholder="Type / Paste JSON Setting"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
 </html>

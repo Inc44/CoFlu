@@ -1,112 +1,162 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css");
-:root {
---bs-border-color-translucent: unset;
-}
-html[data-bs-theme="light"] body {
-background-color: rgb(199, 195, 189);
-color: black;
-}
-html[data-bs-theme="dark"] body {
-background-color: rgb(56, 60, 66);
-color: white;
-}
-html[data-bs-theme="dark"] body .diff-deletion {
-background-color: rgb(94, 15, 8);
-}
-html[data-bs-theme="dark"] body .diff-insertion {
-background-color: rgb(15, 87, 46);
-}
-html[data-bs-theme="light"] .line-number {
-color: rgb(56, 60, 66);
-}
-html[data-bs-theme="dark"] .line-number {
-color: rgb(199, 195, 189);
-}
-html[data-bs-theme="light"] body #homePage {
-color: rgb(30, 35, 40);
-}
-html:not(.wide) .container {
-max-width: 100rem;
-}
-html.wide .container {
-max-width: 420rem;
-}
-.card {
-box-shadow: 0.15rem 0.15rem 0.15rem black;
-margin: 0.5rem;
-}
-textarea {
-resize: vertical;
-}
-#singleColumnDiff,
-.diff-column {
-padding: 1rem;
-}
-#singleColumnDiff,
-#doubleColumnDiff {
-font-family: monospace;
-white-space: pre-wrap;
-word-wrap: break-word;
-overflow-y: auto;
-}
-#doubleColumnDiff {
-display: flex;
-}
-.diff-column {
-width: 50%;
-}
-.diff-deletion {
-background-color: rgb(253, 233, 231);
-color: rgb(237, 53, 36);
-}
-.diff-insertion {
-background-color: rgb(233, 251, 241);
-color: rgb(46, 218, 119);
-}
-#customPromptContainer {
-display: none;
+
+:root
+{
+	--bs-border-color-translucent: unset;
 }
 
-.button-group {
-display: flex;
-flex-wrap: wrap;
-gap: 2rem;
-justify-content: center;
+html[data-bs-theme="light"] body
+{
+	background-color: rgb(199, 195, 189);
+	color: black;
 }
-.btn-lg {
-flex: 1;
-max-width: 16rem;
-margin-left: 0.5rem;
-margin-right: 0.5rem;
+
+html[data-bs-theme="dark"] body
+{
+	background-color: rgb(56, 60, 66);
+	color: white;
 }
-.btn-sm {
-margin-top: 0.1rem;
-margin-bottom: 0.1rem;
+
+html[data-bs-theme="dark"] body .diff-deletion
+{
+	background-color: rgb(94, 15, 8);
 }
+
+html[data-bs-theme="dark"] body .diff-insertion
+{
+	background-color: rgb(15, 87, 46);
+}
+
+html[data-bs-theme="light"] .line-number
+{
+	color: rgb(56, 60, 66);
+}
+
+html[data-bs-theme="dark"] .line-number
+{
+	color: rgb(199, 195, 189);
+}
+
+html[data-bs-theme="light"] body #homePage
+{
+	color: rgb(30, 35, 40);
+}
+
+html:not(.wide) .container
+{
+	max-width: 100rem;
+}
+
+html.wide .container
+{
+	max-width: 420rem;
+}
+
+.card
+{
+	box-shadow: 0.15rem 0.15rem 0.15rem black;
+	margin: 0.5rem;
+}
+
+textarea
+{
+	resize: vertical;
+}
+
+#singleColumnDiff,
+.diff-column
+{
+	padding: 1rem;
+}
+
+#singleColumnDiff,
+#doubleColumnDiff
+{
+	font-family: monospace;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	overflow-y: auto;
+}
+
+#doubleColumnDiff
+{
+	display: flex;
+}
+
+.diff-column
+{
+	width: 50%;
+}
+
+.diff-deletion
+{
+	background-color: rgb(253, 233, 231);
+	color: rgb(237, 53, 36);
+}
+
+.diff-insertion
+{
+	background-color: rgb(233, 251, 241);
+	color: rgb(46, 218, 119);
+}
+
+#customPromptContainer
+{
+	display: none;
+}
+
+.button-group
+{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+	justify-content: center;
+}
+
+.btn-lg
+{
+	flex: 1;
+	max-width: 16rem;
+	margin-left: 0.5rem;
+	margin-right: 0.5rem;
+}
+
+.btn-sm
+{
+	margin-top: 0.1rem;
+	margin-bottom: 0.1rem;
+}
+
 #clearSource,
 #clearTarget,
 #cleanChat,
 .delete-button,
-.delete-button:hover {
-background-color: rgb(237, 53, 36);
-color: white;
+.delete-button:hover
+{
+	background-color: rgb(237, 53, 36);
+	color: white;
 }
+
 #switchBtn,
 .edit-button,
-.edit-button:hover {
-background-color: rgb(250, 157, 1);
-color: white;
+.edit-button:hover
+{
+	background-color: rgb(250, 157, 1);
+	color: white;
 }
+
 #copySource,
 #copyTarget,
 #compareBtn,
 #downloadTranslated,
 #exportSettings,
 .copy-button,
-.copy-button:hover {
-background-color: rgb(46, 218, 119);
-color: white;
+.copy-button:hover
+{
+	background-color: rgb(46, 218, 119);
+	color: white;
 }
+
 #generateTarget,
 #unboldSource,
 #unboldTarget,
@@ -117,10 +167,12 @@ color: white;
 #latexSource,
 #latexTarget,
 #htmlSource,
-#htmlTarget {
-background-color: rgb(20, 199, 222);
-color: white;
+#htmlTarget
+{
+	background-color: rgb(20, 199, 222);
+	color: white;
 }
+
 #savePrompt,
 #dedupeSource,
 #dedupeTarget,
@@ -129,178 +181,246 @@ color: white;
 #transcribeBtn,
 #translateBtn,
 #saveSettings,
-#sendMessage {
-background-color: rgb(1, 111, 255);
-color: white;
+#sendMessage
+{
+	background-color: rgb(1, 111, 255);
+	color: white;
 }
+
 #uppercaseSource,
 #uppercaseTarget,
 #lowercaseSource,
 #lowercaseTarget,
-.assistant-message {
-background-color: rgb(68, 79, 173);
-color: white;
+.assistant-message
+{
+	background-color: rgb(68, 79, 173);
+	color: white;
 }
+
 #renderMarkdownBtn,
 #importSettings,
 .input-file-label,
 .progress-bar,
-.user-message {
-background-color: rgb(140, 84, 208);
-color: white;
+.user-message
+{
+	background-color: rgb(140, 84, 208);
+	color: white;
 }
-.upload-file {
-position: relative;
-display: inline-block;
+
+.upload-file
+{
+	position: relative;
+	display: inline-block;
 }
-.input-file {
-position: absolute;
-left: 0;
-top: 0;
-opacity: 0;
-width: 100%;
-height: 100%;
+
+.input-file
+{
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: 0;
+	width: 100%;
+	height: 100%;
 }
-.input-file-label {
-display: inline-block;
-color: white;
+
+.input-file-label
+{
+	display: inline-block;
+	color: white;
 }
+
 #audioList,
 #imageList,
-#videoList {
-display: flex;
-flex-wrap: wrap;
+#videoList
+{
+	display: flex;
+	flex-wrap: wrap;
 }
+
 .image-container,
-.video-container {
-margin: 0.5rem;
-position: relative;
-width: 10rem;
-height: 10rem;
+.video-container
+{
+	margin: 0.5rem;
+	position: relative;
+	width: 10rem;
+	height: 10rem;
 }
+
 .image-container img,
-.video-container video {
-width: 100%;
-height: 100%;
-object-fit: cover;
+.video-container video
+{
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
+
 .remove-image,
-.remove-video {
-position: absolute;
-width: 2rem;
-height: 2rem;
-top: 0.25rem;
-right: 0.25rem;
+.remove-video
+{
+	position: absolute;
+	width: 2rem;
+	height: 2rem;
+	top: 0.25rem;
+	right: 0.25rem;
 }
-#homePage {
-color: inherit;
-display: flex;
-font-size: 2rem;
-font-weight: bold;
-margin: 1rem;
-max-width: 9rem;
-text-decoration: none;
+
+#homePage
+{
+	color: inherit;
+	display: flex;
+	font-size: 2rem;
+	font-weight: bold;
+	margin: 1rem;
+	max-width: 9rem;
+	text-decoration: none;
 }
-#homePage:hover {
-color: rgb(1, 111, 255);
+
+#homePage:hover
+{
+	color: rgb(1, 111, 255);
 }
-#printContainer {
-display: none;
+
+#printContainer
+{
+	display: none;
 }
-.nav-link {
-margin-right: 1rem;
-text-align: right;
+
+.nav-link
+{
+	margin-right: 1rem;
+	text-align: right;
 }
-.model-select {
-display: none;
+
+.model-select
+{
+	display: none;
 }
-.model-select.active {
-display: block;
+
+.model-select.active
+{
+	display: block;
 }
-.progress {
-background-color: white;
-border-radius: 0.5rem;
-box-shadow: inset 0rem 0.15rem 0.3rem black;
-height: 1.5rem;
+
+.progress
+{
+	background-color: white;
+	border-radius: 0.5rem;
+	box-shadow: inset 0rem 0.15rem 0.3rem black;
+	height: 1.5rem;
 }
-.progress-bar {
-color: white;
-line-height: 1.5rem;
-text-align: center;
-transition: width 1s ease;
+
+.progress-bar
+{
+	color: white;
+	line-height: 1.5rem;
+	text-align: center;
+	transition: width 1s ease;
 }
-.progress-bar-animated {
-animation: 0.4s linear infinite progress-bar-stripes;
+
+.progress-bar-animated
+{
+	animation: 0.4s linear infinite progress-bar-stripes;
 }
-.message {
-border-radius: 5px;
-clear: both;
-color: white;
-margin: 1rem;
-max-width: 84%;
-padding: 1rem;
+
+.message
+{
+	border-radius: 5px;
+	clear: both;
+	color: white;
+	margin: 1rem;
+	max-width: 84%;
+	padding: 1rem;
 }
-.message p {
-margin: 0rem;
+
+.message p
+{
+	margin: 0rem;
 }
-.user-message {
-float: right;
+
+.user-message
+{
+	float: right;
 }
-.assistant-message {
-float: left;
+
+.assistant-message
+{
+	float: left;
 }
-.message-buttons {
-display: none;
-float: right;
-gap: 0.25rem;
-margin-bottom: 0.25rem;
+
+.message-buttons
+{
+	display: none;
+	float: right;
+	gap: 0.25rem;
+	margin-bottom: 0.25rem;
 }
-.message:hover .message-buttons {
-display: flex;
+
+.message:hover .message-buttons
+{
+	display: flex;
 }
-.edit-buttons {
-display: flex;
-float: right;
-gap: 0.25rem;
-margin-top: 0.25rem;
+
+.edit-buttons
+{
+	display: flex;
+	float: right;
+	gap: 0.25rem;
+	margin-top: 0.25rem;
 }
-#thinkingBudgetContainer {
-display: flex;
-gap: 1rem;
+
+#thinkingBudgetContainer
+{
+	display: flex;
+	gap: 1rem;
 }
-#thinkingBudgetRange {
-height: unset;
+
+#thinkingBudgetRange
+{
+	height: unset;
 }
-#thinkingBudgetNumber {
-width: 5.5rem;
+
+#thinkingBudgetNumber
+{
+	width: 5.5rem;
 }
-.line-number {
-display: inline-block;
-margin-right: 0.5rem;
-min-width: 2.5rem;
-user-select: none;
+
+.line-number
+{
+	display: inline-block;
+	margin-right: 0.5rem;
+	min-width: 2.5rem;
+	user-select: none;
 }
-.audio-container {
-border-radius: 0.5rem;
-border: 0.1rem solid var(--bs-border-color);
-margin: 0.5rem;
-padding: 0.5rem;
+
+.audio-container
+{
+	border-radius: 0.5rem;
+	border: 0.1rem solid var(--bs-border-color);
+	margin: 0.5rem;
+	padding: 0.5rem;
 }
-@media print {
-* {
-margin: 0;
-padding: 0;
-box-shadow: none;
-border: none;
-}
-.container {
-display: none;
-}
-#printContainer {
-display: block;
-box-shadow: none;
-height: 100%;
-width: 100%;
-color: black;
-}
+
+@media print
+{
+	*
+	{
+		margin: 0;
+		padding: 0;
+		box-shadow: none;
+		border: none;
+	}
+
+	.container
+	{
+		display: none;
+	}
+
+	#printContainer
+	{
+		display: block;
+		box-shadow: none;
+		height: 100%;
+		width: 100%;
+		color: black;
+	}
 }
