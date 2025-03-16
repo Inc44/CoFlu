@@ -369,11 +369,36 @@ window.CONFIG = {
 						name: "openai/gpt-4o:extended",
 						max_tokens: 128000,
 						image: false
+					}]
+				},
+				perplexity:
+				{
+					default: "",
+					options: [
+					{
+						name: "sonar-deep-research",
+						max_tokens: 200000,
+						image: true
 					},
 					{
-						name: "perplexity/r1-1776",
+						name: "sonar-reasoning-pro",
 						max_tokens: 128000,
-						image: false
+						image: true
+					},
+					{
+						name: "sonar-reasoning",
+						max_tokens: 127000,
+						image: true
+					},
+					{
+						name: "sonar",
+						max_tokens: 127000,
+						image: true
+					},
+					{
+						name: "r1-1776",
+						max_tokens: 128000,
+						image: true
 					}]
 				},
 				alibaba:
@@ -651,6 +676,16 @@ window.CONFIG = {
 					{
 						name: "claude-3-5-sonnet-20240620",
 						max_tokens: 8192,
+						image: true
+					}]
+				},
+				perplexity:
+				{
+					default: "",
+					options: [
+					{
+						name: "sonar-pro",
+						max_tokens: 200000,
 						image: true
 					}]
 				}
