@@ -10,100 +10,101 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 
 **1. Text Manipulation & Comparison:**
 
--   **File Upload:** Supports `.epub`, `.txt`, `.html`, `.htm`, `.css`, `.xml`, `.json`, and `.docx`.
--   **Text Comparison:**
-    -   Calculates Levenshtein distance and percentage differences.
-    -   Optional "semantic cleanup" for more meaningful comparisons.
-    -   **Diff Views:** Single-column (insertions/deletions highlighted) or double-column (side-by-side).
--   **Text Transformations:**
-    -   Convert case (uppercase/lowercase).
-    -   Deduplicate and sort lines (alphabetically, including space-separated words).
-    -   Remove bold formatting and extra spaces.
-    -   Format LaTeX (spacing around delimiters) and HTML (`&nbsp;` to spaces).
-    -   Retab: Convert spaces to tabs for consistent indentation.
--   **Markdown Rendering:**
-    -   Converts Markdown to HTML, including math (KaTeX or MathJax).
-    -   Print/save as PDF with Ctrl+P.
+- **File Upload:** Supports `.epub`, `.txt`, `.html`, `.htm`, `.css`, `.xml`, `.json`, and `.docx`.
+- **Text Comparison:**
+	- Calculates Levenshtein distance and percentage differences.
+	- Optional "semantic cleanup" for more meaningful comparisons.
+	- **Diff Views:** Single-column (insertions/deletions highlighted) or double-column (side-by-side).
+- **Text Transformations:**
+	- Convert case (uppercase/lowercase).
+	- Deduplicate and sort lines (alphabetically, including space-separated words).
+	- Remove bold formatting and extra spaces.
+	- Format LaTeX (spacing around delimiters) and HTML (`&nbsp;` to spaces).
+	- Retab: Convert spaces to tabs for consistent indentation.
+- **Markdown Rendering:**
+	- Converts Markdown to HTML, including math (KaTeX or MathJax).
+	- Print/save as PDF with Ctrl+P.
 
 **2. AI-Powered Capabilities:**
 
--   **AI Text Generation:** Uses leading AI models:
-    -   **OpenAI:** `gpt-4o`, `o3-mini`, and others.
-    -   **Anthropic:** `claude-3-7-sonnet`, `claude-3-5-sonnet`, `claude-3-5-haiku`.
-    -   **DeepSeek:** R1 and V3.
-    -   **Google Gemini:** Gemini 2.0 models, including video input.
-    -   **Groq:** LPU high-speed inference, including vision models.
-    -   **Lambda:** LLaMA.
-    -   **OpenRouter:** Unsage Dolphin 3.0, Mistral, and `gpt-4o` extended output.
-    -   **xAI:** The most based Grok.
-    -   **Alibaba:** `qwen-max`, `qwen-vl-max`, and others.
-    -   **SambaNova:** Fastest full-size DeepSeek and LLaMAs.
-    -   **Together.AI:** Qwens.
--   **Prompting:**
-    -   Predefined prompts (e.g., "Proofread this text").
-    -   Create and save custom prompts.
-    -   Optional streaming output (see text as it's generated).
-    -   Image/video input (for supported models).
--   **Audio Transcription:**
-    -   Transcribes `.flac`, `.mp3`, `.mp4`, `.mpeg`, `.mpga`, `.m4a`, `.ogg`, `.wav`, `.webm`.
-    -   Uses Whisper models.
-    -   Supports multiple languages.
--   **Text Translation:** Translates text using the selected AI model (also as part of the .docx feature).
+- **AI Text Generation:** Uses leading AI models:
+	- **OpenAI:** `gpt-4o`, `o3-mini`, and others.
+	- **Anthropic:** `claude-3-7-sonnet`, `claude-3-5-sonnet`, `claude-3-5-haiku`.
+	- **DeepSeek:** R1 and V3.
+	- **Google:** Gemini 2.0 models, including video input.
+	- **Groq:** LPU high-speed inference, including vision models.
+	- **Lambda:** LLaMA.
+	- **xAI:** The most based Grok.
+	- **OpenRouter:** Unsage Dolphin 3.0, Mistral, and `gpt-4o` extended output.
+	- **Alibaba:** `qwen-max`, `qwen-vl-max`, and others.
+	- **SambaNova:** Fastest full-size DeepSeek and LLaMAs.
+	- **Together.AI:** Qwens.
+- **Prompting:**
+	- Predefined prompts (e.g., "Proofread this text").
+	- Create and save custom prompts.
+	- Optional streaming output (see text as it's generated).
+	- Image/video input (for supported models).
+- **Audio Transcription:**
+	- Transcribes `.flac`, `.mp3`, `.mp4`, `.mpeg`, `.mpga`, `.m4a`, `.ogg`, `.wav`, `.webm`.
+	- Uses Whisper models.
+	- Supports multiple languages.
+- **Text Translation:** Translates text using the selected AI model (also as part of the .docx feature).
 
 **3. Groundbreaking .DOCX Translation:**
 
--   **Upload & Translate .DOCX:** Handles Microsoft Word documents.
--   **Full Layout Preservation:** *Crucially*, CoFlu maintains the *exact* original formatting (fonts, styles, tables, images).
--   **LLM-Powered:** Uses the selected AI model for translation.
--   **Translation Settings:**
-    -   **Batch Size:** Number of text chunks sent to the AI at once (smaller = more stable).
-    -   **Batch RPM:** Delay between batches (same as API rate limits).
-    -   **Exponential Retry:** Number of retries for failed API requests.
--   **Download Translated .DOCX:** Automatically downloads the translated document.
+- **Upload & Translate .DOCX:** Handles Microsoft Word documents.
+- **Full Layout Preservation:** *Crucially*, CoFlu maintains the *exact* original formatting (fonts, styles, tables, images).
+- **LLM-Powered:** Uses the selected AI model for translation.
+- **Translation Settings:**
+	- **Batch Size:** Number of text chunks sent to the AI at once (smaller = more stable).
+	- **Batch RPM:** Delay between batches (same as API rate limits).
+	- **Exponential Retry:** Number of retries for failed API requests.
+- **Download Translated .DOCX:** Automatically downloads the translated document.
 
 **4. User Experience:**
 
--   **Local Storage:** Saves text, chat, API keys, settings, and custom prompts in your browser. No data is sent to external servers (except for API calls to the chosen AI provider).
--   **Appearance:** Light/dark mode, wide mode.
--   **Settings Import/Export:** JSON format.
+- **Local Storage:** Saves text, chat, API keys, settings, and custom prompts in your browser. No data is sent to external servers (except for API calls to the chosen AI provider).
+- **Appearance:** Light/dark mode, wide mode.
+- **Settings Import/Export:** JSON format.
 
 ## Usage
 
-1.  **Load Text:** Upload files or paste/type text into the source/target areas.
-2.  **Transform:** Use buttons above text areas for transformations (uppercase, lowercase, dedupe, etc.).
-3.  **AI Generate:**
-    -   Select an API model and enter your API key in settings.
-    -   Choose a prompt (predefined or custom).
-    -   (Optional) Upload images/videos, enable streaming.
-    -   Click "Generate."
-4.  **Compare:** Click "Compare" to see differences (Levenshtein, percentage, visual diffs).
-5.  **Switch:** Swap source and target text.
-6.  **Transcribe:** Select language, upload audio, click "Start Transcribe."
-7.  **Render Markdown:** Choose math renderer (KaTeX/MathJax), click "Render," use Ctrl+P to save.
-8.  **Translate .DOCX:** Select language, upload .docx, click "Start Translation."
+1. **Load Text:** Upload files or paste/type text into the source/target areas.
+2. **Transform:** Use buttons above text areas for transformations (uppercase, lowercase, dedupe, etc.).
+3. **AI Generate:**
+	- Select an API model and enter your API key in settings.
+	- Choose a prompt (predefined or custom).
+	- (Optional) Upload images/videos, enable streaming.
+	- Click "Generate."
+4. **Compare:** Click "Compare" to see differences (Levenshtein, percentage, visual diffs).
+5. **Switch:** Swap source and target text.
+6. **Transcribe:** Select language, upload audio, click "Start Transcribe."
+7. **Render Markdown:** Choose math renderer (KaTeX/MathJax), click "Render," use Ctrl+P to save.
+8. **Translate .DOCX:** Select language, upload .docx, click "Start Translation."
 
 ## Custom Prompts
 
-1.  Enter your custom prompt in the "Custom Prompt" input.
-2.  Click "Save Prompt" to store it for later use.
-3.  Saved prompts will appear in the "Select Prompt" dropdown.
+1. Enter your custom prompt in the "Custom Prompt" input.
+2. Click "Save Prompt" to store it for later use.
+3. Saved prompts will appear in the "Select Prompt" dropdown.
 
 ## API Keys
 
--   **Required for AI features (generation, transcription, .docx translation).**
--   Enter keys in the "Settings" page.
--   CoFlu supports:
-    -   **OpenAI:** [OpenAI Platform](https://platform.openai.com/api-keys)
-    -   **Anthropic:** [Anthropic Console](https://console.anthropic.com/settings/keys)
-    -   **Google:** [Google AI Studio](https://aistudio.google.com/app/apikey)
-    -   **Grok:** [xAI Cloud Console](https://console.x.ai)
-    -   **Groq:** [GroqCloud](https://console.groq.com/keys)
-    -   **Lambda:** [Lambda](https://cloud.lambdalabs.com/api-keys)
-    -   **OpenRouter:** [OpenRouter](https://openrouter.ai/settings/keys)
-    -   **Qwen:** [Alibaba Cloud](https://bailian.console.alibabacloud.com/?apiKey=1#/api-key)
-    -   **SambaNova:** [SambaNova Cloud](https://cloud.sambanova.ai/apis)
-    -   **Together:** [Together.AI](https://api.together.ai/settings/api-keys)
-    
+- **Required for AI features (generation, transcription, .docx translation).**
+- Enter keys in the "Settings" page.
+- CoFlu supports:
+	- **OpenAI:** [OpenAI Platform](https://platform.openai.com/api-keys)
+	- **Anthropic:** [Anthropic Console](https://console.anthropic.com/settings/keys)
+	- **Google:** [Google AI Studio](https://aistudio.google.com/app/apikey)
+	- **Grok:** [xAI Cloud Console](https://console.x.ai)
+	- **Groq:** [GroqCloud](https://console.groq.com/keys)
+	- **Lambda:** [Lambda](https://cloud.lambdalabs.com/api-keys)
+	- **OpenRouter:** [OpenRouter](https://openrouter.ai/settings/keys)
+	- **Perplexity:** [Perplexity](https://www.perplexity.ai/settings/api)
+	- **Qwen:** [Alibaba Cloud](https://bailian.console.alibabacloud.com/?apiKey=1#/api-key)
+	- **SambaNova:** [SambaNova Cloud](https://cloud.sambanova.ai/apis)
+	- **Together:** [Together.AI](https://api.together.ai/settings/api-keys)
+	
 ## Dependencies
 
 - [Bootstrap](https://getbootstrap.com)
@@ -179,11 +180,11 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟢 Add Hyperbolic AI as a model provider endpoint.
 - 🟢 Consider adding new default prompts, such as:
 	- *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
-    - *"Adhere to ASD-STE100 Simplified Technical English."*
-    - *"Do not use try, except, raise, or print."*
-    - *"Reduce repetition and variable name length."*
-    - *"Remove all docstrings and comments."*
-    - *"Rewrite the code to enhance scalability, readability, and performance."*
+	- *"Adhere to ASD-STE100 Simplified Technical English."*
+	- *"Do not use try, except, raise, or print."*
+	- *"Reduce repetition and variable name length."*
+	- *"Remove all docstrings and comments."*
+	- *"Rewrite the code to enhance scalability, readability, and performance."*
 - 🟢 Improve LaTeX handling by replacing punctuation inside separate text macros.
 - 🟢 Include Cerebras if approved.
 - 🟢 Remove max tokens.
