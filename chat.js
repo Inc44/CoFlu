@@ -302,6 +302,8 @@ class ChatApp
 		const textarea = document.createElement('textarea');
 		textarea.value = msg.content;
 		textarea.classList.add('edit-textarea', 'form-control');
+		textarea.setAttribute('rows', 20);
+		textarea.setAttribute('cols', 120);
 		const btnBox = document.createElement('div');
 		btnBox.classList.add('edit-buttons');
 		const saveBtn = document.createElement('button');
@@ -360,13 +362,13 @@ class ChatApp
 					display: false
 				},
 				{
-					left: '\[',
-					right: '\]',
+					left: '\\\[',
+					right: '\\\]',
 					display: true
 				},
 				{
-					left: '\(',
-					right: '\)',
+					left: '\\\(',
+					right: '\\\)',
 					display: false
 				}],
 				throwOnError: false,

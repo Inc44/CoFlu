@@ -208,10 +208,10 @@ class App
 			const srcMd = this.els.sourceText?.value || '';
 			const tgtMd = this.els.targetText?.value || '';
 			document.getElementById('leftColumn')
-				.innerHTML = marked.parse(srcMd);
+				.innerHTML = marked.parse(TextService.format.latex(srcMd));
 			document.getElementById('rightColumn')
-				.innerHTML = marked.parse(tgtMd);
-			this.els.printBox.innerHTML = marked.parse(tgtMd);
+				.innerHTML = marked.parse(TextService.format.latex(tgtMd));
+			this.els.printBox.innerHTML = marked.parse(TextService.format.latex(tgtMd));
 			this.renderMath();
 		});
 	}
@@ -244,13 +244,13 @@ class App
 						display: false
 					},
 					{
-						left: '\[',
-						right: '\]',
+						left: '\\\[',
+						right: '\\\]',
 						display: true
 					},
 					{
-						left: '\(',
-						right: '\)',
+						left: '\\\(',
+						right: '\\\)',
 						display: false
 					}],
 					throwOnError: false,
