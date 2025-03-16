@@ -22,7 +22,7 @@ window.CONFIG = {
 			{
 				openai:
 				{
-					default: "chatgpt-4o-latest",
+					default: "o3-mini",
 					options: [
 					{
 						name: "o3-mini",
@@ -102,14 +102,24 @@ window.CONFIG = {
 						image: true
 					},
 					{
-						name: "gpt-4-1106-preview",
-						max_tokens: 4095,
-						image: true
+						name: "gpt-3.5-turbo-16k",
+						max_tokens: 16385,
+						image: false
 					},
 					{
-						name: "chatgpt-4o-latest",
-						max_tokens: 16383,
-						image: true
+						name: "gpt-3.5-turbo-1106",
+						max_tokens: 4096,
+						image: false
+					},
+					{
+						name: "gpt-3.5-turbo-1106",
+						max_tokens: 4096,
+						image: false
+					},
+					{
+						name: "gpt-3.5-turbo",
+						max_tokens: 4096,
+						image: false
 					}]
 				},
 				anthropic:
@@ -527,6 +537,70 @@ window.CONFIG = {
 						max_tokens: 32768,
 						reasoning_effort: "low",
 						image: false
+					},
+					{
+						name: "gpt-4o-search-preview",
+						max_tokens: 0,
+						search_context_size: "low",
+						image: false
+					},
+					{
+						name: "gpt-4o-search-preview-2025-03-11",
+						max_tokens: 0,
+						search_context_size: "low",
+						image: false
+					},
+					{
+						name: "gpt-4o-mini-search-preview-2025-03-11",
+						max_tokens: 0,
+						search_context_size: "low",
+						image: false
+					},
+					{
+						name: "gpt-4o-mini-search-preview",
+						max_tokens: 0,
+						search_context_size: "low",
+						image: false
+					},
+					{
+						name: "gpt-4o-2024-05-13",
+						max_tokens: 4096,
+						image: true
+					},
+					{
+						name: "gpt-4-turbo-2024-04-09",
+						max_tokens: 4096,
+						image: true
+					},
+					{
+						name: "gpt-4-turbo",
+						max_tokens: 4096,
+						image: true
+					},
+					{
+						name: "gpt-4-1106-preview",
+						max_tokens: 4096,
+						image: true
+					},
+					{
+						name: "gpt-4-0613",
+						max_tokens: 4096,
+						image: true
+					},
+					{
+						name: "gpt-4-0125-preview",
+						max_tokens: 4096,
+						image: true
+					},
+					{
+						name: "gpt-4",
+						max_tokens: 4096,
+						image: true
+					},
+					{
+						name: "chatgpt-4o-latest",
+						max_tokens: 16383,
+						image: true
 					}]
 				},
 				anthropic:
