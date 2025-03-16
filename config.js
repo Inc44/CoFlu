@@ -12,6 +12,7 @@ window.CONFIG = {
 			groq: 'groq_api_key',
 			lambda: 'lambda_api_key',
 			openrouter: 'openrouter_api_key',
+			perplexity: 'perplexity_api_key',
 			alibaba: 'alibaba_api_key',
 			sambanova: 'sambanova_api_key',
 			together: 'together_api_key'
@@ -373,7 +374,7 @@ window.CONFIG = {
 				},
 				perplexity:
 				{
-					default: "",
+					default: "sonar",
 					options: [
 					{
 						name: "sonar-deep-research",
@@ -844,6 +845,14 @@ window.CONFIG = {
 					},
 					extractStreamContent: data => data.choices[0]?.delta?.reasoning || data.choices[0]?.delta?.content
 				},
+				perplexity:
+				{
+					url: 'https://api.perplexity.ai/chat/completions',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.choices[0]?.message?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.content
+				},
 				alibaba:
 				{
 					url: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions',
@@ -932,6 +941,11 @@ window.CONFIG = {
 					max: 0,
 					size: 0
 				},
+				perplexity:
+				{
+					max: 0,
+					size: 0
+				},
 				alibaba:
 				{
 					max: 0,
@@ -989,6 +1003,11 @@ window.CONFIG = {
 				{
 					max: 1,
 					size: 8
+				},
+				perplexity:
+				{
+					max: 100,
+					size: 100
 				},
 				alibaba:
 				{
@@ -1048,6 +1067,11 @@ window.CONFIG = {
 					max: 0,
 					size: 0
 				},
+				perplexity:
+				{
+					max: 0,
+					size: 0
+				},
 				alibaba:
 				{
 					max: 0,
@@ -1094,6 +1118,7 @@ window.CONFIG = {
 			groq: 'Groq API Key:',
 			lambda: 'Lambda API Key:',
 			openrouter: 'OpenRouter API Key:',
+			perplexity: 'Perplexity API Key:',
 			alibaba: 'Alibaba API Key:',
 			sambanova: 'SambaNova API Key:',
 			together: 'Together API Key:'
@@ -1114,6 +1139,7 @@ window.CONFIG = {
 			groq: /^gsk_[A-Za-z0-9]{32,}$/,
 			lambda: /^secret_[A-Za-z0-9]{32,}$/,
 			openrouter: /^sk-or-v1-[A-Za-z0-9]{32,}$/,
+			perplexity: /^pplx-[A-Za-z0-9]{32,}$/,
 			alibaba: /^sk-[A-Za-z0-9]{32,}$/,
 			sambanova: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
 			together: /^tgp_v1_[A-Za-z0-9]{32,}$/
