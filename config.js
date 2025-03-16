@@ -189,6 +189,11 @@ window.CONFIG = {
 						audio: true,
 						image: true,
 						video: true
+					},
+					{
+						name: "gemma-3-27b-it",
+						max_tokens: 8192,
+						image: true
 					}]
 				},
 				x:
@@ -311,6 +316,21 @@ window.CONFIG = {
 						image: false
 					},
 					{
+						name: "google/gemma-3-1b-it:free",
+						max_tokens: 32000,
+						image: false
+					},
+					{
+						name: "google/gemma-3-4b-it:free",
+						max_tokens: 131072,
+						image: true
+					},
+					{
+						name: "google/gemma-3-12b-it:free",
+						max_tokens: 131072,
+						image: true
+					},
+					{
 						name: "deepseek/deepseek-r1-distill-llama-8b",
 						max_tokens: 32000,
 						image: false
@@ -319,6 +339,11 @@ window.CONFIG = {
 						name: "microsoft/phi-4",
 						max_tokens: 16384,
 						image: false
+					},
+					{
+						name: "microsoft/phi-4-multimodal-instruct",
+						max_tokens: 128000,
+						image: true
 					},
 					{
 						name: "minimax/minimax-01",
