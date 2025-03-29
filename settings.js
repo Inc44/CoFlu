@@ -23,6 +23,8 @@ class SettingsApp
 			numberedLinesToggle: document.getElementById('numberedLinesToggle'),
 			reasoningBox: document.getElementById('reasoningEffortContainer'),
 			reasoningEffort: document.getElementById('reasoningEffort'),
+			receiveAudioToggle: document.getElementById('receiveAudioToggle'),
+			receiveImagesToggle: document.getElementById('receiveImagesToggle'),
 			rendererSelect: document.getElementById('renderer'),
 			saveBtn: document.getElementById('saveSettings'),
 			settingsText: document.getElementById('settingsTextArea'),
@@ -96,6 +98,8 @@ class SettingsApp
 		this.loadCheckbox('highCostToggle', 'high_cost_enabled', false);
 		this.loadCheckbox('noBSToggle', 'no_bs_enabled', false);
 		this.loadCheckbox('numberedLinesToggle', 'numbered_lines_enabled', false);
+		this.loadCheckbox('receiveAudioToggle', 'receive_audio_enabled', false);
+		this.loadCheckbox('receiveImagesToggle', 'receive_images_enabled', false);
 		this.loadCheckbox('streamToggle', 'streaming_enabled', true);
 		this.loadCheckbox('wideToggle', 'wide_enabled', false);
 		this.loadInput('apiKey', CONFIG.API.KEYS[this.els.apiModel.value] || '', this.els.apiModel.value);
@@ -269,6 +273,8 @@ class SettingsApp
 		this.els.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
 		this.els.numberedLinesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'numberedLinesToggle', 'numbered_lines_enabled'));
 		this.els.reasoningEffort?.addEventListener('change', this.handleReasoningChange.bind(this));
+		this.els.receiveAudioToggle?.addEventListener('change', this.handleReceiveAudioToggleChange.bind(this));
+		this.els.receiveImagesToggle?.addEventListener('change', this.handleReceiveImagesToggleChange.bind(this));
 		this.els.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
 		this.els.saveBtn?.addEventListener('click', this.saveSettings.bind(this));
 		this.els.streamToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'streamToggle', 'streaming_enabled'));
@@ -363,6 +369,14 @@ class SettingsApp
 		this.updateReasoningVisibility(provider);
 		this.updateThinkingVisibility(provider);
 	}
+	handleReceiveAudioToggleChange()
+	{
+		StorageService.save('receive_audio_enabled', this.els.receiveAudioSelect.value);
+	}
+	handleReceiveImagesToggleChange()
+	{
+		StorageService.save('receive_images_enabled', this.els.receiveImagesSelect.value);
+	}
 	handleRendererChange()
 	{
 		StorageService.save('selected_renderer', this.els.rendererSelect.value);
@@ -420,6 +434,8 @@ class SettingsApp
 			no_bs_enabled: this.els.noBSToggle.checked,
 			numbered_lines_enabled: this.els.numberedLinesToggle.checked,
 			prompts: StorageService.load('prompts', []),
+			receive_audio_enabled: this.els.receiveAudioToggle.checked,
+			receive_images_enabled: this.els.receiveImagesToggle.checked,
 			selected_api_model: this.els.apiModel.value,
 			selected_language: this.els.langSelect.value,
 			selected_renderer: this.els.rendererSelect.value,
