@@ -317,6 +317,7 @@ const AiService = {
 		const decoder = new TextDecoder();
 		let buffer = '';
 		let accumulatedText = '';
+		let latestCitations = null;
 		while (true)
 		{
 			const
@@ -334,15 +335,33 @@ const AiService = {
 				{
 					const data = line.slice(6);
 					if (data === '[DONE]') continue;
-					const parsed = JSON.parse(data);
-					const content = CONFIG.API.CONFIG.COMPLETION[model].extractStreamContent(parsed);
-					if (content)
+					try
 					{
-						accumulatedText += content;
-						onProgress?.(accumulatedText);
+						const parsed = JSON.parse(data);
+						if (model === 'perplexity' && parsed.citations)
+						{
+							latestCitations = parsed.citations;
+						}
+						const content = CONFIG.API.CONFIG.COMPLETION[model].extractStreamContent(parsed);
+						if (content)
+						{
+							accumulatedText += content;
+							onProgress?.(accumulatedText);
+						}
+					}
+					catch (e)
+					{
+						console.error('Error parsing JSON:', e);
 					}
 				}
 			}
+		}
+		if (model === 'perplexity' && latestCitations && latestCitations.length > 0)
+		{
+			const citationsText = "\n\nReferences:\n" + latestCitations.map((citation, i) => `[${i + 1}] ${citation}`)
+				.join('\n');
+			accumulatedText += citationsText;
+			onProgress?.(accumulatedText);
 		}
 		return {
 			choices: [

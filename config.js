@@ -709,7 +709,7 @@ window.CONFIG = {
 				},
 				perplexity:
 				{
-					default: "",
+					default: "sonar-pro",
 					options: [
 					{
 						name: "sonar-pro",
@@ -877,8 +877,32 @@ window.CONFIG = {
 					url: 'https://api.perplexity.ai/chat/completions',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
-					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractContent: data =>
+					{
+						const parts = [];
+						if (data.choices && data.choices[0]?.message?.content)
+						{
+							parts.push(data.choices[0].message.content);
+						}
+						if (data.citations && data.citations.length > 0)
+						{
+							parts.push("\n\n");
+							data.citations.forEach((citation, index) =>
+							{
+								parts.push(`[${index + 1}] ${citation}`);
+							});
+						}
+						return parts.join('\n')
+							.trim();
+					},
+					extractStreamContent: data =>
+					{
+						if (data.choices && data.choices[0]?.delta?.content)
+						{
+							return data.choices[0].delta.content;
+						}
+						return '';
+					}
 				},
 				alibaba:
 				{
