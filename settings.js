@@ -28,6 +28,8 @@ class SettingsApp
 			rendererSelect: document.getElementById('renderer'),
 			saveBtn: document.getElementById('saveSettings'),
 			settingsText: document.getElementById('settingsTextArea'),
+			searchBox: document.getElementById('searchContainer'),
+			searchToggle: document.getElementById('searchToggle'),
 			streamToggle: document.getElementById('streamingToggle'),
 			thinkingBox: document.getElementById('thinkingBudgetContainer'),
 			thinkingNum: document.getElementById('thinkingBudgetNumber'),
@@ -100,6 +102,7 @@ class SettingsApp
 		this.loadCheckbox('numberedLinesToggle', 'numbered_lines_enabled', false);
 		this.loadCheckbox('receiveAudioToggle', 'receive_audio_enabled', false);
 		this.loadCheckbox('receiveImagesToggle', 'receive_images_enabled', false);
+		this.loadCheckbox('searchToggle', 'search_enabled', false);
 		this.loadCheckbox('streamToggle', 'streaming_enabled', true);
 		this.loadCheckbox('wideToggle', 'wide_enabled', false);
 		this.loadInput('apiKey', CONFIG.API.KEYS[this.els.apiModel.value] || '', this.els.apiModel.value);
@@ -219,6 +222,7 @@ class SettingsApp
 			selectedBox.classList.add('active');
 			this.updateReasoningVisibility(provider);
 			this.updateThinkingVisibility(provider);
+			this.updateSearchVisibility(provider);
 		}
 	}
 	updateTranscribeModelVisibility(provider)
@@ -247,6 +251,13 @@ class SettingsApp
 		const modelName = modelSelect ? modelSelect.value : null;
 		const modelDetails = this.getModelDetails(provider, modelName);
 		this.els.thinkingBox.style.display = (modelDetails && modelDetails.thinking) ? 'block' : 'none';
+	}
+	updateSearchVisibility(provider)
+	{
+		const modelSelect = this.els.modelSelects[provider];
+		const modelName = modelSelect ? modelSelect.value : null;
+		const modelDetails = this.getModelDetails(provider, modelName);
+		this.els.searchBox.style.display = (modelDetails && modelDetails.search) ? 'block' : 'none';
 	}
 	getModelDetails(provider, modelName)
 	{
@@ -277,6 +288,7 @@ class SettingsApp
 		this.els.receiveImagesToggle?.addEventListener('change', this.handleReceiveImagesToggleChange.bind(this));
 		this.els.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
 		this.els.saveBtn?.addEventListener('click', this.saveSettings.bind(this));
+		this.els.searchToggle?.addEventListener('change', this.handleSearchToggleChange.bind(this));
 		this.els.streamToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'streamToggle', 'streaming_enabled'));
 		this.els.transcribeLang?.addEventListener('change', this.handleTranscribeLangChange.bind(this));
 		this.els.transcribeModel?.addEventListener('change', this.handleTranscribeModelChange.bind(this));
@@ -371,11 +383,11 @@ class SettingsApp
 	}
 	handleReceiveAudioToggleChange()
 	{
-		StorageService.save('receive_audio_enabled', this.els.receiveAudioSelect.value);
+		StorageService.save('receive_audio_enabled', this.els.receiveAudioToggle.checked);
 	}
 	handleReceiveImagesToggleChange()
 	{
-		StorageService.save('receive_images_enabled', this.els.receiveImagesSelect.value);
+		StorageService.save('receive_images_enabled', this.els.receiveImagesToggle.checked);
 	}
 	handleRendererChange()
 	{
@@ -384,6 +396,10 @@ class SettingsApp
 	handleReasoningChange()
 	{
 		StorageService.save('reasoning_effort', this.els.reasoningEffort.value);
+	}
+	handleSearchToggleChange()
+	{
+		StorageService.save('search_enabled', this.els.searchToggle.checked);
 	}
 	handleThinkingChange()
 	{

@@ -170,7 +170,7 @@ window.CONFIG = {
 						audio: true,
 						image: true,
 						video: true,
-						google_search: true
+						search: true
 					},
 					{
 						name: "gemini-2.0-flash-001",
@@ -178,7 +178,7 @@ window.CONFIG = {
 						audio: true,
 						image: true,
 						video: true,
-						google_search: true
+						search: true
 					},
 					{
 						name: "gemini-2.0-flash-exp-image-generation",
