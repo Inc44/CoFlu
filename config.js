@@ -61,19 +61,22 @@ window.CONFIG = {
 						name: "gpt-4o-audio-preview",
 						max_tokens: 2048,
 						audio: true,
-						image: false
+						image: false,
+						modality: "audio"
 					},
 					{
 						name: "gpt-4o-mini-audio-preview-2024-12-17",
 						max_tokens: 2048,
 						audio: true,
-						image: true
+						image: true,
+						modality: "audio"
 					},
 					{
 						name: "gpt-4o-mini-audio-preview",
 						max_tokens: 2048,
 						audio: true,
-						image: true
+						image: true,
+						modality: "audio"
 					},
 					{
 						name: "gpt-4o-mini-2024-07-18",
@@ -84,13 +87,15 @@ window.CONFIG = {
 						name: "gpt-4o-audio-preview-2024-12-17",
 						max_tokens: 2048,
 						audio: true,
-						image: false
+						image: false,
+						modality: "audio"
 					},
 					{
 						name: "gpt-4o-audio-preview-2024-10-01",
 						max_tokens: 2048,
 						audio: true,
-						image: false
+						image: false,
+						modality: "audio"
 					},
 					{
 						name: "gpt-4o-2024-11-20",
@@ -150,7 +155,7 @@ window.CONFIG = {
 				},
 				google:
 				{
-					default: "gemini-2.0-pro-exp-02-05",
+					default: "gemini-2.5-pro-exp-03-25",
 					options: [
 					{
 						name: "gemini-exp-1206",
@@ -164,21 +169,24 @@ window.CONFIG = {
 						max_tokens: 65536,
 						audio: true,
 						image: true,
-						video: true
+						video: true,
+						google_search: true
 					},
 					{
 						name: "gemini-2.0-flash-001",
 						max_tokens: 8192,
 						audio: true,
 						image: true,
-						video: true
+						video: true,
+						google_search: true
 					},
 					{
 						name: "gemini-2.0-flash-exp-image-generation",
 						max_tokens: 8192,
 						audio: true,
 						image: true,
-						video: true
+						video: true,
+						modality: "image"
 					},
 					{
 						name: "gemini-2.0-flash-lite-001",
