@@ -160,6 +160,13 @@ window.CONFIG = {
 						video: true
 					},
 					{
+						name: "gemini-2.5-pro-exp-03-25",
+						max_tokens: 65536,
+						audio: true,
+						image: true,
+						video: true
+					},
+					{
 						name: "gemini-2.0-flash-001",
 						max_tokens: 8192,
 						audio: true,
@@ -167,7 +174,14 @@ window.CONFIG = {
 						video: true
 					},
 					{
-						name: "gemini-2.0-flash-lite-preview-02-05",
+						name: "gemini-2.0-flash-exp-image-generation",
+						max_tokens: 8192,
+						audio: true,
+						image: true,
+						video: true
+					},
+					{
+						name: "gemini-2.0-flash-lite-001",
 						max_tokens: 8192,
 						audio: true,
 						image: true
