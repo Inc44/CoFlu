@@ -16,6 +16,7 @@ class SettingsApp
 			darkToggle: document.getElementById('darkToggle'),
 			expRetry: document.getElementById('exponentialRetry'),
 			exportBtn: document.getElementById('exportSettings'),
+			googleCompatToggle: document.getElementById('googleCompatToggle'),
 			highCostToggle: document.getElementById('highCostToggle'),
 			importBtn: document.getElementById('importSettings'),
 			langSelect: document.getElementById('language'),
@@ -97,6 +98,7 @@ class SettingsApp
 	{
 		this.loadCheckbox('cleanupToggle', 'cleanup_enabled', true);
 		this.loadCheckbox('darkToggle', 'dark_enabled', true);
+		this.loadCheckbox('googleCompatToggle', 'google_compat_enabled', true);
 		this.loadCheckbox('highCostToggle', 'high_cost_enabled', false);
 		this.loadCheckbox('noBSToggle', 'no_bs_enabled', false);
 		this.loadCheckbox('numberedLinesToggle', 'numbered_lines_enabled', false);
@@ -278,17 +280,18 @@ class SettingsApp
 		this.els.darkToggle?.addEventListener('change', this.handleDarkToggleChange.bind(this));
 		this.els.expRetry?.addEventListener('change', this.handleNumericChange.bind(this, 'expRetry', 'exponential_retry', 0));
 		this.els.exportBtn?.addEventListener('click', this.exportSettings.bind(this));
+		this.els.googleCompatToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'googleCompatToggle', 'google_compat_enabled'));
 		this.els.highCostToggle?.addEventListener('change', this.handleHighCostToggleChange.bind(this));
 		this.els.importBtn?.addEventListener('click', this.importSettings.bind(this));
 		this.els.langSelect?.addEventListener('change', this.handleLangChange.bind(this));
 		this.els.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
 		this.els.numberedLinesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'numberedLinesToggle', 'numbered_lines_enabled'));
 		this.els.reasoningEffort?.addEventListener('change', this.handleReasoningChange.bind(this));
-		this.els.receiveAudioToggle?.addEventListener('change', this.handleReceiveAudioToggleChange.bind(this));
-		this.els.receiveImagesToggle?.addEventListener('change', this.handleReceiveImagesToggleChange.bind(this));
+		this.els.receiveAudioToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'receiveAudioToggle', 'receive_audio_enabled'));
+		this.els.receiveImagesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'receiveImagesToggle', 'receive_images_enabled'));
 		this.els.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
 		this.els.saveBtn?.addEventListener('click', this.saveSettings.bind(this));
-		this.els.searchToggle?.addEventListener('change', this.handleSearchToggleChange.bind(this));
+		this.els.searchToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'searchToggle', 'search_enabled'));
 		this.els.streamToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'streamToggle', 'streaming_enabled'));
 		this.els.transcribeLang?.addEventListener('change', this.handleTranscribeLangChange.bind(this));
 		this.els.transcribeModel?.addEventListener('change', this.handleTranscribeModelChange.bind(this));
@@ -381,14 +384,6 @@ class SettingsApp
 		this.updateReasoningVisibility(provider);
 		this.updateThinkingVisibility(provider);
 	}
-	handleReceiveAudioToggleChange()
-	{
-		StorageService.save('receive_audio_enabled', this.els.receiveAudioToggle.checked);
-	}
-	handleReceiveImagesToggleChange()
-	{
-		StorageService.save('receive_images_enabled', this.els.receiveImagesToggle.checked);
-	}
 	handleRendererChange()
 	{
 		StorageService.save('selected_renderer', this.els.rendererSelect.value);
@@ -396,10 +391,6 @@ class SettingsApp
 	handleReasoningChange()
 	{
 		StorageService.save('reasoning_effort', this.els.reasoningEffort.value);
-	}
-	handleSearchToggleChange()
-	{
-		StorageService.save('search_enabled', this.els.searchToggle.checked);
 	}
 	handleThinkingChange()
 	{
@@ -446,6 +437,7 @@ class SettingsApp
 			cleanup_enabled: this.els.cleanupToggle.checked,
 			dark_enabled: this.els.darkToggle.checked,
 			exponential_retry: parseInt(this.els.expRetry.value, 10),
+			google_compat_enabled: this.els.googleCompatToggle.checked,
 			high_cost_enabled: this.els.highCostToggle.checked,
 			no_bs_enabled: this.els.noBSToggle.checked,
 			numbered_lines_enabled: this.els.numberedLinesToggle.checked,

@@ -816,10 +816,33 @@ window.CONFIG = {
 				google:
 				{
 					url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+					nativeUrl: 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
-					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractContent: data =>
+					{
+						if (data.choices)
+						{
+							return data.choices[0]?.message?.content;
+						}
+						else if (data.candidates)
+						{
+							return data.candidates[0]?.content?.parts[0]?.text;
+						}
+						return "";
+					},
+					extractStreamContent: data =>
+					{
+						if (data.choices)
+						{
+							return data.choices[0]?.delta?.content;
+						}
+						else if (data.candidates)
+						{
+							return data.candidates[0]?.content?.parts[0]?.text;
+						}
+						return "";
+					}
 				},
 				x:
 				{
