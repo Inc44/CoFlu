@@ -480,12 +480,22 @@ window.CONFIG = {
 					options: [
 					{
 						name: "DeepSeek-R1",
-						max_tokens: 4096,
+						max_tokens: 16384,
 						image: false
 					},
 					{
 						name: "DeepSeek-R1-Distill-Llama-70B",
-						max_tokens: 32768,
+						max_tokens: 131072,
+						image: false
+					},
+					{
+						name: "QwQ-32B",
+						max_tokens: 16384,
+						image: false
+					},
+					{
+						name: "DeepSeek-V3-0324",
+						max_tokens: 8192,
 						image: false
 					},
 					{
@@ -510,7 +520,7 @@ window.CONFIG = {
 					},
 					{
 						name: "Meta-Llama-3.3-70B-Instruct",
-						max_tokens: 4096,
+						max_tokens: 131072,
 						image: false
 					},
 					{
@@ -520,11 +530,6 @@ window.CONFIG = {
 					},
 					{
 						name: "Qwen2.5-Coder-32B-Instruct",
-						max_tokens: 16384,
-						image: false
-					},
-					{
-						name: "QwQ-32B-Preview",
 						max_tokens: 16384,
 						image: false
 					},
