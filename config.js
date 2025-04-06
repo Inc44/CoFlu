@@ -155,7 +155,7 @@ window.CONFIG = {
 				},
 				google:
 				{
-					default: "gemini-2.5-pro-exp-03-25",
+					default: "gemini-2.5-pro-preview-03-25",
 					options: [
 					{
 						name: "gemini-exp-1206",
@@ -163,6 +163,14 @@ window.CONFIG = {
 						audio: true,
 						image: true,
 						video: true
+					},
+					{
+						name: "gemini-2.5-pro-preview-03-25",
+						max_tokens: 65536,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
 					},
 					{
 						name: "gemini-2.5-pro-exp-03-25",
@@ -251,7 +259,7 @@ window.CONFIG = {
 				},
 				groq:
 				{
-					default: "llama-3.2-90b-vision-preview",
+					default: "meta-llama/llama-4-scout-17b-16e-instruct",
 					options: [
 					{
 						name: "qwen-2.5-32b",
@@ -309,6 +317,16 @@ window.CONFIG = {
 						image: false
 					},
 					{
+						name: "meta-llama/llama-4-scout-17b-16e-instruct",
+						max_tokens: 8192,
+						image: true
+					},
+					{
+						name: "meta-llama/llama-4-maverick-17b-128e-instruct",
+						max_tokens: 8192,
+						image: true
+					},
+					{
 						name: "mixtral-8x7b-32768",
 						max_tokens: 32768,
 						image: false
@@ -326,7 +344,7 @@ window.CONFIG = {
 				},
 				openrouter:
 				{
-					default: "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
+					default: "openrouter/quasar-alpha",
 					options: [
 					{
 						name: "cognitivecomputations/dolphin3.0-mistral-24b:free",
@@ -336,6 +354,11 @@ window.CONFIG = {
 					{
 						name: "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
 						max_tokens: 32768,
+						image: false
+					},
+					{
+						name: "deepseek/deepseek-r1-distill-llama-8b",
+						max_tokens: 32000,
 						image: false
 					},
 					{
@@ -352,11 +375,6 @@ window.CONFIG = {
 						name: "google/gemma-3-12b-it:free",
 						max_tokens: 131072,
 						image: true
-					},
-					{
-						name: "deepseek/deepseek-r1-distill-llama-8b",
-						max_tokens: 32000,
-						image: false
 					},
 					{
 						name: "microsoft/phi-4",
@@ -392,6 +410,11 @@ window.CONFIG = {
 						name: "openai/gpt-4o:extended",
 						max_tokens: 128000,
 						image: false
+					},
+					{
+						name: "openrouter/quasar-alpha",
+						max_tokens: 1000000,
+						image: true
 					}]
 				},
 				perplexity:
