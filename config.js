@@ -222,9 +222,39 @@ window.CONFIG = {
 						video: true
 					},
 					{
+						name: "gemma-3-1b-it",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "gemma-3-4b-it",
+						max_tokens: 8192,
+						image: true
+					},
+					{
+						name: "gemma-3-12b-it",
+						max_tokens: 8192,
+						image: true
+					},
+					{
 						name: "gemma-3-27b-it",
 						max_tokens: 8192,
 						image: true
+					},
+					{
+						name: "gemma-2-2b-it",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "gemma-2-9b-it",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "gemma-2-27b-it",
+						max_tokens: 8192,
+						image: false
 					}]
 				},
 				x:
