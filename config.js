@@ -128,6 +128,26 @@ window.CONFIG = {
 						image: false
 					}]
 				},
+				cerebras:
+				{
+					default: "llama-3.3-70b",
+					options: [
+					{
+						name: "llama3.1-8b",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "llama-3.3-70b",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "deepseek-r1-distill-llama-70b",
+						max_tokens: 8192,
+						image: false
+					}]
+				},
 				anthropic:
 				{
 					default: "claude-3-5-haiku-20241022",
@@ -816,7 +836,7 @@ window.CONFIG = {
 				},
 				cerebras:
 				{
-					url: '',
+					url: 'https://api.cerebras.ai/v1/chat/completions',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -875,7 +895,7 @@ window.CONFIG = {
 				},
 				deepinfra:
 				{
-					url: '',
+					url: 'https://api.deepinfra.com/v1/openai/chat/completions',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -929,7 +949,7 @@ window.CONFIG = {
 				},
 				hyperbolic:
 				{
-					url: '',
+					url: 'https://api.hyperbolic.xyz/v1/chat/completions',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -945,7 +965,7 @@ window.CONFIG = {
 				},
 				minimax:
 				{
-					url: '',
+					url: 'https://api.minimaxi.chat/v1/text/chatcompletion_v2',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
