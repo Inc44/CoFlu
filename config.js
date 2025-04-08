@@ -156,11 +156,13 @@ window.CONFIG = {
 				},
 				chutes:
 				{
-					default: "",
+					default: "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
 					options: [
 					{
-						name: ""
-					}],
+						name: "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
+						max_tokens: 131072,
+						image: false
+					}]
 				},
 				anthropic:
 				{
@@ -174,10 +176,17 @@ window.CONFIG = {
 				},
 				deepinfra:
 				{
-					default: "",
+					default: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
 					options: [
 					{
-						name: ""
+						name: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+						max_tokens: 1048576,
+						image: true
+					},
+					{
+						name: "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+						max_tokens: 327680,
+						image: true
 					}],
 				},
 				deepseek:
@@ -1331,8 +1340,8 @@ window.CONFIG = {
 				},
 				chutes:
 				{
-					max: 1,
-					size: 25
+					max: 0,
+					size: 0
 				},
 				anthropic:
 				{
