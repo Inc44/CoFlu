@@ -478,7 +478,16 @@ class SettingsApp
 		Object.entries(CONFIG.API.MODELS.COMPLETION)
 			.forEach(([provider, config]) =>
 			{
-				settings[`${provider}_model`] = this.els.modelSelects[provider].value;
+				const selectElement = this.els.modelSelects[provider];
+				if (selectElement)
+				{
+					settings[`${provider}_model`] = selectElement.value;
+				}
+				else
+				{
+					const storedOrDefaultValue = StorageService.load(`${provider}_model`, config.default);
+					settings[`${provider}_model`] = storedOrDefaultValue;
+				}
 			});
 	}
 	addWhisperSettings(settings)
@@ -486,7 +495,16 @@ class SettingsApp
 		Object.entries(CONFIG.API.MODELS.TRANSCRIPTION)
 			.forEach(([provider, config]) =>
 			{
-				settings[`${provider}_whisper_model`] = this.els.whisperModels[provider].value;
+				const selectElement = this.els.whisperModels[provider];
+				if (selectElement)
+				{
+					settings[`${provider}_whisper_model`] = selectElement.value;
+				}
+				else
+				{
+					const storedOrDefaultValue = StorageService.load(`${provider}_whisper_model`, config.default);
+					settings[`${provider}_whisper_model`] = storedOrDefaultValue;
+				}
 			});
 	}
 	displaySettings()
