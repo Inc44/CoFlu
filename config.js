@@ -162,6 +162,16 @@ window.CONFIG = {
 						name: "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
 						max_tokens: 131072,
 						image: false
+					},
+					{
+						name: "nvidia/Llama-3_3-Nemotron-Super-49B-v1",
+						max_tokens: 131072,
+						image: false
+					},
+					{
+						name: "nvidia/Llama-3.1-Nemotron-Nano-8B-v1",
+						max_tokens: 131072,
+						image: false
 					}]
 				},
 				anthropic:
