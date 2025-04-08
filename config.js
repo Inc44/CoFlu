@@ -1383,7 +1383,7 @@ window.CONFIG = {
 				{
 					max: 0,
 					size: 0
-				}
+				},
 				openrouter:
 				{
 					max: 0,
