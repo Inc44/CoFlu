@@ -773,6 +773,14 @@ window.CONFIG = {
 			},
 			TRANSCRIPTION:
 			{
+				chutes:
+				{
+					default: "",
+					options: [
+					{
+						name: ""
+					}],
+				},
 				groq:
 				{
 					default: "whisper-large-v3",
@@ -984,6 +992,12 @@ window.CONFIG = {
 			},
 			TRANSCRIPTION:
 			{
+				chutes:
+				{
+					url: 'https://chutes-whisper-large-v3.chutes.ai/transcribe',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer '
+				},
 				groq:
 				{
 					url: 'https://api.groq.com/openai/v1/audio/transcriptions',
