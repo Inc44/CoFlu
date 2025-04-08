@@ -178,7 +178,6 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟡 Add search prompt library.
 - 🟡 Explore other models on www.minimax.io and lambdalabs.com.
 - 🟢 Add Grok-3.
-- 🟢 Add Hyperbolic AI as a model provider endpoint.
 - 🟢 Consider adding new default prompts, such as:
 	- *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
 	- *"Adhere to ASD-STE100 Simplified Technical English."*
@@ -187,7 +186,6 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 	- *"Remove all docstrings and comments."*
 	- *"Rewrite the code to enhance scalability, readability, and performance."*
 - 🟢 Improve LaTeX handling by replacing punctuation inside separate text macros.
-- 🟢 Include Cerebras if approved.
 - 🟢 Remove max tokens.
 - 🟢 Test old models Gemini Exp 1121 and 1114.
 - 🟢 Verify supported upload formats.

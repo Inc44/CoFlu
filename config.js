@@ -425,10 +425,12 @@ window.CONFIG = {
 				},
 				hyperbolic:
 				{
-					default: "",
+					default: "NousResearch/Hermes-3-Llama-3.1-70B",
 					options: [
 					{
-						name: ""
+						name: "NousResearch/Hermes-3-Llama-3.1-70B",
+						max_tokens: 12288,
+						iamge: false
 					}],
 				},
 				lambda:
@@ -443,10 +445,12 @@ window.CONFIG = {
 				},
 				minimax:
 				{
-					default: "",
+					default: "MiniMax-Text-01",
 					options: [
 					{
-						name: ""
+						name: "MiniMax-Text-01",
+						max_tokens: 1000192,
+						image: true
 					}],
 				},
 				ollama:

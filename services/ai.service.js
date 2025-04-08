@@ -212,7 +212,7 @@ const AiService = {
 				reqBody.temperature = 0;
 			}
 		}
-		if (model !== 'openrouter' && model !== 'perplexity' && model !== 'sambanova' && model !== 'together' && !modelConfig.reasoning_effort && !modelConfig.search_context_size && modelConfig.name !== 'grok-2-1212')
+		if (model !== 'chutes' && model !== 'openrouter' && model !== 'perplexity' && model !== 'sambanova' && model !== 'together' && !modelConfig.reasoning_effort && !modelConfig.search_context_size && modelConfig.name !== 'grok-2-1212')
 		{
 			reqBody.max_tokens = modelConfig.max_tokens;
 		}
