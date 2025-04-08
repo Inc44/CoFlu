@@ -4,13 +4,19 @@ window.CONFIG = {
 	{
 		KEYS:
 		{
+			cerebras: 'cerebras_api_key',
 			openai: 'openai_api_key',
+			chutes: 'chutes_api_key',
 			anthropic: 'anthropic_api_key',
+			deepinfra: 'deepinfra_api_key',
 			deepseek: 'deepseek_api_key',
 			google: 'google_api_key',
 			x: 'x_api_key',
 			groq: 'groq_api_key',
+			hyperbolic: 'hyperbolic_api_key',
 			lambda: 'lambda_api_key',
+			minimax: 'minimax_api_key',
+			ollama: 'ollama_api_key',
 			openrouter: 'openrouter_api_key',
 			perplexity: 'perplexity_api_key',
 			alibaba: 'alibaba_api_key',
@@ -21,6 +27,26 @@ window.CONFIG = {
 		{
 			COMPLETION:
 			{
+				cerebras:
+				{
+					default: "llama-3.3-70b",
+					options: [
+					{
+						name: "llama3.1-8b",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "llama-3.3-70b",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "deepseek-r1-distill-llama-70b",
+						max_tokens: 8192,
+						image: false
+					}]
+				},
 				openai:
 				{
 					default: "o3-mini",
@@ -128,25 +154,13 @@ window.CONFIG = {
 						image: false
 					}]
 				},
-				cerebras:
+				chutes:
 				{
-					default: "llama-3.3-70b",
+					default: "",
 					options: [
 					{
-						name: "llama3.1-8b",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "llama-3.3-70b",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "deepseek-r1-distill-llama-70b",
-						max_tokens: 8192,
-						image: false
-					}]
+						name: ""
+					}],
 				},
 				anthropic:
 				{
@@ -157,6 +171,14 @@ window.CONFIG = {
 						max_tokens: 8192,
 						image: true
 					}]
+				},
+				deepinfra:
+				{
+					default: "",
+					options: [
+					{
+						name: ""
+					}],
 				},
 				deepseek:
 				{
@@ -382,6 +404,14 @@ window.CONFIG = {
 						image: false
 					}]
 				},
+				hyperbolic:
+				{
+					default: "",
+					options: [
+					{
+						name: ""
+					}],
+				},
 				lambda:
 				{
 					default: "hermes3-405b",
@@ -391,6 +421,22 @@ window.CONFIG = {
 						max_tokens: 131072,
 						image: false
 					}]
+				},
+				minimax:
+				{
+					default: "",
+					options: [
+					{
+						name: ""
+					}],
+				},
+				ollama:
+				{
+					default: "",
+					options: [
+					{
+						name: ""
+					}],
 				},
 				openrouter:
 				{
@@ -826,14 +872,6 @@ window.CONFIG = {
 		{
 			COMPLETION:
 			{
-				openai:
-				{
-					url: 'https://api.openai.com/v1/chat/completions',
-					apiKeyHeader: 'Authorization',
-					apiKeyPrefix: 'Bearer ',
-					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
-				},
 				cerebras:
 				{
 					url: 'https://api.cerebras.ai/v1/chat/completions',
@@ -842,9 +880,17 @@ window.CONFIG = {
 					extractContent: data => data.choices[0]?.message?.content,
 					extractStreamContent: data => data.choices[0]?.delta?.content
 				},
+				openai:
+				{
+					url: 'https://api.openai.com/v1/chat/completions',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.choices[0]?.message?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.content
+				},
 				chutes:
 				{
-					url: '',
+					url: 'https://api.chutes.ai/v1/chat/completions',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -973,7 +1019,7 @@ window.CONFIG = {
 				},
 				ollama:
 				{
-					url: '',
+					url: 'http://localhost:11434/api/chat',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
@@ -1087,12 +1133,27 @@ window.CONFIG = {
 		{
 			AUDIO:
 			{
+				cerebras:
+				{
+					max: 0,
+					size: 0
+				},
 				openai:
 				{
 					max: 100,
 					size: 100
 				},
+				chutes:
+				{
+					max: 0,
+					size: 0
+				},
 				anthropic:
+				{
+					max: 0,
+					size: 0
+				},
+				deepinfra:
 				{
 					max: 0,
 					size: 0
@@ -1117,7 +1178,22 @@ window.CONFIG = {
 					max: 0,
 					size: 0
 				},
+				hyperbolic:
+				{
+					max: 0,
+					size: 0
+				},
 				lambda:
+				{
+					max: 0,
+					size: 0
+				},
+				minimax:
+				{
+					max: 0,
+					size: 0
+				},
+				ollama:
 				{
 					max: 0,
 					size: 0
@@ -1150,15 +1226,30 @@ window.CONFIG = {
 			},
 			IMAGE:
 			{
+				cerebras:
+				{
+					max: 0,
+					size: 0
+				},
 				openai:
 				{
 					max: 100,
 					size: 20
 				},
+				chutes:
+				{
+					max: 100,
+					size: 100
+				},
 				anthropic:
 				{
 					max: 100,
 					size: 5
+				},
+				deepinfra:
+				{
+					max: 100,
+					size: 100
 				},
 				deepseek:
 				{
@@ -1180,10 +1271,25 @@ window.CONFIG = {
 					max: 1,
 					size: 3
 				},
+				hyperbolic:
+				{
+					max: 100,
+					size: 100
+				},
 				lambda:
 				{
 					max: 0,
 					size: 0
+				},
+				minimax:
+				{
+					max: 100,
+					size: 100
+				},
+				ollama:
+				{
+					max: 100,
+					size: 100
 				},
 				openrouter:
 				{
@@ -1213,12 +1319,27 @@ window.CONFIG = {
 			},
 			VIDEO:
 			{
+				cerebras:
+				{
+					max: 0,
+					size: 0
+				},
 				openai:
 				{
 					max: 0,
 					size: 0
 				},
+				chutes:
+				{
+					max: 1,
+					size: 25
+				},
 				anthropic:
+				{
+					max: 0,
+					size: 0
+				},
+				deepinfra:
 				{
 					max: 0,
 					size: 0
@@ -1243,11 +1364,26 @@ window.CONFIG = {
 					max: 0,
 					size: 0
 				},
+				hyperbolic:
+				{
+					max: 0,
+					size: 0
+				},
 				lambda:
 				{
 					max: 0,
 					size: 0
 				},
+				minimax:
+				{
+					max: 0,
+					size: 0
+				},
+				ollama:
+				{
+					max: 0,
+					size: 0
+				}
 				openrouter:
 				{
 					max: 0,
@@ -1296,13 +1432,19 @@ window.CONFIG = {
 	{
 		API_KEY_LABELS:
 		{
+			cerebras: 'Cerebras API Key:',
 			openai: 'OpenAI API Key:',
+			chutes: 'Chutes API Key:',
 			anthropic: 'Anthropic API Key:',
+			deepinfra: 'Deepinfra API Key:',
 			deepseek: 'DeepSeek API Key:',
 			google: 'Google API Key:',
 			x: 'X API Key:',
 			groq: 'Groq API Key:',
+			hyperbolic: 'Hyperbolic API Key:',
 			lambda: 'Lambda API Key:',
+			minimax: 'MiniMax API Key:',
+			ollama: 'Ollama API Key:',
 			openrouter: 'OpenRouter API Key:',
 			perplexity: 'Perplexity API Key:',
 			alibaba: 'Alibaba API Key:',
@@ -1317,13 +1459,19 @@ window.CONFIG = {
 	{
 		API_KEY_PATTERNS:
 		{
+			cerebras: /^[A-Za-z0-9]{32,}$/,
 			openai: /^sk-[A-Za-z0-9]{32,}$/,
+			chutes: /^[A-Za-z0-9]{32,}$/,
 			anthropic: /^sk-ant-[A-Za-z0-9]{32,}$/,
+			deepinfra: /^[A-Za-z0-9]{32,}$/,
 			deepseek: /^sk-[A-Za-z0-9]{32,}$/,
 			google: /^AI[A-Za-z0-9-_]{32,}$/,
 			x: /^xai-[A-Za-z0-9]{32,}$/,
 			groq: /^gsk_[A-Za-z0-9]{32,}$/,
+			hyperbolic: /^[A-Za-z0-9]{32,}$/,
 			lambda: /^secret_[A-Za-z0-9]{32,}$/,
+			minimax: /^[A-Za-z0-9]{32,}$/,
+			ollama: /^.*$/,
 			openrouter: /^sk-or-v1-[A-Za-z0-9]{32,}$/,
 			perplexity: /^pplx-[A-Za-z0-9]{32,}$/,
 			alibaba: /^sk-[A-Za-z0-9]{32,}$/,
