@@ -814,6 +814,22 @@ window.CONFIG = {
 					extractContent: data => data.choices[0]?.message?.content,
 					extractStreamContent: data => data.choices[0]?.delta?.content
 				},
+				cerebras:
+				{
+					url: '',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.choices[0]?.message?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.content
+				},
+				chutes:
+				{
+					url: '',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.choices[0]?.message?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.content
+				},
 				anthropic:
 				{
 					url: 'https://api.anthropic.com/v1/messages',
@@ -856,6 +872,14 @@ window.CONFIG = {
 						}
 						return '';
 					}
+				},
+				deepinfra:
+				{
+					url: '',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.choices[0]?.message?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.content
 				},
 				deepseek:
 				{
@@ -903,9 +927,33 @@ window.CONFIG = {
 					extractContent: data => data.choices[0]?.message?.content,
 					extractStreamContent: data => data.choices[0]?.delta?.content
 				},
+				hyperbolic:
+				{
+					url: '',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.choices[0]?.message?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.content
+				},
 				lambda:
 				{
 					url: 'https://api.lambdalabs.com/v1/chat/completions',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.choices[0]?.message?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.content
+				},
+				minimax:
+				{
+					url: '',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.choices[0]?.message?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.content
+				},
+				ollama:
+				{
+					url: '',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
