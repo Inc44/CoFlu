@@ -909,7 +909,7 @@ window.CONFIG = {
 				},
 				chutes:
 				{
-					url: 'https://api.chutes.ai/v1/chat/completions',
+					url: 'https://llm.chutes.ai/v1/chat/completions',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
