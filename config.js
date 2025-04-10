@@ -29,8 +29,18 @@ window.CONFIG = {
 			{
 				cerebras:
 				{
-					default: "llama-3.3-70b",
+					default: "llama-4-scout-17b-16e-instruct",
 					options: [
+					{
+						name: "llama-4-scout-17b-16e-instruct",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "llama-4-maverick-17b-16e-instruct",
+						max_tokens: 8192,
+						image: false
+					},
 					{
 						name: "llama3.1-8b",
 						max_tokens: 8192,
