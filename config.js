@@ -473,7 +473,7 @@ window.CONFIG = {
 				},
 				openrouter:
 				{
-					default: "openrouter/quasar-alpha",
+					default: "openrouter/optimus-alpha",
 					options: [
 					{
 						name: "cognitivecomputations/dolphin3.0-mistral-24b:free",
@@ -541,7 +541,7 @@ window.CONFIG = {
 						image: false
 					},
 					{
-						name: "openrouter/quasar-alpha",
+						name: "openrouter/optimus-alpha",
 						max_tokens: 1000000,
 						image: true
 					}]
