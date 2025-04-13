@@ -330,8 +330,19 @@ window.CONFIG = {
 				},
 				x:
 				{
-					default: "grok-2-1212",
+					default: "grok-3-beta",
 					options: [
+					{
+						name: "grok-3-beta",
+						max_tokens: 131072,
+						image: false
+					},
+					{
+						name: "grok-3-mini-beta",
+						max_tokens: 131072,
+						reasoning_effort: "low",
+						image: false
+					},
 					{
 						name: "grok-2-1212",
 						max_tokens: 131072,
@@ -341,11 +352,6 @@ window.CONFIG = {
 						name: "grok-2-vision-1212",
 						max_tokens: 32768,
 						image: true
-					},
-					{
-						name: "grok-3",
-						max_tokens: 131072,
-						image: false
 					},
 					{
 						name: "grok-beta",
