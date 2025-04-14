@@ -62,6 +62,36 @@ window.CONFIG = {
 					default: "o3-mini",
 					options: [
 					{
+						name: "gpt-4.1",
+						max_tokens: 16384,
+						image: true
+					},
+					{
+						name: "gpt-4.1-mini",
+						max_tokens: 16384,
+						image: true
+					},
+					{
+						name: "gpt-4.1-nano",
+						max_tokens: 16384,
+						image: true
+					},
+					{
+						name: "gpt-4.1-nano-2025-04-14",
+						max_tokens: 16384,
+						image: true
+					},
+					{
+						name: "gpt-4.1-mini-2025-04-14",
+						max_tokens: 16384,
+						image: true
+					},
+					{
+						name: "gpt-4.1-2025-04-14",
+						max_tokens: 16384,
+						image: true
+					},
+					{
 						name: "o3-mini",
 						max_tokens: 100000,
 						reasoning_effort: "low",
