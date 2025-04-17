@@ -92,10 +92,10 @@ window.CONFIG = {
 						image: true
 					},
 					{
-						name: "o3-mini",
+						name: "o4-mini",
 						max_tokens: 100000,
 						reasoning_effort: "low",
-						image: false
+						image: true
 					},
 					{
 						name: "o1-mini",
@@ -108,10 +108,22 @@ window.CONFIG = {
 						image: false
 					},
 					{
+						name: "o3-mini",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						image: false
+					},
+					{
 						name: "o3-mini-2025-01-31",
 						max_tokens: 100000,
 						reasoning_effort: "low",
 						image: false
+					},
+					{
+						name: "o4-mini-2025-04-16",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						image: true
 					},
 					{
 						name: "gpt-4o",
@@ -664,7 +676,7 @@ window.CONFIG = {
 				},
 				sambanova:
 				{
-					default: "Llama-3.2-90B-Vision-Instruct",
+					default: "DeepSeek-V3-0324",
 					options: [
 					{
 						name: "DeepSeek-R1",
@@ -683,6 +695,11 @@ window.CONFIG = {
 					},
 					{
 						name: "DeepSeek-V3-0324",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "Llama-4-Scout-17B-16E-Instruct",
 						max_tokens: 8192,
 						image: false
 					},
@@ -707,6 +724,16 @@ window.CONFIG = {
 						image: false
 					},
 					{
+						name: "Meta-Llama-3.2-1B-Instruct",
+						max_tokens: 16384,
+						image: true
+					},
+					{
+						name: "Meta-Llama-3.2-3B-Instruct",
+						max_tokens: 8192,
+						image: true
+					},
+					{
 						name: "Meta-Llama-3.3-70B-Instruct",
 						max_tokens: 131072,
 						image: false
@@ -722,14 +749,10 @@ window.CONFIG = {
 						image: false
 					},
 					{
-						name: "Meta-Llama-3.2-1B-Instruct",
-						max_tokens: 16384,
-						image: true
-					},
-					{
-						name: "Meta-Llama-3.2-3B-Instruct",
+						name: "Qwen2-Audio-7B-Instruct",
 						max_tokens: 8192,
-						image: true
+						audio: true,
+						image: false
 					},
 					{
 						name: "Llama-3.2-11B-Vision-Instruct",
@@ -742,10 +765,9 @@ window.CONFIG = {
 						image: true
 					},
 					{
-						name: "Qwen2-Audio-7B-Instruct",
+						name: "Llama-4-Maverick-17B-128E-Instruct",
 						max_tokens: 8192,
-						audio: true,
-						image: false
+						image: true
 					}]
 				},
 				together:
