@@ -294,6 +294,14 @@ window.CONFIG = {
 						search: true
 					},
 					{
+						name: "gemini-2.5-flash-preview-04-17",
+						max_tokens: 65536,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					},
+					{
 						name: "gemini-2.0-flash-001",
 						max_tokens: 8192,
 						audio: true,
@@ -589,8 +597,23 @@ window.CONFIG = {
 						image: false
 					},
 					{
+						name: "openrouter/quasar-alpha",
+						max_tokens: 1000000,
+						image: true
+					},
+					{
 						name: "openrouter/optimus-alpha",
 						max_tokens: 1000000,
+						image: true
+					},
+					{
+						name: "moonshotai/kimi-vl-a3b-thinking:free",
+						max_tokens: 131072,
+						image: true
+					},
+					{
+						name: "openai/o3",
+						max_tokens: 200000,
 						image: true
 					}]
 				},
