@@ -610,11 +610,6 @@ window.CONFIG = {
 						name: "moonshotai/kimi-vl-a3b-thinking:free",
 						max_tokens: 131072,
 						image: true
-					},
-					{
-						name: "openai/o3",
-						max_tokens: 200000,
-						image: true
 					}]
 				},
 				perplexity:
@@ -826,6 +821,12 @@ window.CONFIG = {
 						image: true
 					},
 					{
+						name: "o3",
+						max_tokens: 200000,
+						reasoning_effort: "low",
+						image: true
+					},
+					{
 						name: "o1",
 						max_tokens: 100000,
 						reasoning_effort: "low",
@@ -848,6 +849,12 @@ window.CONFIG = {
 						max_tokens: 32768,
 						reasoning_effort: "low",
 						image: false
+					},
+					{
+						name: "o3-2025-04-16",
+						max_tokens: 200000,
+						reasoning_effort: "low",
+						image: true
 					},
 					{
 						name: "gpt-4o-search-preview",
