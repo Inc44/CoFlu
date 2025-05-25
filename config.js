@@ -1200,6 +1200,11 @@ window.CONFIG = {
 						name: "grok-3-fast",
 						max_tokens: 131072,
 						image: false
+					},
+					{
+						name: "grok-3-beta",
+						max_tokens: 131072,
+						image: false
 					}]
 				},
 				perplexity:
