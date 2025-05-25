@@ -268,7 +268,7 @@ window.CONFIG = {
 				},
 				google:
 				{
-					default: "gemini-2.5-pro-preview-03-25",
+					default: "gemini-2.5-pro-preview-05-06",
 					options: [
 					{
 						name: "gemini-exp-1206",
@@ -276,14 +276,6 @@ window.CONFIG = {
 						audio: true,
 						image: true,
 						video: true
-					},
-					{
-						name: "gemini-2.5-pro-preview-03-25",
-						max_tokens: 65536,
-						audio: true,
-						image: true,
-						video: true,
-						search: true
 					},
 					{
 						name: "gemini-2.5-pro-exp-03-25",
@@ -294,8 +286,34 @@ window.CONFIG = {
 						search: true
 					},
 					{
+						name: "gemini-2.5-pro-preview-03-25",
+						max_tokens: 65536,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					},
+					{
+						name: "gemini-2.5-pro-preview-05-06",
+						max_tokens: 65536,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					},
+					{
 						name: "gemini-2.5-flash-preview-04-17",
 						max_tokens: 65536,
+						thinking: true,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					},
+					{
+						name: "gemini-2.5-flash-preview-05-20",
+						max_tokens: 65536,
+						thinking: true,
 						audio: true,
 						image: true,
 						video: true,
@@ -363,6 +381,11 @@ window.CONFIG = {
 						image: true
 					},
 					{
+						name: "gemma-3n-e4b-it",
+						max_tokens: 8192,
+						image: false
+					},
+					{
 						name: "gemma-2-2b-it",
 						max_tokens: 8192,
 						image: false
@@ -380,10 +403,10 @@ window.CONFIG = {
 				},
 				x:
 				{
-					default: "grok-3-beta",
+					default: "grok-3-mini",
 					options: [
 					{
-						name: "grok-3-beta",
+						name: "grok-3-mini",
 						max_tokens: 131072,
 						image: false
 					},
@@ -496,7 +519,7 @@ window.CONFIG = {
 					{
 						name: "NousResearch/Hermes-3-Llama-3.1-70B",
 						max_tokens: 12288,
-						iamge: false
+						image: false
 					}],
 				},
 				lambda:
@@ -657,39 +680,174 @@ window.CONFIG = {
 						image: false
 					},
 					{
+						name: "qwen-plus-2025-04-28",
+						max_tokens: 8192,
+						thinking: true,
+						image: false
+					},
+					{
+						name: "qwen-max-2025-01-25",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "qwen-plus-2025-01-25",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "qwen3-235b-a22b",
+						max_tokens: 16384,
+						thinking: true,
+						image: false
+					},
+					{
+						name: "qwen3-32b",
+						max_tokens: 16384,
+						thinking: true,
+						image: false
+					},
+					{
+						name: "qwen2.5-72b-instruct",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "qwen2.5-32b-instruct",
+						max_tokens: 8192,
+						image: false
+					},
+					{
 						name: "qwen-turbo",
 						max_tokens: 8192,
 						image: false
 					},
 					{
-						name: "qwen-vl-max",
-						max_tokens: 2048,
-						image: true
-					},
-					{
-						name: "qwen-vl-plus",
-						max_tokens: 2048,
-						image: true
-					},
-					{
-						name: "qwen2.5-vl-72b-instruct",
+						name: "qwen-turbo-2025-04-28",
 						max_tokens: 8192,
-						image: true
+						thinking: true,
+						image: false
 					},
 					{
-						name: "qwen2.5-vl-7b-instruct",
+						name: "qwen-turbo-2024-11-01",
 						max_tokens: 8192,
-						image: true
+						image: false
 					},
 					{
-						name: "qwen2.5-vl-3b-instruct",
+						name: "qwen3-30b-a3b",
+						max_tokens: 16384,
+						thinking: true,
+						image: false
+					},
+					{
+						name: "qwen3-14b",
 						max_tokens: 8192,
-						image: true
+						thinking: true,
+						image: false
+					},
+					{
+						name: "qwen3-8b",
+						max_tokens: 8192,
+						thinking: true,
+						image: false
+					},
+					{
+						name: "qwen3-4b",
+						max_tokens: 40960,
+						thinking: true,
+						image: false
+					},
+					{
+						name: "qwen3-1.7b",
+						max_tokens: 8192,
+						thinking: true,
+						image: false
+					},
+					{
+						name: "qwen3-0.6b",
+						max_tokens: 8192,
+						thinking: true,
+						image: false
+					},
+					{
+						name: "qwen2.5-14b-instruct",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "qwen2.5-14b-instruct-1m",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "qwen2.5-7b-instruct",
+						max_tokens: 8192,
+						image: false
 					},
 					{
 						name: "qwen2.5-7b-instruct-1m",
 						max_tokens: 8192,
 						image: false
+					},
+					{
+						name: "qwen-vl-max",
+						max_tokens: 2000,
+						image: true
+					},
+					{
+						name: "qwen-vl-plus",
+						max_tokens: 2000,
+						image: true
+					},
+					{
+						name: "qwen-vl-max-2025-04-08",
+						max_tokens: 8192,
+						image: true
+					},
+					{
+						name: "qwen-vl-max-2025-01-25",
+						max_tokens: 2000,
+						image: true
+					},
+					{
+						name: "qwen2.5-vl-72b-instruct",
+						max_tokens: 2048,
+						image: true
+					},
+					{
+						name: "qwen2.5-vl-32b-instruct",
+						max_tokens: 8192,
+						image: true
+					},
+					{
+						name: "qwen2.5-vl-7b-instruct",
+						max_tokens: 2048,
+						image: true
+					},
+					{
+						name: "qwen2.5-vl-3b-instruct",
+						max_tokens: 2048,
+						image: true
+					},
+					{
+						name: "qwen-qwq-plus",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "qvq-max",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "qvq-max-2025-03-25",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "qwen2.5-omni-7b",
+						max_tokens: 2048,
+						image: true
 					}]
 				},
 				sambanova:
@@ -923,8 +1081,20 @@ window.CONFIG = {
 				},
 				anthropic:
 				{
-					default: "claude-3-7-sonnet-20250219",
+					default: "claude-3-5-sonnet-20241022",
 					options: [
+					{
+						name: "claude-opus-4-20250514",
+						max_tokens: 32000,
+						thinking: true,
+						image: false
+					},
+					{
+						name: "claude-sonnet-4-20250514",
+						max_tokens: 64000,
+						thinking: true,
+						image: false
+					},
 					{
 						name: "claude-3-7-sonnet-20250219",
 						max_tokens: 128000,
@@ -945,6 +1115,21 @@ window.CONFIG = {
 						name: "claude-3-5-sonnet-20240620",
 						max_tokens: 8192,
 						image: true
+					}]
+				},
+				x:
+				{
+					default: "grok-3",
+					options: [
+					{
+						name: "grok-3",
+						max_tokens: 131072,
+						image: false
+					},
+					{
+						name: "grok-3-fast",
+						max_tokens: 131072,
+						image: false
 					}]
 				},
 				perplexity:
