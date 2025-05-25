@@ -55,6 +55,11 @@ window.CONFIG = {
 						name: "deepseek-r1-distill-llama-70b",
 						max_tokens: 8192,
 						image: false
+					},
+					{
+						name: "qwen-3-32b",
+						max_tokens: 8192,
+						image: false
 					}]
 				},
 				openai:
@@ -633,6 +638,61 @@ window.CONFIG = {
 						name: "moonshotai/kimi-vl-a3b-thinking:free",
 						max_tokens: 131072,
 						image: true
+					},
+					{
+						name: "thudm/glm-4-32b",
+						max_tokens: 32000,
+						image: false
+					},
+					{
+						name: "thudm/glm-z1-32b",
+						max_tokens: 32000,
+						image: false
+					},
+					{
+						name: "microsoft/mai-ds-r1:free",
+						max_tokens: 163840,
+						image: false
+					},
+					{
+						name: "thudm/glm-z1-rumination-32b",
+						max_tokens: 32000,
+						image: false
+					},
+					{
+						name: "tngtech/deepseek-r1t-chimera:free",
+						max_tokens: 163840,
+						image: false
+					},
+					{
+						name: "microsoft/phi-4-multimodal-instruct",
+						max_tokens: 131072,
+						image: true
+					},
+					{
+						name: "deepseek/deepseek-prover-v2",
+						max_tokens: 131072,
+						image: false
+					},
+					{
+						name: "microsoft/phi-4-reasoning-plus",
+						max_tokens: 32768,
+						image: false
+					},
+					{
+						name: "mistralai/mistral-medium-3",
+						max_tokens: 131072,
+						image: false
+					},
+					{
+						name: "openai/codex-mini",
+						max_tokens: 1000000,
+						image: true
+					},
+					{
+						name: "mistralai/devstral-small",
+						max_tokens: 131072,
+						image: false
 					}]
 				},
 				perplexity:
@@ -865,12 +925,22 @@ window.CONFIG = {
 						image: false
 					},
 					{
+						name: "Qwen3-32B",
+						max_tokens: 8192,
+						image: false
+					},
+					{
 						name: "QwQ-32B",
 						max_tokens: 16384,
 						image: false
 					},
 					{
 						name: "DeepSeek-V3-0324",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "Llama-3.3-Swallow-70B-Instruct-v0.4",
 						max_tokens: 8192,
 						image: false
 					},
@@ -925,6 +995,11 @@ window.CONFIG = {
 						image: false
 					},
 					{
+						name: "Llama-4-Maverick-17B-128E-Instruct",
+						max_tokens: 8192,
+						image: true
+					},
+					{
 						name: "Qwen2-Audio-7B-Instruct",
 						max_tokens: 8192,
 						audio: true,
@@ -938,11 +1013,6 @@ window.CONFIG = {
 					{
 						name: "Llama-3.2-90B-Vision-Instruct",
 						max_tokens: 4096,
-						image: true
-					},
-					{
-						name: "Llama-4-Maverick-17B-128E-Instruct",
-						max_tokens: 8192,
 						image: true
 					}]
 				},
