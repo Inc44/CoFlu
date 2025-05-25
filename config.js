@@ -457,6 +457,11 @@ window.CONFIG = {
 						image: false
 					},
 					{
+						name: "qwen-qwq-32b",
+						max_tokens: 131072,
+						image: false
+					},
+					{
 						name: "deepseek-r1-distill-qwen-32b",
 						max_tokens: 131072,
 						image: false
@@ -464,6 +469,11 @@ window.CONFIG = {
 					{
 						name: "deepseek-r1-distill-llama-70b",
 						max_tokens: 131072,
+						image: false
+					},
+					{
+						name: "gemma2-9b-it",
+						max_tokens: 8192,
 						image: false
 					},
 					{
@@ -502,12 +512,22 @@ window.CONFIG = {
 						image: false
 					},
 					{
-						name: "meta-llama/llama-4-scout-17b-16e-instruct",
+						name: "llama-3-70b-8192",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "llama-3-8b-8192",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "meta-llama/llama-4-maverick-17b-128e-instruct",
 						max_tokens: 8192,
 						image: true
 					},
 					{
-						name: "meta-llama/llama-4-maverick-17b-128e-instruct",
+						name: "meta-llama/llama-4-scout-17b-16e-instruct",
 						max_tokens: 8192,
 						image: true
 					},
