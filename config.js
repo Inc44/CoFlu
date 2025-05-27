@@ -1265,6 +1265,12 @@ window.CONFIG = {
 					options: [
 					{
 						name: "whisper-1"
+					},
+					{
+						name: "gpt-4o-mini-transcribe"
+					},
+					{
+						name: "gpt-4o-transcribe"
 					}],
 				},
 			}

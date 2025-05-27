@@ -379,7 +379,6 @@ const AiService = {
 		formData.append('file', file);
 		formData.append('model', modelName);
 		formData.append('language', language);
-		formData.append('response_format', 'verbose_json');
 		const config = CONFIG.API.CONFIG.TRANSCRIPTION[transModel];
 		if (!config)
 		{
