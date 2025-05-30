@@ -713,6 +713,16 @@ window.CONFIG = {
 						name: "mistralai/devstral-small",
 						max_tokens: 131072,
 						image: false
+					},
+					{
+						name: "deepseek/deepseek-r1-0528",
+						max_tokens: 163840,
+						image: false
+					},
+					{
+						name: "deepseek/deepseek-r1-0528-qwen3-8b",
+						max_tokens: 128000,
+						image: false
 					}]
 				},
 				perplexity:
