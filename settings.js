@@ -21,6 +21,7 @@ class SettingsApp
 			importBtn: document.getElementById('importSettings'),
 			langSelect: document.getElementById('language'),
 			noBSToggle: document.getElementById('noBSToggle'),
+			noBSPlusToggle: document.getElementById('noBSPlusToggle'),
 			numberedLinesToggle: document.getElementById('numberedLinesToggle'),
 			reasoningBox: document.getElementById('reasoningEffortContainer'),
 			reasoningEffort: document.getElementById('reasoningEffort'),
@@ -113,6 +114,7 @@ class SettingsApp
 		this.loadCheckbox('googleCompatToggle', 'google_compat_enabled', true);
 		this.loadCheckbox('highCostToggle', 'high_cost_enabled', false);
 		this.loadCheckbox('noBSToggle', 'no_bs_enabled', false);
+		this.loadCheckbox('noBSPlusToggle', 'no_bs_plus_enabled', false);
 		this.loadCheckbox('numberedLinesToggle', 'numbered_lines_enabled', false);
 		this.loadCheckbox('receiveAudioToggle', 'receive_audio_enabled', false);
 		this.loadCheckbox('receiveImagesToggle', 'receive_images_enabled', false);
@@ -297,6 +299,7 @@ class SettingsApp
 		this.els.importBtn?.addEventListener('click', this.importSettings.bind(this));
 		this.els.langSelect?.addEventListener('change', this.handleLangChange.bind(this));
 		this.els.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
+		this.els.noBSPlusToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSPlusToggle', 'no_bs_plus_enabled'));
 		this.els.numberedLinesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'numberedLinesToggle', 'numbered_lines_enabled'));
 		this.els.reasoningEffort?.addEventListener('change', this.handleReasoningChange.bind(this));
 		this.els.receiveAudioToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'receiveAudioToggle', 'receive_audio_enabled'));
@@ -452,6 +455,7 @@ class SettingsApp
 			google_compat_enabled: this.els.googleCompatToggle.checked,
 			high_cost_enabled: this.els.highCostToggle.checked,
 			no_bs_enabled: this.els.noBSToggle.checked,
+			no_bs_plus_enabled: this.els.noBSPlusToggle.checked,
 			numbered_lines_enabled: this.els.numberedLinesToggle.checked,
 			prompts: StorageService.load('prompts', []),
 			receive_audio_enabled: this.els.receiveAudioToggle.checked,

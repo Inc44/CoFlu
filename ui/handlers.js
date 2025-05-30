@@ -142,6 +142,10 @@ const UIHandlers = {
 			{
 				prompt = `${CONFIG.UI.NO_BS_PROMPT}.\n\n${prompt}`;
 			}
+			if (StorageService.load('no_bs_plus_enabled', false))
+			{
+				prompt = `${CONFIG.UI.NO_BS_PLUS_PROMPT}.\n\n${prompt}`;
+			}
 			if (!prompt.trim()) return;
 			const genOptions = {
 				streaming: StorageService.load('streaming_enabled', true),
@@ -231,6 +235,7 @@ const UIHandlers = {
 			cleanupToggle: 'cleanup_enabled',
 			darkToggle: 'dark_enabled',
 			noBSToggle: 'no_bs_enabled',
+			noBSPlusToggle: 'no_bs_plus_enabled',
 			streamToggle: 'streaming_enabled',
 			translateToggle: 'translation_enabled',
 			wideToggle: 'wide_enabled',

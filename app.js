@@ -27,6 +27,7 @@ class App
 			imageUploadInput: document.getElementById('imageUploadInput'),
 			langSelect: document.getElementById('language'),
 			noBSToggle: document.getElementById('noBSToggle'),
+			noBSPlusToggle: document.getElementById('noBSPlusToggle'),
 			printBox: document.getElementById('printContainer'),
 			promptSelect: document.getElementById('promptSelect'),
 			renderMdBtn: document.getElementById('renderMarkdownBtn'),
@@ -89,6 +90,7 @@ class App
 		const toggles = {
 			'cleanupToggle': ['cleanup_enabled', true],
 			'noBSToggle': ['no_bs_enabled', false],
+			'noBSPlusToggle': ['no_bs_plus_enabled', false],
 			'streamToggle': ['streaming_enabled', true],
 			'translateToggle': ['translation_enabled', false]
 		};
