@@ -685,6 +685,11 @@ window.CONFIG = {
 						image: false
 					},
 					{
+						name: "deepseek/deepseek-prover-v2",
+						max_tokens: 131072,
+						image: false
+					},
+					{
 						name: "microsoft/phi-4-multimodal-instruct",
 						max_tokens: 131072,
 						image: true
