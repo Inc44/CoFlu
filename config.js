@@ -307,6 +307,14 @@ window.CONFIG = {
 						search: true
 					},
 					{
+						name: "gemini-2.5-pro-preview-06-05",
+						max_tokens: 65536,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					},
+					{
 						name: "gemini-2.5-flash-preview-04-17",
 						max_tokens: 65536,
 						thinking: true,
