@@ -64,7 +64,7 @@ window.CONFIG = {
 				},
 				openai:
 				{
-					default: "o3-mini",
+					default: "o3",
 					options: [
 					{
 						name: "gpt-4.1",
@@ -97,6 +97,12 @@ window.CONFIG = {
 						image: true
 					},
 					{
+						name: "o3",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						image: true
+					},
+					{
 						name: "o4-mini",
 						max_tokens: 100000,
 						reasoning_effort: "low",
@@ -111,6 +117,12 @@ window.CONFIG = {
 						name: "o1-mini-2024-09-12",
 						max_tokens: 65536,
 						image: false
+					},
+					{
+						name: "o3-2025-04-16",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						image: true
 					},
 					{
 						name: "o3-mini",
@@ -736,6 +748,21 @@ window.CONFIG = {
 						name: "deepseek/deepseek-r1-0528-qwen3-8b",
 						max_tokens: 128000,
 						image: false
+					},
+					{
+						name: "mistralai/magistral-medium-2506:thinking",
+						max_tokens: 40960,
+						image: false
+					},
+					{
+						name: "mistralai/magistral-medium-2506",
+						max_tokens: 40960,
+						image: false
+					},
+					{
+						name: "mistralai/magistral-small-2506",
+						max_tokens: 40000,
+						image: false
 					}]
 				},
 				perplexity:
@@ -1092,8 +1119,8 @@ window.CONFIG = {
 						image: true
 					},
 					{
-						name: "o3",
-						max_tokens: 200000,
+						name: "o1-pro",
+						max_tokens: 100000,
 						reasoning_effort: "low",
 						image: true
 					},
@@ -1122,8 +1149,20 @@ window.CONFIG = {
 						image: false
 					},
 					{
-						name: "o3-2025-04-16",
-						max_tokens: 200000,
+						name: "o1-pro-2025-03-19",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						image: true
+					},
+					{
+						name: "o3-pro",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						image: true
+					},
+					{
+						name: "o3-pro-2025-06-10",
+						max_tokens: 100000,
 						reasoning_effort: "low",
 						image: true
 					},
