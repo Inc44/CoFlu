@@ -285,7 +285,7 @@ window.CONFIG = {
 				},
 				google:
 				{
-					default: "gemini-2.5-pro-preview-05-06",
+					default: "gemini-2.5-pro",
 					options: [
 					{
 						name: "gemini-exp-1206",
@@ -327,6 +327,14 @@ window.CONFIG = {
 						search: true
 					},
 					{
+						name: "gemini-2.5-pro",
+						max_tokens: 65536,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					},
+					{
 						name: "gemini-2.5-flash-preview-04-17",
 						max_tokens: 65536,
 						thinking: true,
@@ -337,6 +345,24 @@ window.CONFIG = {
 					},
 					{
 						name: "gemini-2.5-flash-preview-05-20",
+						max_tokens: 65536,
+						thinking: true,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					},
+					{
+						name: "gemini-2.5-flash",
+						max_tokens: 65536,
+						thinking: true,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					},
+					{
+						name: "gemini-2.5-flash-lite-preview-06-17",
 						max_tokens: 65536,
 						thinking: true,
 						audio: true,
@@ -579,11 +605,16 @@ window.CONFIG = {
 				},
 				minimax:
 				{
-					default: "MiniMax-Text-01",
+					default: "MiniMax-M1",
 					options: [
 					{
 						name: "MiniMax-Text-01",
 						max_tokens: 1000192,
+						image: true
+					},
+					{
+						name: "MiniMax-M1",
+						max_tokens: 1000000,
 						image: true
 					}],
 				},
@@ -763,6 +794,21 @@ window.CONFIG = {
 						name: "mistralai/magistral-small-2506",
 						max_tokens: 40000,
 						image: false
+					},
+					{
+						name: "moonshotai/kimi-dev-72b:free",
+						max_tokens: 131072,
+						image: false
+					},
+					{
+						name: "minimax/minimax-m1:extended",
+						max_tokens: 128000,
+						image: true
+					},
+					{
+						name: "minimax/minimax-m1",
+						max_tokens: 1000000,
+						image: true
 					}]
 				},
 				perplexity:
