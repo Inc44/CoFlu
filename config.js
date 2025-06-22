@@ -809,6 +809,11 @@ window.CONFIG = {
 						name: "minimax/minimax-m1",
 						max_tokens: 1000000,
 						image: true
+					},
+					{
+						name: "mistralai/mistral-small-3.2-24b-instruct-2506:free",
+						max_tokens: 96000,
+						image: false
 					}]
 				},
 				perplexity:
