@@ -432,8 +432,13 @@ window.CONFIG = {
 						image: true
 					},
 					{
+						name: "gemma-3n-e2b-it",
+						max_tokens: 2048,
+						image: false
+					},
+					{
 						name: "gemma-3n-e4b-it",
-						max_tokens: 8192,
+						max_tokens: 2048,
 						image: false
 					},
 					{
@@ -811,8 +816,13 @@ window.CONFIG = {
 						image: true
 					},
 					{
-						name: "mistralai/mistral-small-3.2-24b-instruct-2506:free",
-						max_tokens: 96000,
+						name: "mistralai/mistral-small-3.2-24b-instruct-2506",
+						max_tokens: 128000,
+						image: false
+					},
+					{
+						name: "inception/mercury",
+						max_tokens: 32000,
 						image: false
 					}]
 				},
