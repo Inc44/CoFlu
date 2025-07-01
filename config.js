@@ -111,11 +111,13 @@ window.CONFIG = {
 					{
 						name: "o1-mini",
 						max_tokens: 65536,
+						completions_api_only: true,
 						image: false
 					},
 					{
 						name: "o1-mini-2024-09-12",
 						max_tokens: 65536,
+						completions_api_only: true,
 						image: false
 					},
 					{
@@ -169,6 +171,7 @@ window.CONFIG = {
 					{
 						name: "gpt-4o-audio-preview",
 						max_tokens: 2048,
+						completions_api_only: true,
 						audio: true,
 						image: false,
 						modality: "audio"
@@ -176,6 +179,7 @@ window.CONFIG = {
 					{
 						name: "gpt-4o-mini-audio-preview-2024-12-17",
 						max_tokens: 2048,
+						completions_api_only: true,
 						audio: true,
 						image: true,
 						modality: "audio"
@@ -183,6 +187,7 @@ window.CONFIG = {
 					{
 						name: "gpt-4o-mini-audio-preview",
 						max_tokens: 2048,
+						completions_api_only: true,
 						audio: true,
 						image: true,
 						modality: "audio"
@@ -193,8 +198,17 @@ window.CONFIG = {
 						image: true
 					},
 					{
+						name: "gpt-4o-audio-preview-2025-06-03",
+						max_tokens: 2048,
+						completions_api_only: true,
+						audio: true,
+						image: false,
+						modality: "audio"
+					},
+					{
 						name: "gpt-4o-audio-preview-2024-12-17",
 						max_tokens: 2048,
+						completions_api_only: true,
 						audio: true,
 						image: false,
 						modality: "audio"
@@ -202,6 +216,7 @@ window.CONFIG = {
 					{
 						name: "gpt-4o-audio-preview-2024-10-01",
 						max_tokens: 2048,
+						completions_api_only: true,
 						audio: true,
 						image: false,
 						modality: "audio"
@@ -1201,8 +1216,8 @@ window.CONFIG = {
 					{
 						name: "o1-pro",
 						max_tokens: 100000,
-						reasoning_effort: "low",
 						responses_api_only: true,
+						reasoning_effort: "low",
 						image: true
 					},
 					{
@@ -1221,19 +1236,21 @@ window.CONFIG = {
 						name: "o1-preview",
 						max_tokens: 32768,
 						reasoning_effort: "low",
+						completions_api_only: true,
 						image: false
 					},
 					{
 						name: "o1-preview-2024-09-12",
 						max_tokens: 32768,
 						reasoning_effort: "low",
+						completions_api_only: true,
 						image: false
 					},
 					{
 						name: "o1-pro-2025-03-19",
 						max_tokens: 100000,
-						reasoning_effort: "low",
 						responses_api_only: true,
+						reasoning_effort: "low",
 						image: true
 					},
 					{
@@ -1253,38 +1270,42 @@ window.CONFIG = {
 					{
 						name: "o3-pro",
 						max_tokens: 100000,
-						reasoning_effort: "low",
 						responses_api_only: true,
+						reasoning_effort: "low",
 						image: true
 					},
 					{
 						name: "o3-pro-2025-06-10",
 						max_tokens: 100000,
-						reasoning_effort: "low",
 						responses_api_only: true,
+						reasoning_effort: "low",
 						image: true
 					},
 					{
 						name: "gpt-4o-search-preview",
 						max_tokens: 0,
+						completions_api_only: true,
 						search_context_size: "low",
 						image: false
 					},
 					{
 						name: "gpt-4o-search-preview-2025-03-11",
 						max_tokens: 0,
+						completions_api_only: true,
 						search_context_size: "low",
 						image: false
 					},
 					{
 						name: "gpt-4o-mini-search-preview-2025-03-11",
 						max_tokens: 0,
+						completions_api_only: true,
 						search_context_size: "low",
 						image: false
 					},
 					{
 						name: "gpt-4o-mini-search-preview",
 						max_tokens: 0,
+						completions_api_only: true,
 						search_context_size: "low",
 						image: false
 					},

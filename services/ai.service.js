@@ -191,6 +191,13 @@ const AiService = {
 		if (model === 'openai_responses')
 		{
 			reqBody.input = msgs;
+			if (modelConfig.tools && Array.isArray(modelConfig.tools))
+			{
+				reqBody.tools = modelConfig.tools.map(tool => (
+				{
+					type: tool
+				}));
+			}
 		}
 		else
 		{
