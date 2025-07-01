@@ -145,14 +145,12 @@ window.CONFIG = {
 					{
 						name: "o4-mini-deep-research",
 						max_tokens: 100000,
-						search_context_size: "low",
 						responses_api_only: true,
 						image: true
 					},
 					{
 						name: "o4-mini-deep-research-2025-06-26",
 						max_tokens: 100000,
-						search_context_size: "low",
 						responses_api_only: true,
 						image: true
 					},
@@ -1239,14 +1237,12 @@ window.CONFIG = {
 					{
 						name: "o3-deep-research",
 						max_tokens: 100000,
-						search_context_size: "low",
 						responses_api_only: true,
 						image: true
 					},
 					{
 						name: "o3-deep-research-2025-06-26",
 						max_tokens: 100000,
-						search_context_size: "low",
 						responses_api_only: true,
 						image: true
 					},

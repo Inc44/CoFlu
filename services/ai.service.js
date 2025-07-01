@@ -37,6 +37,10 @@ const AiService = {
 	async complete(apiKey, prompt, model, options, attempt)
 	{
 		const maxRetries = StorageService.load('exponential_retry', 4);
+		if (model === 'openai' && modelConfig.responses_api_only)
+		{
+			model = 'openai_responses';
+		}
 		const config = CONFIG.API.CONFIG.COMPLETION[model];
 		if (!config)
 		{
@@ -182,16 +186,33 @@ const AiService = {
 		});
 		let reqBody = {
 			model: modelConfig.name,
-			messages: msgs,
 			stream: options.streaming,
 		};
+		if (model === 'openai_responses')
+		{
+			reqBody.input = msgs;
+		}
+		else
+		{
+			reqBody.messages = msgs;
+		}
 		if (!modelConfig.reasoning_effort && !modelConfig.search_context_size && !modelConfig.thinking)
 		{
 			reqBody.temperature = 0;
 		}
 		if (modelConfig.reasoning_effort)
 		{
-			reqBody.reasoning_effort = StorageService.load('reasoning_effort', 'low');
+			const reasoning_effort = StorageService.load('reasoning_effort', 'low');
+			if (model === 'openai_responses')
+			{
+				reqBody.reasoning = {
+					effort: reasoning_effort
+				};
+			}
+			else
+			{
+				reqBody.reasoning_effort = reasoning_effort;
+			}
 		}
 		if (modelConfig.search_context_size)
 		{
