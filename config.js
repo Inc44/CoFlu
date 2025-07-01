@@ -145,7 +145,6 @@ window.CONFIG = {
 					{
 						name: "o4-mini-deep-research",
 						max_tokens: 100000,
-						reasoning_effort: "low",
 						search_context_size: "low",
 						responses_api_only: true,
 						image: true
@@ -153,7 +152,6 @@ window.CONFIG = {
 					{
 						name: "o4-mini-deep-research-2025-06-26",
 						max_tokens: 100000,
-						reasoning_effort: "low",
 						search_context_size: "low",
 						responses_api_only: true,
 						image: true
@@ -1241,7 +1239,6 @@ window.CONFIG = {
 					{
 						name: "o3-deep-research",
 						max_tokens: 100000,
-						reasoning_effort: "low",
 						search_context_size: "low",
 						responses_api_only: true,
 						image: true
@@ -1249,7 +1246,6 @@ window.CONFIG = {
 					{
 						name: "o3-deep-research-2025-06-26",
 						max_tokens: 100000,
-						reasoning_effort: "low",
 						search_context_size: "low",
 						responses_api_only: true,
 						image: true
@@ -1458,6 +1454,15 @@ window.CONFIG = {
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
 					extractStreamContent: data => data.choices[0]?.delta?.content
+				},
+				openai_responses:
+				{
+					url: 'https://api.openai.com/v1/responses',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer ',
+					extractContent: data => data.output.find(item => item.type === "message")
+						.content[0].text,
+					extractStreamContent: data => data.delta,
 				},
 				chutes:
 				{
