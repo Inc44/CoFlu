@@ -143,6 +143,22 @@ window.CONFIG = {
 						image: true
 					},
 					{
+						name: "o4-mini-deep-research",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						search_context_size: "low",
+						responses_api_only: true,
+						image: true
+					},
+					{
+						name: "o4-mini-deep-research-2025-06-26",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						search_context_size: "low",
+						responses_api_only: true,
+						image: true
+					},
+					{
 						name: "gpt-4o",
 						max_tokens: 16383,
 						image: true
@@ -824,6 +840,11 @@ window.CONFIG = {
 						name: "inception/mercury",
 						max_tokens: 32000,
 						image: false
+					},
+					{
+						name: "baidu/ernie-4.5-300b-a47b",
+						max_tokens: 123000,
+						image: false
 					}]
 				},
 				perplexity:
@@ -1183,6 +1204,7 @@ window.CONFIG = {
 						name: "o1-pro",
 						max_tokens: 100000,
 						reasoning_effort: "low",
+						responses_api_only: true,
 						image: true
 					},
 					{
@@ -1213,18 +1235,37 @@ window.CONFIG = {
 						name: "o1-pro-2025-03-19",
 						max_tokens: 100000,
 						reasoning_effort: "low",
+						responses_api_only: true,
+						image: true
+					},
+					{
+						name: "o3-deep-research",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						search_context_size: "low",
+						responses_api_only: true,
+						image: true
+					},
+					{
+						name: "o3-deep-research-2025-06-26",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						search_context_size: "low",
+						responses_api_only: true,
 						image: true
 					},
 					{
 						name: "o3-pro",
 						max_tokens: 100000,
 						reasoning_effort: "low",
+						responses_api_only: true,
 						image: true
 					},
 					{
 						name: "o3-pro-2025-06-10",
 						max_tokens: 100000,
 						reasoning_effort: "low",
+						responses_api_only: true,
 						image: true
 					},
 					{
