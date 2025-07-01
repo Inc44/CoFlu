@@ -1481,8 +1481,8 @@ window.CONFIG = {
 					url: 'https://api.openai.com/v1/responses',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
-					extractContent: data => data.output.find(item => item.type === "message")
-						.content[0].text,
+					extractContent: data => data.output?.find(item => item.type === "message")
+						?.content?.[0]?.text,
 					extractStreamContent: data => data.delta,
 				},
 				chutes:

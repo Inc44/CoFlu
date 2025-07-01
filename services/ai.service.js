@@ -37,19 +37,8 @@ const AiService = {
 	async complete(apiKey, prompt, model, options, attempt)
 	{
 		const maxRetries = StorageService.load('exponential_retry', 4);
-		if (model === 'openai' && modelConfig.responses_api_only)
-		{
-			model = 'openai_responses';
-		}
-		const config = CONFIG.API.CONFIG.COMPLETION[model];
-		if (!config)
-		{
-			alert(`Config not found for model: ${model}`);
-			return;
-		}
 		const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
-		let modelConfig;
-		modelConfig = CONFIG.API.MODELS.COMPLETION[model].options.find(m => m.name === modelName);
+		let modelConfig = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === modelName);
 		if (!modelConfig && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
 		{
 			modelConfig = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(m => m.name === modelName);
@@ -57,6 +46,13 @@ const AiService = {
 		if (!modelConfig)
 		{
 			alert(`Model ${modelName} not found in config.`);
+			return;
+		}
+		const endpoint = (model === 'openai' && modelConfig.responses_api_only) ? 'openai_responses' : model;
+		const config = CONFIG.API.CONFIG.COMPLETION[endpoint];
+		if (!config)
+		{
+			alert(`Config not found for endpoint: ${endpoint}`);
 			return;
 		}
 		const reqBody = this.buildReqBody(prompt, model, modelConfig, options);
@@ -82,11 +78,21 @@ const AiService = {
 		}
 		if (options.streaming)
 		{
-			return await this.handleStreamResponse(response, model, options.onProgress);
+			return await this.handleStreamResponse(response, endpoint, options.onProgress);
 		}
 		else
 		{
-			return await response.json();
+			const jsonResponse = await response.json();
+			const content = config.extractContent(jsonResponse);
+			return {
+				choices: [
+				{
+					message:
+					{
+						content: content || ""
+					}
+				}]
+			};
 		}
 	},
 	buildReqBody(prompt, model, modelConfig, options)
@@ -188,7 +194,7 @@ const AiService = {
 			model: modelConfig.name,
 			stream: options.streaming,
 		};
-		if (model === 'openai_responses')
+		if (model === 'openai' && modelConfig.responses_api_only)
 		{
 			reqBody.input = msgs;
 			if (modelConfig.tools && Array.isArray(modelConfig.tools))
@@ -198,28 +204,24 @@ const AiService = {
 					type: tool
 				}));
 			}
+			if (modelConfig.reasoning_effort)
+			{
+				reqBody.reasoning = {
+					effort: StorageService.load('reasoning_effort', 'low')
+				};
+			}
 		}
 		else
 		{
 			reqBody.messages = msgs;
+			if (modelConfig.reasoning_effort)
+			{
+				reqBody.reasoning_effort = StorageService.load('reasoning_effort', 'low');
+			}
 		}
-		if (!modelConfig.reasoning_effort && !modelConfig.search_context_size && !modelConfig.thinking)
+		if (!modelConfig.reasoning_effort && !modelConfig.responses_api_only && !modelConfig.search_context_size && !modelConfig.thinking)
 		{
 			reqBody.temperature = 0;
-		}
-		if (modelConfig.reasoning_effort)
-		{
-			const reasoning_effort = StorageService.load('reasoning_effort', 'low');
-			if (model === 'openai_responses')
-			{
-				reqBody.reasoning = {
-					effort: reasoning_effort
-				};
-			}
-			else
-			{
-				reqBody.reasoning_effort = reasoning_effort;
-			}
 		}
 		if (modelConfig.search_context_size)
 		{
@@ -240,7 +242,7 @@ const AiService = {
 				reqBody.temperature = 0;
 			}
 		}
-		if (model !== 'chutes' && model !== 'openrouter' && model !== 'perplexity' && model !== 'sambanova' && model !== 'together' && !modelConfig.reasoning_effort && !modelConfig.search_context_size && modelConfig.name !== 'grok-2-1212')
+		if (!['chutes', 'openrouter', 'perplexity', 'sambanova', 'together'].includes(model) && !modelConfig.reasoning_effort && !modelConfig.responses_api_only && !modelConfig.search_context_size && modelConfig.name !== 'grok-2-1212')
 		{
 			reqBody.max_tokens = modelConfig.max_tokens;
 		}
