@@ -491,7 +491,19 @@ window.CONFIG = {
 					default: "grok-3-mini",
 					options: [
 					{
+						name: "grok-4",
+						max_tokens: 256000,
+						reasoning_effort: "low",
+						image: true
+					},
+					{
 						name: "grok-3-mini",
+						max_tokens: 131072,
+						reasoning_effort: "low",
+						image: false
+					},
+					{
+						name: "grok-3",
 						max_tokens: 131072,
 						image: false
 					},
@@ -502,7 +514,18 @@ window.CONFIG = {
 						image: false
 					},
 					{
-						name: "grok-2-1212",
+						name: "grok-3-beta",
+						max_tokens: 131072,
+						image: false
+					},
+					{
+						name: "grok-3-mini-fast",
+						max_tokens: 131072,
+						reasoning_effort: "low",
+						image: false
+					},
+					{
+						name: "grok-3-fast",
 						max_tokens: 131072,
 						image: false
 					},
@@ -512,14 +535,24 @@ window.CONFIG = {
 						image: true
 					},
 					{
-						name: "grok-beta",
+						name: "grok-2-1212",
 						max_tokens: 131072,
+						image: false
+					},
+					{
+						name: "grok-2-mini",
+						max_tokens: 32768,
 						image: false
 					},
 					{
 						name: "grok-vision-beta",
 						max_tokens: 8192,
 						image: true
+					},
+					{
+						name: "grok-beta",
+						max_tokens: 131072,
+						image: false
 					}]
 				},
 				groq:
