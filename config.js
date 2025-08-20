@@ -29,1204 +29,92 @@ window.CONFIG = {
 				cerebras:
 				{
 					default: "llama-4-scout-17b-16e-instruct",
-					options: [
-					{
-						name: "llama-4-scout-17b-16e-instruct",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "llama-4-maverick-17b-16e-instruct",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "llama3.1-8b",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "llama-3.3-70b",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "deepseek-r1-distill-llama-70b",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen-3-32b",
-						max_tokens: 8192,
-						image: false
-					}]
+					options: []
 				},
 				openai:
 				{
 					default: "o3",
-					options: [
-					{
-						name: "gpt-4.1",
-						max_tokens: 16384,
-						image: true
-					},
-					{
-						name: "gpt-4.1-mini",
-						max_tokens: 16384,
-						image: true
-					},
-					{
-						name: "gpt-4.1-nano",
-						max_tokens: 16384,
-						image: true
-					},
-					{
-						name: "gpt-4.1-nano-2025-04-14",
-						max_tokens: 16384,
-						image: true
-					},
-					{
-						name: "gpt-4.1-mini-2025-04-14",
-						max_tokens: 16384,
-						image: true
-					},
-					{
-						name: "gpt-4.1-2025-04-14",
-						max_tokens: 16384,
-						image: true
-					},
-					{
-						name: "o3",
-						max_tokens: 100000,
-						reasoning_effort: "low",
-						image: true
-					},
-					{
-						name: "o4-mini",
-						max_tokens: 100000,
-						reasoning_effort: "low",
-						image: true
-					},
-					{
-						name: "o1-mini",
-						max_tokens: 65536,
-						completions_api_only: true,
-						image: false
-					},
-					{
-						name: "o1-mini-2024-09-12",
-						max_tokens: 65536,
-						completions_api_only: true,
-						image: false
-					},
-					{
-						name: "o3-2025-04-16",
-						max_tokens: 100000,
-						reasoning_effort: "low",
-						image: true
-					},
-					{
-						name: "o3-mini",
-						max_tokens: 100000,
-						reasoning_effort: "low",
-						image: false
-					},
-					{
-						name: "o3-mini-2025-01-31",
-						max_tokens: 100000,
-						reasoning_effort: "low",
-						image: false
-					},
-					{
-						name: "o4-mini-2025-04-16",
-						max_tokens: 100000,
-						reasoning_effort: "low",
-						image: true
-					},
-					{
-						name: "o4-mini-deep-research",
-						max_tokens: 100000,
-						responses_api_only: true,
-						tools: ["web_search_preview"],
-						image: true
-					},
-					{
-						name: "o4-mini-deep-research-2025-06-26",
-						max_tokens: 100000,
-						responses_api_only: true,
-						tools: ["web_search_preview"],
-						image: true
-					},
-					{
-						name: "gpt-4o",
-						max_tokens: 16383,
-						image: true
-					},
-					{
-						name: "gpt-4o-mini",
-						max_tokens: 16383,
-						image: true
-					},
-					{
-						name: "gpt-4o-audio-preview",
-						max_tokens: 2048,
-						completions_api_only: true,
-						audio: true,
-						image: false,
-						modality: "audio"
-					},
-					{
-						name: "gpt-4o-mini-audio-preview-2024-12-17",
-						max_tokens: 2048,
-						completions_api_only: true,
-						audio: true,
-						image: true,
-						modality: "audio"
-					},
-					{
-						name: "gpt-4o-mini-audio-preview",
-						max_tokens: 2048,
-						completions_api_only: true,
-						audio: true,
-						image: true,
-						modality: "audio"
-					},
-					{
-						name: "gpt-4o-mini-2024-07-18",
-						max_tokens: 16383,
-						image: true
-					},
-					{
-						name: "gpt-4o-audio-preview-2025-06-03",
-						max_tokens: 2048,
-						completions_api_only: true,
-						audio: true,
-						image: false,
-						modality: "audio"
-					},
-					{
-						name: "gpt-4o-audio-preview-2024-12-17",
-						max_tokens: 2048,
-						completions_api_only: true,
-						audio: true,
-						image: false,
-						modality: "audio"
-					},
-					{
-						name: "gpt-4o-audio-preview-2024-10-01",
-						max_tokens: 2048,
-						completions_api_only: true,
-						audio: true,
-						image: false,
-						modality: "audio"
-					},
-					{
-						name: "gpt-4o-2024-11-20",
-						max_tokens: 16383,
-						image: true
-					},
-					{
-						name: "gpt-4o-2024-08-06",
-						max_tokens: 16383,
-						image: true
-					},
-					{
-						name: "gpt-3.5-turbo-16k",
-						max_tokens: 16385,
-						image: false
-					},
-					{
-						name: "gpt-3.5-turbo-1106",
-						max_tokens: 4096,
-						image: false
-					},
-					{
-						name: "gpt-3.5-turbo-1106",
-						max_tokens: 4096,
-						image: false
-					},
-					{
-						name: "gpt-3.5-turbo",
-						max_tokens: 4096,
-						image: false
-					}]
+					options: []
 				},
 				chutes:
 				{
 					default: "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
-					options: [
-					{
-						name: "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "nvidia/Llama-3_3-Nemotron-Super-49B-v1",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "nvidia/Llama-3.1-Nemotron-Nano-8B-v1",
-						max_tokens: 131072,
-						image: false
-					}]
+					options: []
 				},
 				anthropic:
 				{
 					default: "claude-3-5-haiku-20241022",
-					options: [
-					{
-						name: "claude-3-5-haiku-20241022",
-						max_tokens: 8192,
-						image: true
-					}]
+					options: []
 				},
 				deepinfra:
 				{
 					default: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
-					options: [
-					{
-						name: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
-						max_tokens: 1048576,
-						image: true
-					},
-					{
-						name: "meta-llama/Llama-4-Scout-17B-16E-Instruct",
-						max_tokens: 327680,
-						image: true
-					}],
+					options: []
 				},
 				deepseek:
 				{
 					default: "deepseek-chat",
-					options: [
-					{
-						name: "deepseek-chat",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "deepseek-reasoner",
-						max_tokens: 8192,
-						image: false
-					}]
+					options: []
 				},
 				google:
 				{
 					default: "gemini-2.5-pro",
-					options: [
-					{
-						name: "gemini-exp-1206",
-						max_tokens: 8192,
-						audio: true,
-						image: true,
-						video: true
-					},
-					{
-						name: "gemini-2.5-pro-exp-03-25",
-						max_tokens: 65536,
-						audio: true,
-						image: true,
-						video: true,
-						search: true
-					},
-					{
-						name: "gemini-2.5-pro-preview-03-25",
-						max_tokens: 65536,
-						audio: true,
-						image: true,
-						video: true,
-						search: true
-					},
-					{
-						name: "gemini-2.5-pro-preview-05-06",
-						max_tokens: 65536,
-						audio: true,
-						image: true,
-						video: true,
-						search: true
-					},
-					{
-						name: "gemini-2.5-pro-preview-06-05",
-						max_tokens: 65536,
-						audio: true,
-						image: true,
-						video: true,
-						search: true
-					},
-					{
-						name: "gemini-2.5-pro",
-						max_tokens: 65536,
-						audio: true,
-						image: true,
-						video: true,
-						search: true
-					},
-					{
-						name: "gemini-2.5-flash-preview-04-17",
-						max_tokens: 65536,
-						thinking: true,
-						audio: true,
-						image: true,
-						video: true,
-						search: true
-					},
-					{
-						name: "gemini-2.5-flash-preview-05-20",
-						max_tokens: 65536,
-						thinking: true,
-						audio: true,
-						image: true,
-						video: true,
-						search: true
-					},
-					{
-						name: "gemini-2.5-flash",
-						max_tokens: 65536,
-						thinking: true,
-						audio: true,
-						image: true,
-						video: true,
-						search: true
-					},
-					{
-						name: "gemini-2.5-flash-lite-preview-06-17",
-						max_tokens: 65536,
-						thinking: true,
-						audio: true,
-						image: true,
-						video: true,
-						search: true
-					},
-					{
-						name: "gemini-2.0-flash-001",
-						max_tokens: 8192,
-						audio: true,
-						image: true,
-						video: true,
-						search: true
-					},
-					{
-						name: "gemini-2.0-flash-exp-image-generation",
-						max_tokens: 8192,
-						audio: true,
-						image: true,
-						video: true,
-						modality: "image"
-					},
-					{
-						name: "gemini-2.0-flash-lite-001",
-						max_tokens: 8192,
-						audio: true,
-						image: true
-					},
-					{
-						name: "gemini-2.0-pro-exp-02-05",
-						max_tokens: 8192,
-						audio: true,
-						image: true
-					},
-					{
-						name: "gemini-2.0-flash-thinking-exp-01-21",
-						max_tokens: 65536,
-						audio: true,
-						image: true
-					},
-					{
-						name: "gemini-2.0-flash-exp",
-						max_tokens: 8192,
-						audio: true,
-						image: true,
-						video: true
-					},
-					{
-						name: "gemma-3-1b-it",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "gemma-3-4b-it",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "gemma-3-12b-it",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "gemma-3-27b-it",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "gemma-3n-e2b-it",
-						max_tokens: 2048,
-						image: false
-					},
-					{
-						name: "gemma-3n-e4b-it",
-						max_tokens: 2048,
-						image: false
-					},
-					{
-						name: "gemma-2-2b-it",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "gemma-2-9b-it",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "gemma-2-27b-it",
-						max_tokens: 8192,
-						image: false
-					}]
+					options: []
 				},
 				x:
 				{
 					default: "grok-3-mini",
-					options: [
-					{
-						name: "grok-4",
-						max_tokens: 256000,
-						reasoning_effort: "low",
-						image: true
-					},
-					{
-						name: "grok-3-mini",
-						max_tokens: 131072,
-						reasoning_effort: "low",
-						image: false
-					},
-					{
-						name: "grok-3",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "grok-3-mini-beta",
-						max_tokens: 131072,
-						reasoning_effort: "low",
-						image: false
-					},
-					{
-						name: "grok-3-beta",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "grok-3-mini-fast",
-						max_tokens: 131072,
-						reasoning_effort: "low",
-						image: false
-					},
-					{
-						name: "grok-3-fast",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "grok-2-vision-1212",
-						max_tokens: 32768,
-						image: true
-					},
-					{
-						name: "grok-2-1212",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "grok-2-mini",
-						max_tokens: 32768,
-						image: false
-					},
-					{
-						name: "grok-vision-beta",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "grok-beta",
-						max_tokens: 131072,
-						image: false
-					}]
+					options: []
 				},
 				groq:
 				{
 					default: "meta-llama/llama-4-scout-17b-16e-instruct",
-					options: [
-					{
-						name: "qwen-2.5-32b",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "qwen-2.5-coder-32b",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "qwen-qwq-32b",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "deepseek-r1-distill-qwen-32b",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "deepseek-r1-distill-llama-70b",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "gemma2-9b-it",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "llama-3.1-8b-instant",
-						max_tokens: 8000,
-						image: false
-					},
-					{
-						name: "llama-3.2-11b-vision-preview",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "llama-3.2-1b-preview",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "llama-3.2-3b-preview",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "llama-3.2-90b-vision-preview",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "llama-3.3-70b-specdec",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "llama-3.3-70b-versatile",
-						max_tokens: 32768,
-						image: false
-					},
-					{
-						name: "llama-3-70b-8192",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "llama-3-8b-8192",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "meta-llama/llama-4-maverick-17b-128e-instruct",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "meta-llama/llama-4-scout-17b-16e-instruct",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "mixtral-8x7b-32768",
-						max_tokens: 32768,
-						image: false
-					}]
+					options: []
 				},
 				hyperbolic:
 				{
 					default: "NousResearch/Hermes-3-Llama-3.1-70B",
-					options: [
-					{
-						name: "NousResearch/Hermes-3-Llama-3.1-70B",
-						max_tokens: 12288,
-						image: false
-					}],
+					options: []
 				},
 				lambda:
 				{
 					default: "hermes3-405b",
-					options: [
-					{
-						name: "hermes3-405b",
-						max_tokens: 131072,
-						image: false
-					}]
+					options: []
 				},
 				minimax:
 				{
 					default: "MiniMax-M1",
-					options: [
-					{
-						name: "MiniMax-Text-01",
-						max_tokens: 1000192,
-						image: true
-					},
-					{
-						name: "MiniMax-M1",
-						max_tokens: 1000000,
-						image: true
-					}],
+					options: []
 				},
 				ollama:
 				{
 					default: "",
-					options: [
-					{
-						name: ""
-					}],
+					options: []
 				},
 				openrouter:
 				{
 					default: "openrouter/optimus-alpha",
-					options: [
-					{
-						name: "cognitivecomputations/dolphin3.0-mistral-24b:free",
-						max_tokens: 32768,
-						image: false
-					},
-					{
-						name: "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
-						max_tokens: 32768,
-						image: false
-					},
-					{
-						name: "deepseek/deepseek-r1-distill-llama-8b",
-						max_tokens: 32000,
-						image: false
-					},
-					{
-						name: "google/gemma-3-1b-it:free",
-						max_tokens: 32000,
-						image: false
-					},
-					{
-						name: "google/gemma-3-4b-it:free",
-						max_tokens: 131072,
-						image: true
-					},
-					{
-						name: "google/gemma-3-12b-it:free",
-						max_tokens: 131072,
-						image: true
-					},
-					{
-						name: "microsoft/phi-4",
-						max_tokens: 16384,
-						image: false
-					},
-					{
-						name: "microsoft/phi-4-multimodal-instruct",
-						max_tokens: 128000,
-						image: true
-					},
-					{
-						name: "minimax/minimax-01",
-						max_tokens: 1000192,
-						image: true
-					},
-					{
-						name: "mistralai/codestral-2501",
-						max_tokens: 256000,
-						image: false
-					},
-					{
-						name: "mistralai/mistral-large-2411",
-						max_tokens: 128000,
-						image: false
-					},
-					{
-						name: "mistralai/pixtral-large-2411",
-						max_tokens: 128000,
-						image: true
-					},
-					{
-						name: "openai/gpt-4o:extended",
-						max_tokens: 128000,
-						image: false
-					},
-					{
-						name: "openrouter/quasar-alpha",
-						max_tokens: 1000000,
-						image: true
-					},
-					{
-						name: "openrouter/optimus-alpha",
-						max_tokens: 1000000,
-						image: true
-					},
-					{
-						name: "moonshotai/kimi-vl-a3b-thinking:free",
-						max_tokens: 131072,
-						image: true
-					},
-					{
-						name: "thudm/glm-4-32b",
-						max_tokens: 32000,
-						image: false
-					},
-					{
-						name: "thudm/glm-z1-32b",
-						max_tokens: 32000,
-						image: false
-					},
-					{
-						name: "microsoft/mai-ds-r1:free",
-						max_tokens: 163840,
-						image: false
-					},
-					{
-						name: "thudm/glm-z1-rumination-32b",
-						max_tokens: 32000,
-						image: false
-					},
-					{
-						name: "tngtech/deepseek-r1t-chimera:free",
-						max_tokens: 163840,
-						image: false
-					},
-					{
-						name: "deepseek/deepseek-prover-v2",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "microsoft/phi-4-multimodal-instruct",
-						max_tokens: 131072,
-						image: true
-					},
-					{
-						name: "deepseek/deepseek-prover-v2",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "microsoft/phi-4-reasoning-plus",
-						max_tokens: 32768,
-						image: false
-					},
-					{
-						name: "mistralai/mistral-medium-3",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "openai/codex-mini",
-						max_tokens: 1000000,
-						image: true
-					},
-					{
-						name: "mistralai/devstral-small",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "deepseek/deepseek-r1-0528",
-						max_tokens: 163840,
-						image: false
-					},
-					{
-						name: "deepseek/deepseek-r1-0528-qwen3-8b",
-						max_tokens: 128000,
-						image: false
-					},
-					{
-						name: "mistralai/magistral-medium-2506:thinking",
-						max_tokens: 40960,
-						image: false
-					},
-					{
-						name: "mistralai/magistral-medium-2506",
-						max_tokens: 40960,
-						image: false
-					},
-					{
-						name: "mistralai/magistral-small-2506",
-						max_tokens: 40000,
-						image: false
-					},
-					{
-						name: "moonshotai/kimi-dev-72b:free",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "minimax/minimax-m1:extended",
-						max_tokens: 128000,
-						image: true
-					},
-					{
-						name: "minimax/minimax-m1",
-						max_tokens: 1000000,
-						image: true
-					},
-					{
-						name: "mistralai/mistral-small-3.2-24b-instruct-2506",
-						max_tokens: 128000,
-						image: false
-					},
-					{
-						name: "inception/mercury",
-						max_tokens: 32000,
-						image: false
-					},
-					{
-						name: "baidu/ernie-4.5-300b-a47b",
-						max_tokens: 123000,
-						image: false
-					}]
+					options: []
 				},
 				perplexity:
 				{
 					default: "sonar",
-					options: [
-					{
-						name: "sonar-deep-research",
-						max_tokens: 200000,
-						image: true
-					},
-					{
-						name: "sonar-reasoning-pro",
-						max_tokens: 128000,
-						image: true
-					},
-					{
-						name: "sonar-reasoning",
-						max_tokens: 127000,
-						image: true
-					},
-					{
-						name: "sonar",
-						max_tokens: 127000,
-						image: true
-					},
-					{
-						name: "r1-1776",
-						max_tokens: 128000,
-						image: true
-					}]
+					options: []
 				},
 				alibaba:
 				{
 					default: "qwen-max",
-					options: [
-					{
-						name: "qwen-max",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen-plus",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen-plus-2025-04-28",
-						max_tokens: 8192,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "qwen-max-2025-01-25",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen-plus-2025-01-25",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen3-235b-a22b",
-						max_tokens: 16384,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "qwen3-32b",
-						max_tokens: 16384,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "qwen2.5-72b-instruct",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen2.5-32b-instruct",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen-turbo",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen-turbo-2025-04-28",
-						max_tokens: 8192,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "qwen-turbo-2024-11-01",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen3-30b-a3b",
-						max_tokens: 16384,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "qwen3-14b",
-						max_tokens: 8192,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "qwen3-8b",
-						max_tokens: 8192,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "qwen3-4b",
-						max_tokens: 40960,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "qwen3-1.7b",
-						max_tokens: 8192,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "qwen3-0.6b",
-						max_tokens: 8192,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "qwen2.5-14b-instruct",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen2.5-14b-instruct-1m",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen2.5-7b-instruct",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen2.5-7b-instruct-1m",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen-vl-max",
-						max_tokens: 2000,
-						image: true
-					},
-					{
-						name: "qwen-vl-plus",
-						max_tokens: 2000,
-						image: true
-					},
-					{
-						name: "qwen-vl-max-2025-04-08",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "qwen-vl-max-2025-01-25",
-						max_tokens: 2000,
-						image: true
-					},
-					{
-						name: "qwen2.5-vl-72b-instruct",
-						max_tokens: 2048,
-						image: true
-					},
-					{
-						name: "qwen2.5-vl-32b-instruct",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "qwen2.5-vl-7b-instruct",
-						max_tokens: 2048,
-						image: true
-					},
-					{
-						name: "qwen2.5-vl-3b-instruct",
-						max_tokens: 2048,
-						image: true
-					},
-					{
-						name: "qwen-qwq-plus",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qvq-max",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qvq-max-2025-03-25",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "qwen2.5-omni-7b",
-						max_tokens: 2048,
-						image: true
-					}]
+					options: []
 				},
 				sambanova:
 				{
 					default: "DeepSeek-V3-0324",
-					options: [
-					{
-						name: "DeepSeek-R1",
-						max_tokens: 16384,
-						image: false
-					},
-					{
-						name: "DeepSeek-R1-Distill-Llama-70B",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "Qwen3-32B",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "QwQ-32B",
-						max_tokens: 16384,
-						image: false
-					},
-					{
-						name: "DeepSeek-V3-0324",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "Llama-3.3-Swallow-70B-Instruct-v0.4",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "Llama-4-Scout-17B-16E-Instruct",
-						max_tokens: 8192,
-						image: false
-					},
-					{
-						name: "Llama-3.1-Tulu-3-405B",
-						max_tokens: 16384,
-						image: false
-					},
-					{
-						name: "Meta-Llama-3.1-405B-Instruct",
-						max_tokens: 16384,
-						image: false
-					},
-					{
-						name: "Meta-Llama-3.1-70B-Instruct",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "Meta-Llama-3.1-8B-Instruct",
-						max_tokens: 16384,
-						image: false
-					},
-					{
-						name: "Meta-Llama-3.2-1B-Instruct",
-						max_tokens: 16384,
-						image: true
-					},
-					{
-						name: "Meta-Llama-3.2-3B-Instruct",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "Meta-Llama-3.3-70B-Instruct",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "Qwen2.5-72B-Instruct",
-						max_tokens: 16384,
-						image: false
-					},
-					{
-						name: "Qwen2.5-Coder-32B-Instruct",
-						max_tokens: 16384,
-						image: false
-					},
-					{
-						name: "Llama-4-Maverick-17B-128E-Instruct",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "Qwen2-Audio-7B-Instruct",
-						max_tokens: 8192,
-						audio: true,
-						image: false
-					},
-					{
-						name: "Llama-3.2-11B-Vision-Instruct",
-						max_tokens: 4096,
-						image: true
-					},
-					{
-						name: "Llama-3.2-90B-Vision-Instruct",
-						max_tokens: 4096,
-						image: true
-					}]
+					options: []
 				},
 				together:
 				{
 					default: "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
-					options: [
-					{
-						name: "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
-						max_tokens: 131073,
-						image: false
-					},
-					{
-						name: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
-						max_tokens: 32768,
-						image: false
-					}]
+					options: []
 				}
 			},
 			COMPLETION_HIGH_COST:
@@ -1234,221 +122,22 @@ window.CONFIG = {
 				openai:
 				{
 					default: "gpt-4.5-preview",
-					options: [
-					{
-						name: "gpt-4.5-preview",
-						max_tokens: 16834,
-						image: true
-					},
-					{
-						name: "gpt-4.5-preview-2025-02-27",
-						max_tokens: 16834,
-						image: true
-					},
-					{
-						name: "o1-pro",
-						max_tokens: 100000,
-						responses_api_only: true,
-						reasoning_effort: "low",
-						image: true
-					},
-					{
-						name: "o1",
-						max_tokens: 100000,
-						reasoning_effort: "low",
-						image: true
-					},
-					{
-						name: "o1-2024-12-17",
-						max_tokens: 100000,
-						reasoning_effort: "low",
-						image: true
-					},
-					{
-						name: "o1-preview",
-						max_tokens: 32768,
-						reasoning_effort: "low",
-						completions_api_only: true,
-						image: false
-					},
-					{
-						name: "o1-preview-2024-09-12",
-						max_tokens: 32768,
-						reasoning_effort: "low",
-						completions_api_only: true,
-						image: false
-					},
-					{
-						name: "o1-pro-2025-03-19",
-						max_tokens: 100000,
-						responses_api_only: true,
-						reasoning_effort: "low",
-						image: true
-					},
-					{
-						name: "o3-deep-research",
-						max_tokens: 100000,
-						responses_api_only: true,
-						tools: ["web_search_preview"],
-						image: true
-					},
-					{
-						name: "o3-deep-research-2025-06-26",
-						max_tokens: 100000,
-						responses_api_only: true,
-						tools: ["web_search_preview"],
-						image: true
-					},
-					{
-						name: "o3-pro",
-						max_tokens: 100000,
-						responses_api_only: true,
-						reasoning_effort: "low",
-						image: true
-					},
-					{
-						name: "o3-pro-2025-06-10",
-						max_tokens: 100000,
-						responses_api_only: true,
-						reasoning_effort: "low",
-						image: true
-					},
-					{
-						name: "gpt-4o-search-preview",
-						max_tokens: 0,
-						completions_api_only: true,
-						search_context_size: "low",
-						image: false
-					},
-					{
-						name: "gpt-4o-search-preview-2025-03-11",
-						max_tokens: 0,
-						completions_api_only: true,
-						search_context_size: "low",
-						image: false
-					},
-					{
-						name: "gpt-4o-mini-search-preview-2025-03-11",
-						max_tokens: 0,
-						completions_api_only: true,
-						search_context_size: "low",
-						image: false
-					},
-					{
-						name: "gpt-4o-mini-search-preview",
-						max_tokens: 0,
-						completions_api_only: true,
-						search_context_size: "low",
-						image: false
-					},
-					{
-						name: "gpt-4o-2024-05-13",
-						max_tokens: 4096,
-						image: true
-					},
-					{
-						name: "gpt-4-turbo-2024-04-09",
-						max_tokens: 4096,
-						image: true
-					},
-					{
-						name: "gpt-4-turbo",
-						max_tokens: 4096,
-						image: true
-					},
-					{
-						name: "gpt-4-1106-preview",
-						max_tokens: 4096,
-						image: true
-					},
-					{
-						name: "gpt-4-0613",
-						max_tokens: 4096,
-						image: true
-					},
-					{
-						name: "gpt-4-0125-preview",
-						max_tokens: 4096,
-						image: true
-					},
-					{
-						name: "gpt-4",
-						max_tokens: 4096,
-						image: true
-					},
-					{
-						name: "chatgpt-4o-latest",
-						max_tokens: 16383,
-						image: true
-					}]
+					options: []
 				},
 				anthropic:
 				{
 					default: "claude-3-5-sonnet-20241022",
-					options: [
-					{
-						name: "claude-opus-4-20250514",
-						max_tokens: 32000,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "claude-sonnet-4-20250514",
-						max_tokens: 64000,
-						thinking: true,
-						image: false
-					},
-					{
-						name: "claude-3-7-sonnet-20250219",
-						max_tokens: 128000,
-						thinking: true,
-						image: true
-					},
-					{
-						name: "claude-3-opus-20240229",
-						max_tokens: 4096,
-						image: true
-					},
-					{
-						name: "claude-3-5-sonnet-20241022",
-						max_tokens: 8192,
-						image: true
-					},
-					{
-						name: "claude-3-5-sonnet-20240620",
-						max_tokens: 8192,
-						image: true
-					}]
+					options: []
 				},
 				x:
 				{
 					default: "grok-3",
-					options: [
-					{
-						name: "grok-3",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "grok-3-fast",
-						max_tokens: 131072,
-						image: false
-					},
-					{
-						name: "grok-3-beta",
-						max_tokens: 131072,
-						image: false
-					}]
+					options: []
 				},
 				perplexity:
 				{
 					default: "sonar-pro",
-					options: [
-					{
-						name: "sonar-pro",
-						max_tokens: 200000,
-						image: true
-					}]
+					options: []
 				}
 			},
 			TRANSCRIPTION:
@@ -1456,36 +145,18 @@ window.CONFIG = {
 				chutes:
 				{
 					default: "",
-					options: [
-					{
-						name: ""
-					}],
+					options: []
 				},
 				groq:
 				{
 					default: "whisper-large-v3",
-					options: [
-					{
-						name: "whisper-large-v3"
-					},
-					{
-						name: "whisper-large-v3-turbo"
-					}],
+					options: []
 				},
 				openai:
 				{
 					default: "whisper-1",
-					options: [
-					{
-						name: "whisper-1"
-					},
-					{
-						name: "gpt-4o-mini-transcribe"
-					},
-					{
-						name: "gpt-4o-transcribe"
-					}],
-				},
+					options: []
+				}
 			}
 		},
 		CONFIG:
@@ -2110,6 +781,82 @@ window.CONFIG = {
 		}
 	}
 };
+(function()
+{
+	function loadModels(url)
+	{
+		const xhr = new XMLHttpRequest();
+		xhr.open('GET', url, false);
+		xhr.send(null);
+		if (xhr.status < 200 || xhr.status >= 300) return null;
+		return JSON.parse(xhr.responseText);
+	}
+
+	function mapModels(json)
+	{
+		if (!Array.isArray(json?.data)) return [];
+		return json.data.map(model =>
+		{
+			const
+			{
+				id,
+				...rest
+			} = model ||
+			{};
+			return {
+				name: id,
+				...rest
+			};
+		});
+	}
+
+	function fillModels(data, variable)
+	{
+		Object.entries(data)
+			.forEach(([provider, path]) =>
+			{
+				const config = variable[provider];
+				if (!config) return;
+				const json = loadModels(`${remote}/${path}`);
+				config.options.push(...mapModels(json));
+			});
+	}
+	const remote = "https://raw.githubusercontent.com/Inc44/CoFluRouter/refs/heads/master/models";
+	const completion = {
+		alibaba: 'completion/Alibaba.json',
+		anthropic: 'completion/Anthropic.json',
+		cerebras: 'completion/Cerebras.json',
+		chutes: 'completion/Chutes.json',
+		deepinfra: 'completion/DeepInfra.json',
+		deepseek: 'completion/DeepSeek.json',
+		google: 'completion/Google.json',
+		groq: 'completion/Groq.json',
+		hyperbolic: 'completion/Hyperbolic.json',
+		lambda: 'completion/Lambda.json',
+		minimax: 'completion/Minimax.json',
+		ollama: 'completion/Ollama.json',
+		openai: 'completion/OpenAI.json',
+		openrouter: 'completion/OpenRouter.json',
+		perplexity: 'completion/Perplexity.json',
+		sambanova: 'completion/SambaNova.json',
+		together: 'completion/Together.json',
+		x: 'completion/X.json'
+	};
+	const completionHighCost = {
+		anthropic: 'completion.high.cost/Anthropic.json',
+		openai: 'completion.high.cost/OpenAI.json',
+		perplexity: 'completion.high.cost/Perplexity.json',
+		x: 'completion.high.cost/X.json'
+	};
+	const transcription = {
+		chutes: 'transcription/Chutes.json',
+		groq: 'transcription/Groq.json',
+		openai: 'transcription/OpenAI.json'
+	};
+	fillModels(completion, window.CONFIG.API.MODELS.COMPLETION);
+	fillModels(completionHighCost, window.CONFIG.API.MODELS.COMPLETION_HIGH_COST);
+	fillModels(transcription, window.CONFIG.API.MODELS.TRANSCRIPTION);
+})();
 window.MathJax = {
 	tex:
 	{
