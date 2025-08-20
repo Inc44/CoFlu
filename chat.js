@@ -1,4 +1,3 @@
-// chat.js
 class ChatApp
 {
 	constructor()

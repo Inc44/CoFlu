@@ -1,4 +1,3 @@
-// translate.js
 class TranslateApp
 {
 	constructor()

@@ -1,4 +1,3 @@
-// services/storage.service.js
 const StorageService = {
 	save(key, value)
 	{

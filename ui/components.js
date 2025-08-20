@@ -1,4 +1,3 @@
-// ui/components.js
 const UIComponents = {
 	AudioUploader: class
 	{

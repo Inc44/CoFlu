@@ -1,4 +1,3 @@
-// services/text.service.js
 const TextService = {
 	updateStats(textArea, type)
 	{

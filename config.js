@@ -1,4 +1,3 @@
-// config.js
 window.CONFIG = {
 	API:
 	{

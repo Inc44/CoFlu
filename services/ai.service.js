@@ -1,4 +1,3 @@
-// services/ai.service.js
 const AiService = {
 	async generate(prompt, model, options = {})
 	{

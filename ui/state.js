@@ -1,4 +1,3 @@
-// ui/state.js
 const UIState = {
 	setGenerating(isGenerating, els)
 	{

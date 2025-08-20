@@ -1,4 +1,3 @@
-// ui/handlers.js
 const UIHandlers = {
 	setupTextAreaHandlers(els)
 	{

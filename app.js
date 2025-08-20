@@ -1,4 +1,3 @@
-// app.js
 class App
 {
 	constructor()

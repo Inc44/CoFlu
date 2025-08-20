@@ -1,4 +1,3 @@
-// services/comparison.service.js
 const ComparisonService = {
 	EQUAL: 0,
 	DEL: -1,
