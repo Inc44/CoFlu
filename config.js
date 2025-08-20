@@ -809,14 +809,20 @@ window.CONFIG = {
 
 	function fillModels(data, variable)
 	{
+		const jsons = [];
 		Object.entries(data)
 			.forEach(([provider, path]) =>
 			{
 				const config = variable[provider];
 				if (!config) return;
-				const json = loadModels(`${remote}/${path}`);
-				config.options.push(...mapModels(json));
+				const json = loadModels(`${remote}/${path}`)
+					.then(resp =>
+					{
+						config.options.push(...mapModels(resp));
+					});
+				jsons.push(json);
 			});
+		return Promise.all(jsons);
 	}
 	const remote = "https://raw.githubusercontent.com/Inc44/CoFluRouter/refs/heads/master/models";
 	const completion = {
