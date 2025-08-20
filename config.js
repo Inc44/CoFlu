@@ -785,11 +785,8 @@ window.CONFIG = {
 {
 	function loadModels(url)
 	{
-		const xhr = new XMLHttpRequest();
-		xhr.open('GET', url, false);
-		xhr.send(null);
-		if (xhr.status < 200 || xhr.status >= 300) return null;
-		return JSON.parse(xhr.responseText);
+		return fetch(url)
+			.then(resp => resp.json());
 	}
 
 	function mapModels(json)
