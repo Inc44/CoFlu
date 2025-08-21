@@ -92,8 +92,9 @@ class SettingsApp
 			},
 		};
 	}
-	init()
+	async init()
 	{
+		await window.CONFIG.API.MODELS.LOADED;
 		this.loadSettings();
 		this.setupEvents();
 		this.updateModelVisibility(this.els.apiModel.value);

@@ -856,9 +856,12 @@ window.CONFIG = {
 		groq: 'transcription/Groq.json',
 		openai: 'transcription/OpenAI.json'
 	};
-	fillModels(completion, window.CONFIG.API.MODELS.COMPLETION);
-	fillModels(completionHighCost, window.CONFIG.API.MODELS.COMPLETION_HIGH_COST);
-	fillModels(transcription, window.CONFIG.API.MODELS.TRANSCRIPTION);
+	const promiseCompletion = fillModels(completion, window.CONFIG.API.MODELS.COMPLETION);
+	const promiseCompletionHighCost = fillModels(completionHighCost, window.CONFIG.API.MODELS.COMPLETION_HIGH_COST);
+	const promiseTranscription = fillModels(transcription, window.CONFIG.API.MODELS.TRANSCRIPTION);
+	window.CONFIG.API.MODELS.LOADED = Promise.all([promiseCompletion, promiseCompletionHighCost, promiseTranscription])
+		.catch(() =>
+		{});
 })();
 window.MathJax = {
 	tex:

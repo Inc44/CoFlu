@@ -1,12 +1,24 @@
 # CoFlu
 
+![Stars](https://img.shields.io/github/stars/Inc44/CoFlu?style=social)
+![Forks](https://img.shields.io/github/forks/Inc44/CoFlu?style=social)
+![Watchers](https://img.shields.io/github/watchers/Inc44/CoFlu?style=social)
+![Repo Size](https://img.shields.io/github/repo-size/Inc44/CoFlu)
+![Language Count](https://img.shields.io/github/languages/count/Inc44/CoFlu)
+![Top Language](https://img.shields.io/github/languages/top/Inc44/CoFlu)
+[![Issues](https://img.shields.io/github/issues/Inc44/CoFlu)](https://github.com/Inc44/CoFlu/issues?q=is%3Aopen+is%3Aissue)
+![Last Commit](https://img.shields.io/github/last-commit/Inc44/CoFlu?color=red)
+[![Release](https://img.shields.io/github/release/Inc44/CoFlu.svg)](https://github.com/Inc44/CoFlu/releases)
+[![Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/Inc44)
+[![Build](https://github.com/Inc44/CoFlu/actions/workflows/build.yml/badge.svg)](https://github.com/Inc44/CoFlu/actions/workflows/build.yml)
+
 CoFlu is a powerful text manipulation, generation, and comparison tool. It's designed for tasks like proofreading, editing, content creation, version control, and ensuring text consistency. CoFlu offers unique capabilities, including AI-powered text generation, audio transcription, and unprecedented layout-preserving .docx translation using LLMs.
 
 ![CoFlu](CoFlu.png)
 
 **Key Differentiator:** As of February 2025, CoFlu is the *only* website offering Microsoft Word (.docx) translation that *fully preserves the original document's layout* (fonts, styles, tables, images, and other elements) while using LLMs for superior translation quality. This sets CoFlu apart, providing a powerful and unique capability for users working with formatted documents.
 
-## Features
+## ⚙️ Features
 
 **1. Text Manipulation & Comparison:**
 
@@ -68,7 +80,9 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - **Appearance:** Light/dark mode, wide mode.
 - **Settings Import/Export:** JSON format.
 
-## Usage
+## 📖 Usage Examples
+
+### Basic Proofreading
 
 1. **Load Text:** Upload files or paste/type text into the source/target areas.
 2. **Transform:** Use buttons above text areas for transformations (uppercase, lowercase, dedupe, etc.).
@@ -83,13 +97,13 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 7. **Render Markdown:** Choose math renderer (KaTeX/MathJax), click "Render," use Ctrl+P to save.
 8. **Translate .DOCX:** Select language, upload .docx, click "Start Translation."
 
-## Custom Prompts
+### Custom Prompts
 
 1. Enter your custom prompt in the "Custom Prompt" input.
 2. Click "Save Prompt" to store it for later use.
 3. Saved prompts will appear in the "Select Prompt" dropdown.
 
-## API Keys
+### API Keys
 
 - **Required for AI features (generation, transcription, .docx translation).**
 - Enter keys in the "Settings" page.
@@ -105,23 +119,14 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 	- **Qwen:** [Alibaba Cloud](https://bailian.console.alibabacloud.com/?apiKey=1#/api-key)
 	- **SambaNova:** [SambaNova Cloud](https://cloud.sambanova.ai/apis)
 	- **Together:** [Together.AI](https://api.together.ai/settings/api-keys)
-	
-## Dependencies
 
-- [Bootstrap](https://getbootstrap.com)
-- [JSZip](https://github.com/Stuk/jszip)
-- [KaTeX](https://katex.org)
-- [MathJax](https://www.mathjax.org)
-- [diff-match-patch](https://github.com/google/diff-match-patch)
-- [marked](https://marked.js.org)
-
-## Inspiration
+## 🎯 Motivation
 
 - [Count Words Free - Compare Texts](https://countwordsfree.com/comparetexts)
 - [EditGPT](https://editgpt.app)
 - [Notability](https://notability.com)
 
-## Bugs
+## 🐛 Bugs
 
 - 🔴 Adjust upload limits based on platform constraints, e.g., SambaNova (~20MB) and Google (>100MB).
 - 🔴 Fix CORS for Groq's 40MB audio upload.
@@ -145,7 +150,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟢 Fix italic text appearing on render and in HTML elements.
 - 🟢 Other bugs have not been found yet.
 
-## TODOs
+## 🚧 TODO
 
 - 🔴 Add support for local LLMs via Ollama.js for offline and independent use.
 - 🔴 Adjust transcription size limits: 40 MB for Groq.
@@ -177,7 +182,6 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟡 Add multiple prompt selections.
 - 🟡 Add search prompt library.
 - 🟡 Explore other models on www.minimax.io and lambdalabs.com.
-- 🟢 Add Grok-3.
 - 🟢 Consider adding new default prompts, such as:
 	- *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
 	- *"Adhere to ASD-STE100 Simplified Technical English."*
@@ -190,6 +194,29 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟢 Test old models Gemini Exp 1121 and 1114.
 - 🟢 Verify supported upload formats.
 
-## License
+## 🙏 Thanks
+
+Creators of:
+
+- [Bootstrap](https://getbootstrap.com)
+- [JSZip](https://github.com/Stuk/jszip)
+- [KaTeX](https://katex.org)
+- [MathJax](https://www.mathjax.org)
+- [diff-match-patch](https://github.com/google/diff-match-patch)
+- [marked](https://marked.js.org)
+
+## 🤝 Contribution
+
+Contributions, suggestions, and new ideas are heartily welcomed. If you're considering significant modifications, please initiate an issue for discussion before submitting a pull request.
+
+## 📜 License
+
+[![MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](https://opensource.org/licenses/MIT)
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## 💖 Support
+
+[![BuyMeACoffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/xamituchido)
+[![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/inc44)
+[![Patreon](https://img.shields.io/badge/Patreon-F96854?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/Inc44)
