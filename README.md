@@ -45,7 +45,6 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 	- **DeepSeek:** R1 and V3.
 	- **Google:** Gemini 2.0 models, including video input.
 	- **Groq:** LPU high-speed inference, including vision models.
-	- **Lambda:** LLaMA.
 	- **xAI:** The most based Grok.
 	- **OpenRouter:** Unsage Dolphin 3.0, Mistral, and `gpt-4o` extended output.
 	- **Perplexity:** Sonar Deep Research.
@@ -113,7 +112,6 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 	- **Google:** [Google AI Studio](https://aistudio.google.com/app/apikey)
 	- **Grok:** [xAI Cloud Console](https://console.x.ai)
 	- **Groq:** [GroqCloud](https://console.groq.com/keys)
-	- **Lambda:** [Lambda](https://cloud.lambdalabs.com/api-keys)
 	- **OpenRouter:** [OpenRouter](https://openrouter.ai/settings/keys)
 	- **Perplexity:** [Perplexity](https://www.perplexity.ai/settings/api)
 	- **Qwen:** [Alibaba Cloud](https://bailian.console.alibabacloud.com/?apiKey=1#/api-key)
@@ -130,7 +128,6 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 
 - 🔴 Adjust upload limits based on platform constraints, e.g., SambaNova (~20MB) and Google (>100MB).
 - 🔴 Fix CORS for Groq's 40MB audio upload.
-- 🔴 Fix CORS for Lambda Labs.
 - 🔴 Fix chat reasoning not showing.
 - 🔴 Fix max_completion_tokens for O models and max_tokens for others.
 - 🔴 Fix reasoning in OpenRouter as `{"max_tokens": 100000}` is not used.
@@ -181,7 +178,7 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟡 Add copy prompt button.
 - 🟡 Add multiple prompt selections.
 - 🟡 Add search prompt library.
-- 🟡 Explore other models on www.minimax.io and lambdalabs.com.
+- 🟡 Explore other models on www.minimax.io
 - 🟢 Consider adding new default prompts, such as:
 	- *"Markdown OCR the following scan. The first page example is already given; continue from the second image."*
 	- *"Adhere to ASD-STE100 Simplified Technical English."*

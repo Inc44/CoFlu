@@ -13,7 +13,6 @@ window.CONFIG = {
 			x: 'x_api_key',
 			groq: 'groq_api_key',
 			hyperbolic: 'hyperbolic_api_key',
-			lambda: 'lambda_api_key',
 			minimax: 'minimax_api_key',
 			ollama: 'ollama_api_key',
 			openrouter: 'openrouter_api_key',
@@ -74,11 +73,6 @@ window.CONFIG = {
 				hyperbolic:
 				{
 					default: "NousResearch/Hermes-3-Llama-3.1-70B",
-					options: []
-				},
-				lambda:
-				{
-					default: "hermes3-405b",
 					options: []
 				},
 				minimax:
@@ -301,14 +295,6 @@ window.CONFIG = {
 					extractContent: data => data.choices[0]?.message?.content,
 					extractStreamContent: data => data.choices[0]?.delta?.content
 				},
-				lambda:
-				{
-					url: 'https://api.lambdalabs.com/v1/chat/completions',
-					apiKeyHeader: 'Authorization',
-					apiKeyPrefix: 'Bearer ',
-					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
-				},
 				minimax:
 				{
 					url: 'https://api.minimaxi.chat/v1/text/chatcompletion_v2',
@@ -483,11 +469,6 @@ window.CONFIG = {
 					max: 0,
 					size: 0
 				},
-				lambda:
-				{
-					max: 0,
-					size: 0
-				},
 				minimax:
 				{
 					max: 0,
@@ -575,11 +556,6 @@ window.CONFIG = {
 				{
 					max: 100,
 					size: 100
-				},
-				lambda:
-				{
-					max: 0,
-					size: 0
 				},
 				minimax:
 				{
@@ -669,11 +645,6 @@ window.CONFIG = {
 					max: 0,
 					size: 0
 				},
-				lambda:
-				{
-					max: 0,
-					size: 0
-				},
 				minimax:
 				{
 					max: 0,
@@ -742,7 +713,6 @@ window.CONFIG = {
 			x: 'X API Key:',
 			groq: 'Groq API Key:',
 			hyperbolic: 'Hyperbolic API Key:',
-			lambda: 'Lambda API Key:',
 			minimax: 'MiniMax API Key:',
 			ollama: 'Ollama API Key:',
 			openrouter: 'OpenRouter API Key:',
@@ -770,7 +740,6 @@ window.CONFIG = {
 			x: /^xai-[A-Za-z0-9]{32,}$/,
 			groq: /^gsk_[A-Za-z0-9]{32,}$/,
 			hyperbolic: /^[A-Za-z0-9]{32,}$/,
-			lambda: /^secret_[A-Za-z0-9]{32,}$/,
 			minimax: /^[A-Za-z0-9]{32,}$/,
 			ollama: /^.*$/,
 			openrouter: /^sk-or-v1-[A-Za-z0-9]{32,}$/,
@@ -835,7 +804,6 @@ window.CONFIG = {
 		google: 'completion/Google.json',
 		groq: 'completion/Groq.json',
 		hyperbolic: 'completion/Hyperbolic.json',
-		lambda: 'completion/Lambda.json',
 		minimax: 'completion/Minimax.json',
 		ollama: 'completion/Ollama.json',
 		openai: 'completion/OpenAI.json',
