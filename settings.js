@@ -191,10 +191,31 @@ class SettingsApp
 					this.addModelsToSelect(modelSelect, highCostConfig.options, true);
 				}
 				modelSelect.value = StorageService.load(`${provider}_model`, config.default);
+				const available = Array.from(modelSelect.options)
+					.filter(option => !option.disabled)
+					.map(option => option.value);
+				if (!available.includes(modelSelect.value))
+				{
+					let fallback = config.default;
+					if (!available.includes(fallback) && available.length > 0)
+					{
+						fallback = available[0];
+					}
+					modelSelect.value = fallback;
+					StorageService.save(`${provider}_model`, fallback);
+				}
 			});
 	}
 	addModelsToSelect(select, models, isHighCost = false)
 	{
+		if (isHighCost && select.options.length > 0)
+		{
+			const option = document.createElement('option');
+			option.value = '';
+			option.textContent = 'High-Cost Model(s) ($15+/1M):';
+			option.disabled = true;
+			select.appendChild(option);
+		}
 		models.forEach(model =>
 		{
 			const option = document.createElement('option');
