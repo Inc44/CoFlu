@@ -224,7 +224,9 @@ const AiService = {
 		}
 		if (modelConfig.search_context_size)
 		{
-			reqBody.search_context_size = StorageService.load('search_context_size', 'low');
+			reqBody.web_search_options = {
+				search_context_size: StorageService.load('search_context_size', 'low')
+			};
 		}
 		if (modelConfig.thinking)
 		{
