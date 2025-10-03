@@ -27,58 +27,170 @@ window.CONFIG = {
 			{
 				cerebras:
 				{
-					default: "llama-4-scout-17b-16e-instruct",
-					options: []
+					default: "gpt-oss-120b",
+					options: [
+					{
+						name: "gpt-oss-120b",
+						max_tokens: 8192,
+						reasoning_effort: "low",
+						image: false
+					}]
 				},
 				openai:
 				{
-					default: "o3",
-					options: []
+					default: "gpt-5",
+					options: [
+					{
+						name: "gpt-5",
+						max_tokens: 128000,
+						reasoning_effort: "low",
+						image: true
+					},
+					{
+						name: "o3",
+						max_tokens: 100000,
+						reasoning_effort: "low",
+						image: true
+					},
+					{
+						name: "gpt-5-mini",
+						max_tokens: 128000,
+						reasoning_effort: "low",
+						image: true
+					},
+					{
+						name: "gpt-4o",
+						max_tokens: 16384,
+						image: true
+					}]
 				},
 				chutes:
 				{
-					default: "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
-					options: []
+					default: "openai/gpt-oss-120b",
+					options: [
+					{
+						name: "openai/gpt-oss-120b",
+						max_tokens: 131072,
+						reasoning_effort: "low",
+						image: false
+					}]
 				},
 				anthropic:
 				{
 					default: "claude-3-5-haiku-20241022",
-					options: []
+					options: [
+					{
+						name: "claude-3-5-haiku-20241022",
+						max_tokens: 8192,
+						image: true
+					}]
 				},
 				deepinfra:
 				{
-					default: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
-					options: []
+					default: "openai/gpt-oss-120b",
+					options: [
+					{
+						name: "openai/gpt-oss-120b",
+						max_tokens: 131072,
+						reasoning_effort: "low",
+						image: false
+					}]
 				},
 				deepseek:
 				{
 					default: "deepseek-chat",
-					options: []
+					options: [
+					{
+						name: "deepseek-chat",
+						max_tokens: 8192,
+						image: false
+					},
+					{
+						name: "deepseek-reasoner",
+						max_tokens: 8192,
+						image: false
+					}]
 				},
 				google:
 				{
 					default: "gemini-2.5-pro",
-					options: []
+					options: [
+					{
+						name: "gemini-2.5-pro",
+						max_tokens: 65536,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					},
+					{
+						name: "gemini-flash-latest",
+						max_tokens: 65536,
+						thinking: true,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					},
+					{
+						name: "gemini-flash-lite-latest",
+						max_tokens: 65536,
+						thinking: true,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					},
+					{
+						name: "gemini-pro-latest",
+						max_tokens: 65536,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					}, ]
 				},
 				x:
 				{
-					default: "grok-3-mini",
-					options: []
+					default: "grok-4-fast-reasoning",
+					options: [
+					{
+						name: "grok-4-fast-reasoning",
+						max_tokens: 30000,
+						image: true
+					}]
 				},
 				groq:
 				{
-					default: "meta-llama/llama-4-scout-17b-16e-instruct",
-					options: []
+					default: "openai/gpt-oss-120b",
+					options: [
+					{
+						name: "openai/gpt-oss-120b",
+						max_tokens: 65536,
+						reasoning_effort: "low",
+						image: false
+					}]
 				},
 				hyperbolic:
 				{
-					default: "NousResearch/Hermes-3-Llama-3.1-70B",
-					options: []
+					default: "openai/gpt-oss-120b",
+					options: [
+					{
+						name: "openai/gpt-oss-120b",
+						max_tokens: 131072,
+						reasoning_effort: "low",
+						image: false
+					}]
 				},
 				minimax:
 				{
 					default: "MiniMax-M1",
-					options: []
+					options: [
+					{
+						name: "MiniMax-M1",
+						max_tokens: 1000192,
+						image: true
+					}]
 				},
 				ollama:
 				{
@@ -87,51 +199,134 @@ window.CONFIG = {
 				},
 				openrouter:
 				{
-					default: "openrouter/optimus-alpha",
-					options: []
+					default: "openai/gpt-oss-120b",
+					options: [
+					{
+						name: "openai/gpt-oss-120b",
+						max_tokens: 131072,
+						reasoning_effort: "low",
+						image: false
+					}]
 				},
 				perplexity:
 				{
-					default: "sonar",
-					options: []
+					default: "sonar-deep-research",
+					options: [
+					{
+						name: "sonar-deep-research",
+						max_tokens: 200000,
+						reasoning_effort: "low",
+						image: false
+					}]
 				},
 				alibaba:
 				{
-					default: "qwen-max",
-					options: []
+					default: "qwen3-235b-a22b",
+					options: [
+					{
+						name: "qwen3-235b-a22b",
+						max_tokens: 16384,
+						thinking: true,
+						image: true
+					}]
 				},
 				sambanova:
 				{
-					default: "DeepSeek-V3-0324",
-					options: []
+					default: "gpt-oss-120b",
+					options: [
+					{
+						name: "gpt-oss-120b",
+						max_tokens: 131072,
+						reasoning_effort: "low",
+						image: false
+					}]
 				},
 				together:
 				{
-					default: "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
-					options: []
+					default: "openai/gpt-oss-120b",
+					options: [
+					{
+						name: "openai/gpt-oss-120b",
+						max_tokens: 131072,
+						reasoning_effort: "low",
+						image: false
+					}]
 				}
 			},
 			COMPLETION_HIGH_COST:
 			{
 				openai:
 				{
-					default: "gpt-4.5-preview",
-					options: []
+					default: "chatgpt-4o-latest",
+					options: [
+					{
+						name: "o3-deep-research",
+						max_tokens: 100000,
+						responses_api_only: true,
+						tools: ["web_search_preview"],
+						image: false
+					},
+					{
+						name: "gpt-4o-search-preview",
+						max_tokens: 16384,
+						completions_api_only: true,
+						search_context_size: "low",
+						image: false
+					},
+					{
+						name: "gpt-4o-audio-preview",
+						max_tokens: 16384,
+						completions_api_only: true,
+						audio: true,
+						image: false,
+						modality: "audio"
+					},
+					{
+						name: "chatgpt-4o-latest",
+						max_tokens: 16384,
+						image: true
+					},
+					{
+						name: "gpt-4-0125-preview",
+						max_tokens: 4096,
+						image: false
+					},
+					{
+						name: "gpt-4-1106-preview",
+						max_tokens: 4096,
+						image: false
+					}]
 				},
 				anthropic:
 				{
-					default: "claude-3-5-sonnet-20241022",
-					options: []
+					default: "claude-sonnet-4-5-20250929",
+					options: [
+					{
+						name: "claude-sonnet-4-5-20250929",
+						max_tokens: 64000,
+						thinking: true,
+						image: true
+					}]
 				},
 				x:
 				{
-					default: "grok-3",
-					options: []
+					default: "grok-4-0709",
+					options: [
+					{
+						name: "grok-4-0709",
+						max_tokens: 256000,
+						image: true
+					}]
 				},
 				perplexity:
 				{
 					default: "sonar-pro",
-					options: []
+					options: [
+					{
+						name: "sonar-pro",
+						max_tokens: 200000,
+						image: true
+					}]
 				}
 			},
 			TRANSCRIPTION:
@@ -297,7 +492,7 @@ window.CONFIG = {
 				},
 				minimax:
 				{
-					url: 'https://api.minimaxi.chat/v1/text/chatcompletion_v2',
+					url: 'https://api.minimax.io/v1/text/chatcompletion_v2',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
