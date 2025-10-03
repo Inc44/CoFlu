@@ -334,18 +334,36 @@ window.CONFIG = {
 				chutes:
 				{
 					default: "",
-					options: []
+					options: [
+					{
+						name: ""
+					}]
 				},
 				groq:
 				{
 					default: "whisper-large-v3",
-					options: []
+					options: [
+					{
+						name: "whisper-large-v3-turbo"
+					},
+					{
+						name: "whisper-large-v3"
+					}],
 				},
 				openai:
 				{
 					default: "whisper-1",
-					options: []
-				}
+					options: [
+					{
+						name: "gpt-4o-mini-transcribe"
+					},
+					{
+						name: "gpt-4o-transcribe"
+					},
+					{
+						name: "whisper-1"
+					}],
+				},
 			}
 		},
 		CONFIG:
