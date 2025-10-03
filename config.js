@@ -989,6 +989,17 @@ window.CONFIG = {
 		});
 	}
 
+	function pushUniqueOptions(config, models)
+	{
+		models.forEach(model =>
+		{
+			if (!config.options.some(option => option.name === model.name))
+			{
+				config.options.push(model);
+			}
+		});
+	}
+
 	function fillModels(data, variable)
 	{
 		const jsons = [];
@@ -1000,11 +1011,53 @@ window.CONFIG = {
 				const json = loadModels(`${remote}/${path}`)
 					.then(resp =>
 					{
-						config.options.push(...mapModels(resp));
+						pushUniqueOptions(config, mapModels(resp));
 					});
 				jsons.push(json);
 			});
 		return Promise.all(jsons);
+	}
+
+	function cloneBase(variable)
+	{
+		const base = {};
+		Object.entries(variable)
+			.forEach(([provider, config]) =>
+			{
+				base[provider] = {
+					default: config.default,
+					options: JSON.parse(JSON.stringify(config.options))
+				};
+			});
+		return base;
+	}
+
+	function resetToBase()
+	{
+		Object.entries(BASE_COMPLETION)
+			.forEach(([provider, base]) =>
+			{
+				if (window.CONFIG.API.MODELS.COMPLETION[provider])
+				{
+					window.CONFIG.API.MODELS.COMPLETION[provider].options = JSON.parse(JSON.stringify(base.options));
+				}
+			});
+		Object.entries(BASE_COMPLETION_HIGH)
+			.forEach(([provider, base]) =>
+			{
+				if (window.CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider])
+				{
+					window.CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider].options = JSON.parse(JSON.stringify(base.options));
+				}
+			});
+		Object.entries(BASE_TRANSCRIPTION)
+			.forEach(([provider, base]) =>
+			{
+				if (window.CONFIG.API.MODELS.TRANSCRIPTION[provider])
+				{
+					window.CONFIG.API.MODELS.TRANSCRIPTION[provider].options = JSON.parse(JSON.stringify(base.options));
+				}
+			});
 	}
 	const remote = "https://raw.githubusercontent.com/Inc44/CoFluRouter/refs/heads/master/models";
 	const completion = {
@@ -1037,12 +1090,35 @@ window.CONFIG = {
 		groq: 'transcription/Groq.json',
 		openai: 'transcription/OpenAI.json'
 	};
-	const promiseCompletion = fillModels(completion, window.CONFIG.API.MODELS.COMPLETION);
-	const promiseCompletionHighCost = fillModels(completionHighCost, window.CONFIG.API.MODELS.COMPLETION_HIGH_COST);
-	const promiseTranscription = fillModels(transcription, window.CONFIG.API.MODELS.TRANSCRIPTION);
-	window.CONFIG.API.MODELS.LOADED = Promise.all([promiseCompletion, promiseCompletionHighCost, promiseTranscription])
-		.catch(() =>
-		{});
+	const BASE_COMPLETION = cloneBase(window.CONFIG.API.MODELS.COMPLETION);
+	const BASE_COMPLETION_HIGH = cloneBase(window.CONFIG.API.MODELS.COMPLETION_HIGH_COST);
+	const BASE_TRANSCRIPTION = cloneBase(window.CONFIG.API.MODELS.TRANSCRIPTION);
+	window.CONFIG.API.MODELS.BASE = {
+		COMPLETION: BASE_COMPLETION,
+		COMPLETION_HIGH_COST: BASE_COMPLETION_HIGH,
+		TRANSCRIPTION: BASE_TRANSCRIPTION
+	};
+	window.CONFIG.API.MODELS.resetToBase = resetToBase;
+	window.CONFIG.API.MODELS.loadExternalModels = function()
+	{
+		return Promise.all([
+				fillModels(completion, window.CONFIG.API.MODELS.COMPLETION),
+				fillModels(completionHighCost, window.CONFIG.API.MODELS.COMPLETION_HIGH_COST),
+				fillModels(transcription, window.CONFIG.API.MODELS.TRANSCRIPTION)
+			])
+			.catch(() =>
+			{});
+	};
+	const isExternalModelEnabled = localStorage.getItem('external_models_enabled') === 'true';
+	if (isExternalModelEnabled)
+	{
+		window.CONFIG.API.MODELS.LOADED = window.CONFIG.API.MODELS.loadExternalModels();
+	}
+	else
+	{
+		resetToBase();
+		window.CONFIG.API.MODELS.LOADED = Promise.resolve();
+	}
 })();
 window.MathJax = {
 	tex:

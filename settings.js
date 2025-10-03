@@ -17,6 +17,7 @@ class SettingsApp
 			exportBtn: document.getElementById('exportSettings'),
 			googleCompatToggle: document.getElementById('googleCompatToggle'),
 			highCostToggle: document.getElementById('highCostToggle'),
+			externalModelsToggle: document.getElementById('externalModelsToggle'),
 			importBtn: document.getElementById('importSettings'),
 			langSelect: document.getElementById('language'),
 			noBSToggle: document.getElementById('noBSToggle'),
@@ -111,6 +112,7 @@ class SettingsApp
 		this.loadCheckbox('darkToggle', 'dark_enabled', true);
 		this.loadCheckbox('googleCompatToggle', 'google_compat_enabled', true);
 		this.loadCheckbox('highCostToggle', 'high_cost_enabled', false);
+		this.loadCheckbox('externalModelsToggle', 'external_models_enabled', false);
 		this.loadCheckbox('noBSToggle', 'no_bs_enabled', false);
 		this.loadCheckbox('noBSPlusToggle', 'no_bs_plus_enabled', false);
 		this.loadCheckbox('numberedLinesToggle', 'numbered_lines_enabled', false);
@@ -294,6 +296,7 @@ class SettingsApp
 		this.els.exportBtn?.addEventListener('click', this.exportSettings.bind(this));
 		this.els.googleCompatToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'googleCompatToggle', 'google_compat_enabled'));
 		this.els.highCostToggle?.addEventListener('change', this.handleHighCostToggleChange.bind(this));
+		this.els.externalModelsToggle?.addEventListener('change', this.handleExternalModelsToggleChange.bind(this));
 		this.els.importBtn?.addEventListener('click', this.importSettings.bind(this));
 		this.els.langSelect?.addEventListener('change', this.handleLangChange.bind(this));
 		this.els.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
@@ -397,6 +400,36 @@ class SettingsApp
 		this.updateReasoningVisibility(provider);
 		this.updateThinkingVisibility(provider);
 	}
+	handleExternalModelsToggleChange()
+	{
+		const isExternalModelsEnabled = this.els.externalModelsToggle.checked;
+		StorageService.save('external_models_enabled', isExternalModelsEnabled);
+		if (isExternalModelsEnabled)
+		{
+			CONFIG.API.MODELS.loadExternalModels()
+				.finally(() =>
+				{
+					this.loadModelOptions();
+					this.loadWhisperOptions();
+					const provider = this.els.apiModel.value;
+					this.updateReasoningVisibility(provider);
+					this.updateThinkingVisibility(provider);
+					this.updateSearchVisibility(provider);
+					this.displaySettings();
+				});
+		}
+		else
+		{
+			CONFIG.API.MODELS.resetToBase();
+			this.loadModelOptions();
+			this.loadWhisperOptions();
+			const provider = this.els.apiModel.value;
+			this.updateReasoningVisibility(provider);
+			this.updateThinkingVisibility(provider);
+			this.updateSearchVisibility(provider);
+			this.displaySettings();
+		}
+	}
 	handleRendererChange()
 	{
 		StorageService.save('selected_renderer', this.els.rendererSelect.value);
@@ -452,6 +485,7 @@ class SettingsApp
 			exponential_retry: parseInt(this.els.expRetry.value, 10),
 			google_compat_enabled: this.els.googleCompatToggle.checked,
 			high_cost_enabled: this.els.highCostToggle.checked,
+			external_models_enabled: this.els.externalModelsToggle.checked,
 			no_bs_enabled: this.els.noBSToggle.checked,
 			no_bs_plus_enabled: this.els.noBSPlusToggle.checked,
 			numbered_lines_enabled: this.els.numberedLinesToggle.checked,
