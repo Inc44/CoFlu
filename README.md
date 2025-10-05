@@ -141,7 +141,6 @@ CoFlu is a powerful text manipulation, generation, and comparison tool. It's des
 - 🟡 Fix smartphone layout issues where uploaded audio and rendered LaTeX extend beyond the screen.
 - 🟡 Fix stop button not stopping in chat.
 - 🟡 Implement real-time update for import/export settings.
-- 🟢 Correct spacing between uploader containers when hidden.
 - 🟢 Fix HTML not sanitized.
 - 🟢 Fix edit message size in chat.
 - 🟢 Fix italic text appearing on render and in HTML elements.

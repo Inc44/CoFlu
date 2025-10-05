@@ -44,26 +44,26 @@ const UIState = {
 	},
 	updateAudioUploadVisibility(modelDetails)
 	{
-		const audioCard = document.querySelector('.card:has(#audioList)');
-		if (audioCard)
+		const audioRow = document.querySelector('.row:has(#audioList)');
+		if (audioRow)
 		{
-			audioCard.style.display = modelDetails.audio ? 'block' : 'none';
+			audioRow.style.display = modelDetails.audio ? '' : 'none';
 		}
 	},
 	updateImageUploadVisibility(modelDetails)
 	{
-		const imageCard = document.querySelector('.card:has(#imageList)');
-		if (imageCard)
+		const imageRow = document.querySelector('.row:has(#imageList)');
+		if (imageRow)
 		{
-			imageCard.style.display = modelDetails.image ? 'block' : 'none';
+			imageRow.style.display = modelDetails.image ? '' : 'none';
 		}
 	},
 	updateVideoUploadVisibility(modelDetails)
 	{
-		const videoCard = document.querySelector('.card:has(#videoList)');
-		if (videoCard)
+		const videoRow = document.querySelector('.row:has(#videoList)');
+		if (videoRow)
 		{
-			videoCard.style.display = modelDetails.video ? 'block' : 'none';
+			videoRow.style.display = modelDetails.video ? '' : 'none';
 		}
 	},
 	showWPM(els)
