@@ -32,7 +32,7 @@ window.CONFIG = {
 					{
 						name: "gpt-oss-120b",
 						max_tokens: 8192,
-						reasoning_effort: "low",
+						reasoning_effort: ["low", "medium", "high"],
 						image: false
 					}]
 				},
@@ -43,19 +43,19 @@ window.CONFIG = {
 					{
 						name: "gpt-5",
 						max_tokens: 128000,
-						reasoning_effort: "low",
+						reasoning_effort: ["minimal", "low", "medium", "high"],
 						image: true
 					},
 					{
 						name: "o3",
 						max_tokens: 100000,
-						reasoning_effort: "low",
+						reasoning_effort: ["low", "medium", "high"],
 						image: true
 					},
 					{
 						name: "gpt-5-mini",
 						max_tokens: 128000,
-						reasoning_effort: "low",
+						reasoning_effort: ["minimal", "low", "medium", "high"],
 						image: true
 					},
 					{
@@ -71,7 +71,7 @@ window.CONFIG = {
 					{
 						name: "openai/gpt-oss-120b",
 						max_tokens: 131072,
-						reasoning_effort: "low",
+						reasoning_effort: ["low", "medium", "high"],
 						image: false
 					}]
 				},
@@ -92,7 +92,7 @@ window.CONFIG = {
 					{
 						name: "openai/gpt-oss-120b",
 						max_tokens: 131072,
-						reasoning_effort: "low",
+						reasoning_effort: ["low", "medium", "high"],
 						image: false
 					}]
 				},
@@ -118,6 +118,7 @@ window.CONFIG = {
 					{
 						name: "gemini-2.5-pro",
 						max_tokens: 65536,
+						thinking_budget: [128, 32768],
 						audio: true,
 						image: true,
 						video: true,
@@ -126,6 +127,7 @@ window.CONFIG = {
 					{
 						name: "gemini-flash-latest",
 						max_tokens: 65536,
+						thinking_budget: [1, 24576],
 						thinking: true,
 						audio: true,
 						image: true,
@@ -135,6 +137,7 @@ window.CONFIG = {
 					{
 						name: "gemini-flash-lite-latest",
 						max_tokens: 65536,
+						thinking_budget: [512, 24576],
 						thinking: true,
 						audio: true,
 						image: true,
@@ -144,6 +147,7 @@ window.CONFIG = {
 					{
 						name: "gemini-pro-latest",
 						max_tokens: 65536,
+						thinking_budget: [128, 32768],
 						audio: true,
 						image: true,
 						video: true,
@@ -167,7 +171,7 @@ window.CONFIG = {
 					{
 						name: "openai/gpt-oss-120b",
 						max_tokens: 65536,
-						reasoning_effort: "low",
+						reasoning_effort: ["low", "medium", "high"],
 						image: false
 					}]
 				},
@@ -178,7 +182,7 @@ window.CONFIG = {
 					{
 						name: "openai/gpt-oss-120b",
 						max_tokens: 131072,
-						reasoning_effort: "low",
+						reasoning_effort: ["low", "medium", "high"],
 						image: false
 					}]
 				},
@@ -204,7 +208,7 @@ window.CONFIG = {
 					{
 						name: "openai/gpt-oss-120b",
 						max_tokens: 131072,
-						reasoning_effort: "low",
+						reasoning_effort: ["low", "medium", "high"],
 						image: false
 					}]
 				},
@@ -215,7 +219,7 @@ window.CONFIG = {
 					{
 						name: "sonar-deep-research",
 						max_tokens: 200000,
-						reasoning_effort: "low",
+						reasoning_effort: ["low", "medium", "high"],
 						image: false
 					}]
 				},
@@ -226,6 +230,7 @@ window.CONFIG = {
 					{
 						name: "qwen3-235b-a22b",
 						max_tokens: 16384,
+						thinking_budget: [1, 32768],
 						thinking: true,
 						image: true
 					}]
@@ -237,7 +242,7 @@ window.CONFIG = {
 					{
 						name: "gpt-oss-120b",
 						max_tokens: 131072,
-						reasoning_effort: "low",
+						reasoning_effort: ["low", "medium", "high"],
 						image: false
 					}]
 				},
@@ -248,7 +253,7 @@ window.CONFIG = {
 					{
 						name: "openai/gpt-oss-120b",
 						max_tokens: 131072,
-						reasoning_effort: "low",
+						reasoning_effort: ["low", "medium", "high"],
 						image: false
 					}]
 				}
@@ -270,7 +275,7 @@ window.CONFIG = {
 						name: "gpt-4o-search-preview",
 						max_tokens: 16384,
 						completions_api_only: true,
-						search_context_size: "low",
+						search_context_size: ["low", "medium", "high"],
 						image: false
 					},
 					{
@@ -304,6 +309,7 @@ window.CONFIG = {
 					{
 						name: "claude-sonnet-4-5-20250929",
 						max_tokens: 64000,
+						thinking_budget: [1024, 63999],
 						thinking: true,
 						image: true
 					}]

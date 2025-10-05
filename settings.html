@@ -152,19 +152,18 @@
 							</div>
 							<div class="mb-3" id="reasoningEffortContainer" style="display: none;">
 								<label for="reasoningEffort" class="form-label">Reasoning Effort:</label>
-								<select class="form-select" id="reasoningEffort">
-									<option value="low">Low</option>
-									<!--Show for OpenAI Only-->
-									<option value="medium" style="display: none;">Medium</option>
-									<option value="high">High</option>
-								</select>
+								<select class="form-select" id="reasoningEffort"></select>
 							</div>
 							<div class="mb-3" id="thinkingBudgetContainer" style="display: none;">
 								<label for="thinkingBudget" class="form-label">Thinking Budget:</label>
 								<div id="thinkingBudgetContainer">
-									<input type="number" class="form-control" id="thinkingBudgetNumber" min="0" max="63999" step="1">
-									<input type="range" class="form-range" id="thinkingBudgetRange" min="0" max="63999" step="1">
+									<input type="number" class="form-control" id="thinkingBudgetNumber" step="1">
+									<input type="range" class="form-range" id="thinkingBudgetRange" step="1">
 								</div>
+							</div>
+							<div class="mb-3" id="searchContextContainer" style="display: none;">
+								<label for="searchContext" class="form-label">Search Context:</label>
+								<select class="form-select" id="searchContext"></select>
 							</div>
 							<div class="mb-3 form-check">
 								<input type="checkbox" class="form-check-input" id="streamingToggle" checked>

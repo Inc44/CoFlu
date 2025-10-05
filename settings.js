@@ -23,8 +23,13 @@ class SettingsApp
 			noBSToggle: document.getElementById('noBSToggle'),
 			noBSPlusToggle: document.getElementById('noBSPlusToggle'),
 			numberedLinesToggle: document.getElementById('numberedLinesToggle'),
-			reasoningBox: document.getElementById('reasoningEffortContainer'),
+			reasoningEffortBox: document.getElementById('reasoningEffortContainer'),
 			reasoningEffort: document.getElementById('reasoningEffort'),
+			thinkingBox: document.getElementById('thinkingBudgetContainer'),
+			thinkingNum: document.getElementById('thinkingBudgetNumber'),
+			thinkingRange: document.getElementById('thinkingBudgetRange'),
+			searchContextSizeBox: document.getElementById('searchContextContainer'),
+			searchContextSize: document.getElementById('searchContext'),
 			receiveAudioToggle: document.getElementById('receiveAudioToggle'),
 			receiveImagesToggle: document.getElementById('receiveImagesToggle'),
 			rendererSelect: document.getElementById('renderer'),
@@ -33,9 +38,6 @@ class SettingsApp
 			searchBox: document.getElementById('searchContainer'),
 			searchToggle: document.getElementById('searchToggle'),
 			streamToggle: document.getElementById('streamingToggle'),
-			thinkingBox: document.getElementById('thinkingBudgetContainer'),
-			thinkingNum: document.getElementById('thinkingBudgetNumber'),
-			thinkingRange: document.getElementById('thinkingBudgetRange'),
 			transcribeLang: document.getElementById('transcribeLanguage'),
 			transcribeModel: document.getElementById('transcriptionApiModel'),
 			wideToggle: document.getElementById('wideToggle'),
@@ -130,13 +132,6 @@ class SettingsApp
 		this.loadSelect('apiModel', 'selected_api_model', 'openai');
 		this.loadSelect('rendererSelect', 'selected_renderer', 'katex');
 		this.loadSelect('transcribeModel', 'selected_transcription_api_model', 'groq');
-		if (this.els.reasoningEffort)
-		{
-			this.loadSelect('reasoningEffort', 'reasoning_effort', 'low');
-		}
-		const thinkingBudget = parseInt(StorageService.load('thinking', 0), 10);
-		this.els.thinkingRange.value = thinkingBudget;
-		this.els.thinkingNum.value = thinkingBudget;
 		this.loadModelOptions();
 		this.loadWhisperOptions();
 		this.updateModelVisibility(this.els.apiModel.value);
@@ -257,9 +252,9 @@ class SettingsApp
 		if (selectedBox)
 		{
 			selectedBox.classList.add('active');
-			this.updateReasoningVisibility(provider);
+			this.updateReasoningEffortVisibility(provider);
 			this.updateThinkingVisibility(provider);
-			this.updateSearchVisibility(provider);
+			this.updateSearchContextSizeVisibility(provider);
 		}
 	}
 	updateTranscribeModelVisibility(provider)
@@ -275,26 +270,82 @@ class SettingsApp
 			selectedBox.style.display = 'block';
 		}
 	}
-	updateReasoningVisibility(provider)
+	updateReasoningEffortVisibility(provider)
 	{
 		const modelSelect = this.els.modelSelects[provider];
 		const modelName = modelSelect ? modelSelect.value : null;
 		const modelDetails = this.getModelDetails(provider, modelName);
-		this.els.reasoningBox.style.display = (modelDetails && modelDetails.reasoning_effort) ? 'block' : 'none';
+		if (modelDetails && modelDetails.reasoning_effort)
+		{
+			this.els.reasoningEffortBox.style.display = 'block';
+			this.els.reasoningEffort.innerHTML = '';
+			modelDetails.reasoning_effort.forEach(opt =>
+			{
+				const option = document.createElement('option');
+				option.value = opt;
+				option.textContent = opt.charAt(0)
+					.toUpperCase() + opt.slice(1);
+				this.els.reasoningEffort.appendChild(option);
+			});
+			const saved = StorageService.load('reasoning_effort', modelDetails.reasoning_effort[0]);
+			this.els.reasoningEffort.value = modelDetails.reasoning_effort.includes(saved) ? saved : modelDetails.reasoning_effort[0];
+		}
+		else
+		{
+			this.els.reasoningEffortBox.style.display = 'none';
+		}
 	}
 	updateThinkingVisibility(provider)
 	{
 		const modelSelect = this.els.modelSelects[provider];
 		const modelName = modelSelect ? modelSelect.value : null;
 		const modelDetails = this.getModelDetails(provider, modelName);
-		this.els.thinkingBox.style.display = (modelDetails && modelDetails.thinking) ? 'block' : 'none';
+		if (modelDetails && modelDetails.thinking_budget)
+		{
+			this.els.thinkingBox.style.display = 'block';
+			const minThinkingBudget = modelDetails.thinking_budget[0];
+			const maxThinkingBudget = modelDetails.thinking_budget[1];
+			this.els.thinkingRange.min = 0;
+			this.els.thinkingRange.max = maxThinkingBudget;
+			this.els.thinkingRange.step = 1;
+			this.els.thinkingNum.min = 0;
+			this.els.thinkingNum.max = maxThinkingBudget;
+			this.els.thinkingNum.step = 1;
+			let saved = parseInt(StorageService.load('thinking', minThinkingBudget), 10);
+			if (isNaN(saved) || saved < 0) saved = minThinkingBudget;
+			if (saved > 0 && saved < minThinkingBudget) saved = minThinkingBudget;
+			this.els.thinkingNum.value = saved;
+			this.els.thinkingRange.value = saved;
+		}
+		else
+		{
+			this.els.thinkingBox.style.display = 'none';
+		}
 	}
-	updateSearchVisibility(provider)
+	updateSearchContextSizeVisibility(provider)
 	{
 		const modelSelect = this.els.modelSelects[provider];
 		const modelName = modelSelect ? modelSelect.value : null;
 		const modelDetails = this.getModelDetails(provider, modelName);
-		this.els.searchBox.style.display = (modelDetails && modelDetails.search) ? 'block' : 'none';
+		if (modelDetails && modelDetails.search_context_size)
+		{
+			this.els.searchContextSizeBox.style.display = 'block';
+			this.els.searchContextSize.innerHTML = '';
+			modelDetails.search_context_size.forEach(opt =>
+			{
+				const option = document.createElement('option');
+				option.value = opt;
+				option.textContent = opt.charAt(0)
+					.toUpperCase() + opt.slice(1);
+				this.els.searchContextSize.appendChild(option);
+			});
+			const saved = StorageService.load('search_context_size', modelDetails.search_context_size[0]);
+			this.els.searchContextSize.value = modelDetails.search_context_size.includes(saved) ? saved : modelDetails.search_context_size[0];
+		}
+		else
+		{
+			this.els.searchContextSizeBox.style.display = 'none';
+		}
 	}
 	getModelDetails(provider, modelName)
 	{
@@ -323,7 +374,8 @@ class SettingsApp
 		this.els.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
 		this.els.noBSPlusToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSPlusToggle', 'no_bs_plus_enabled'));
 		this.els.numberedLinesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'numberedLinesToggle', 'numbered_lines_enabled'));
-		this.els.reasoningEffort?.addEventListener('change', this.handleReasoningChange.bind(this));
+		this.els.reasoningEffort?.addEventListener('change', this.handleReasoningEffortChange.bind(this));
+		this.els.searchContextSize?.addEventListener('change', this.handleSearchContextSizeChange.bind(this));
 		this.els.receiveAudioToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'receiveAudioToggle', 'receive_audio_enabled'));
 		this.els.receiveImagesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'receiveImagesToggle', 'receive_images_enabled'));
 		this.els.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
@@ -359,8 +411,9 @@ class SettingsApp
 				{
 					const selectedModel = select.value;
 					StorageService.save(`${provider}_model`, selectedModel);
-					this.updateReasoningVisibility(provider);
+					this.updateReasoningEffortVisibility(provider);
 					this.updateThinkingVisibility(provider);
+					this.updateSearchContextSizeVisibility(provider);
 				});
 			});
 	}
@@ -418,8 +471,9 @@ class SettingsApp
 		StorageService.save('high_cost_enabled', isHighCostEnabled);
 		this.loadModelOptions();
 		const provider = this.els.apiModel.value;
-		this.updateReasoningVisibility(provider);
+		this.updateReasoningEffortVisibility(provider);
 		this.updateThinkingVisibility(provider);
+		this.updateSearchContextSizeVisibility(provider);
 	}
 	handleExternalModelsToggleChange()
 	{
@@ -433,9 +487,9 @@ class SettingsApp
 					this.loadModelOptions();
 					this.loadWhisperOptions();
 					const provider = this.els.apiModel.value;
-					this.updateReasoningVisibility(provider);
+					this.updateReasoningEffortVisibility(provider);
 					this.updateThinkingVisibility(provider);
-					this.updateSearchVisibility(provider);
+					this.updateSearchContextSizeVisibility(provider);
 					this.displaySettings();
 				});
 		}
@@ -445,9 +499,9 @@ class SettingsApp
 			this.loadModelOptions();
 			this.loadWhisperOptions();
 			const provider = this.els.apiModel.value;
-			this.updateReasoningVisibility(provider);
+			this.updateReasoningEffortVisibility(provider);
 			this.updateThinkingVisibility(provider);
-			this.updateSearchVisibility(provider);
+			this.updateSearchContextSizeVisibility(provider);
 			this.displaySettings();
 		}
 	}
@@ -455,7 +509,7 @@ class SettingsApp
 	{
 		StorageService.save('selected_renderer', this.els.rendererSelect.value);
 	}
-	handleReasoningChange()
+	handleReasoningEffortChange()
 	{
 		StorageService.save('reasoning_effort', this.els.reasoningEffort.value);
 	}
@@ -463,6 +517,10 @@ class SettingsApp
 	{
 		const value = parseInt(this.els.thinkingNum.value, 10);
 		StorageService.save('thinking', value);
+	}
+	handleSearchContextSizeChange()
+	{
+		StorageService.save('search_context_size', this.els.searchContextSize.value);
 	}
 	handleLangChange()
 	{
@@ -528,6 +586,10 @@ class SettingsApp
 		if (this.els.reasoningEffort)
 		{
 			settings.reasoning_effort = this.els.reasoningEffort.value;
+		}
+		if (this.els.searchContextSize)
+		{
+			settings.search_context_size = this.els.searchContextSize.value;
 		}
 		this.addAPIKeySettings(settings);
 		this.addModelSettings(settings);
@@ -667,7 +729,10 @@ class SettingsApp
 	}
 	syncThinkingInputs()
 	{
-		this.els.thinkingNum.value = this.els.thinkingRange.value;
+		if (this.els.thinkingNum && this.els.thinkingRange)
+		{
+			this.els.thinkingNum.value = this.els.thinkingRange.value;
+		}
 	}
 }
 document.addEventListener('DOMContentLoaded', () =>

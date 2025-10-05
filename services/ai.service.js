@@ -205,8 +205,14 @@ const AiService = {
 			}
 			if (modelConfig.reasoning_effort)
 			{
+				let reasoningEffort = StorageService.load('reasoning_effort', modelConfig.reasoning_effort[0]);
+				if (!modelConfig.reasoning_effort.includes(reasoningEffort))
+				{
+					reasoningEffort = modelConfig.reasoning_effort[0];
+					StorageService.save('reasoning_effort', reasoningEffort);
+				}
 				reqBody.reasoning = {
-					effort: StorageService.load('reasoning_effort', 'low')
+					effort: reasoningEffort
 				};
 			}
 		}
@@ -215,23 +221,36 @@ const AiService = {
 			reqBody.messages = msgs;
 			if (modelConfig.reasoning_effort)
 			{
-				reqBody.reasoning_effort = StorageService.load('reasoning_effort', 'low');
+				let reasoningEffort = StorageService.load('reasoning_effort', modelConfig.reasoning_effort[0]);
+				if (!modelConfig.reasoning_effort.includes(reasoningEffort))
+				{
+					reasoningEffort = modelConfig.reasoning_effort[0];
+					StorageService.save('reasoning_effort', reasoningEffort);
+				}
+				reqBody.reasoning_effort = reasoningEffort;
 			}
 		}
-		if (!modelConfig.reasoning_effort && !modelConfig.responses_api_only && !modelConfig.search_context_size && !modelConfig.thinking)
+		if (!modelConfig.reasoning_effort && !modelConfig.responses_api_only && !modelConfig.search_context_size)
 		{
 			reqBody.temperature = 0;
 		}
 		if (modelConfig.search_context_size)
 		{
+			let searchContextSize = StorageService.load('search_context_size', modelConfig.search_context_size[0]);
+			if (!modelConfig.search_context_size.includes(searchContextSize))
+			{
+				searchContextSize = modelConfig.search_context_size[0];
+				StorageService.save('search_context_size', searchContextSize);
+			}
 			reqBody.web_search_options = {
-				search_context_size: StorageService.load('search_context_size', 'low')
+				search_context_size: searchContextSize
 			};
 		}
-		if (modelConfig.thinking)
+		if (modelConfig.thinking_budget)
 		{
-			const thinkingBudget = parseInt(StorageService.load('thinking', 0), 10);
-			if (thinkingBudget >= 1024)
+			const minThinkingBudget = modelConfig.thinking_budget ? modelConfig.thinking_budget[0] : 0;
+			const thinkingBudget = parseInt(StorageService.load('thinking', minThinkingBudget), 10);
+			if (thinkingBudget >= minThinkingBudget)
 			{
 				reqBody.thinking = {
 					type: "enabled",
