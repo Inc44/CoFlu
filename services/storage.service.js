@@ -17,9 +17,16 @@ const StorageService = {
 		if (value === null) return defValue;
 		if (value === 'true') return true;
 		if (value === 'false') return false;
-		if (value.startsWith('{') || value.startsWith('['))
+		if (typeof defValue === 'object' && defValue !== null && (value.startsWith('{') || value.startsWith('[')))
 		{
-			return JSON.parse(value);
+			try
+			{
+				return JSON.parse(value);
+			}
+			catch (e)
+			{
+				return value;
+			}
 		}
 		return value;
 	},
