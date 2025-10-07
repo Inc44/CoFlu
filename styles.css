@@ -230,6 +230,7 @@ textarea
 }
 
 #audioList,
+#fileList,
 #imageList,
 #videoList
 {
@@ -392,7 +393,8 @@ textarea
 	user-select: none;
 }
 
-.audio-container
+.audio-container,
+.file-container
 {
 	border-radius: 0.5rem;
 	border: 0.1rem solid var(--bs-border-color);

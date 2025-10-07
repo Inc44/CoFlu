@@ -7,6 +7,7 @@ class App
 			abortCtrl: null,
 			transcribeAbortCtrl: null,
 			audioUploader: null,
+			fileUploader: null,
 			imageUploader: null,
 			videoUploader: null
 		};
@@ -18,12 +19,14 @@ class App
 			apiModel: document.getElementById('apiModel'),
 			audioFile: document.getElementById('audioFile'),
 			audioUploadInput: document.getElementById('audioUploadInput'),
+			fileUploadInput: document.getElementById('fileUploadInput'),
+			imageUploadInput: document.getElementById('imageUploadInput'),
+			videoUploadInput: document.getElementById('videoUploadInput'),
 			cleanupToggle: document.getElementById('cleanupToggle'),
 			compareBtn: document.getElementById('compareBtn'),
 			customPromptBox: document.getElementById('customPromptContainer'),
 			customPrompt: document.getElementById('customPrompt'),
 			genTargetBtn: document.getElementById('generateTarget'),
-			imageUploadInput: document.getElementById('imageUploadInput'),
 			langSelect: document.getElementById('language'),
 			noBSToggle: document.getElementById('noBSToggle'),
 			noBSPlusToggle: document.getElementById('noBSPlusToggle'),
@@ -38,7 +41,6 @@ class App
 			transcribeBtn: document.getElementById('transcribeBtn'),
 			transcribeLang: document.getElementById('transcribeLanguage'),
 			translateToggle: document.getElementById('translationToggle'),
-			videoUploadInput: document.getElementById('videoUploadInput'),
 			wpmBox: document.getElementById('wpm-container'),
 			wpmDisplay: document.getElementById('wpm')
 		};
@@ -66,6 +68,11 @@ class App
 		this.state.audioUploader = new UIComponents.AudioUploader(this.els.audioUploadInput,
 		{
 			displayElement: document.getElementById('audioList'),
+			getApiModel: () => this.els.apiModel.value
+		});
+		this.state.fileUploader = new UIComponents.FileUploader(this.els.fileUploadInput,
+		{
+			displayElement: document.getElementById('fileList'),
 			getApiModel: () => this.els.apiModel.value
 		});
 		this.state.imageUploader = new UIComponents.ImageUploader(this.els.imageUploadInput,
@@ -324,6 +331,7 @@ class App
 		if (details)
 		{
 			UIState.updateAudioUploadVisibility(details);
+			UIState.updateFileUploadVisibility(details);
 			UIState.updateImageUploadVisibility(details);
 			UIState.updateVideoUploadVisibility(details);
 		}

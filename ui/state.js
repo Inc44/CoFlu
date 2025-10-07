@@ -50,6 +50,14 @@ const UIState = {
 			audioRow.style.display = modelDetails.audio ? '' : 'none';
 		}
 	},
+	updateFileUploadVisibility(modelDetails)
+	{
+		const fileRow = document.querySelector('.row:has(#fileList)');
+		if (fileRow)
+		{
+			fileRow.style.display = modelDetails.file ? '' : 'none';
+		}
+	},
 	updateImageUploadVisibility(modelDetails)
 	{
 		const imageRow = document.querySelector('.row:has(#imageList)');

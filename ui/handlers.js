@@ -149,6 +149,7 @@ const UIHandlers = {
 			const genOptions = {
 				streaming: StorageService.load('streaming_enabled', true),
 				audios: Object.values(state.audioUploader.getAudios()),
+				files: state.fileUploader.getFiles(),
 				images: Object.values(state.imageUploader.getImages()),
 				videos: Object.values(state.videoUploader.getVideos()),
 				abortSignal: state.abortCtrl.signal,
@@ -196,6 +197,7 @@ const UIHandlers = {
 				if (details)
 				{
 					UIState.updateAudioUploadVisibility(details);
+					UIState.updateFileUploadVisibility(details);
 					UIState.updateImageUploadVisibility(details);
 					UIState.updateVideoUploadVisibility(details);
 				}
@@ -210,6 +212,7 @@ const UIHandlers = {
 			const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === els.modelSelects[model].value);
 			StorageService.save('selected_api_model', model);
 			UIState.updateAudioUploadVisibility(details);
+			UIState.updateFileUploadVisibility(details);
 			UIState.updateImageUploadVisibility(details);
 			UIState.updateVideoUploadVisibility(details);
 		});
@@ -225,6 +228,7 @@ const UIHandlers = {
 						const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === select.value);
 						StorageService.save('selected_api_model', model);
 						UIState.updateAudioUploadVisibility(details);
+						UIState.updateFileUploadVisibility(details);
 						UIState.updateImageUploadVisibility(details);
 						UIState.updateVideoUploadVisibility(details);
 					});

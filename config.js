@@ -44,23 +44,27 @@ window.CONFIG = {
 						name: "gpt-5",
 						max_tokens: 128000,
 						reasoning_effort: ["minimal", "low", "medium", "high"],
+						file: true,
 						image: true
 					},
 					{
 						name: "o3",
 						max_tokens: 100000,
 						reasoning_effort: ["low", "medium", "high"],
+						file: true,
 						image: true
 					},
 					{
 						name: "gpt-5-mini",
 						max_tokens: 128000,
 						reasoning_effort: ["minimal", "low", "medium", "high"],
+						file: true,
 						image: true
 					},
 					{
 						name: "gpt-4o",
 						max_tokens: 16384,
+						file: true,
 						image: true
 					}]
 				},
@@ -82,6 +86,7 @@ window.CONFIG = {
 					{
 						name: "claude-3-5-haiku-20241022",
 						max_tokens: 8192,
+						file: true,
 						image: true
 					}]
 				},
@@ -289,6 +294,7 @@ window.CONFIG = {
 					{
 						name: "chatgpt-4o-latest",
 						max_tokens: 16384,
+						file: true,
 						image: true
 					},
 					{
@@ -311,6 +317,7 @@ window.CONFIG = {
 						max_tokens: 64000,
 						thinking_budget: [1024, 63999],
 						thinking: true,
+						file: true,
 						image: true
 					}]
 				},
@@ -717,6 +724,94 @@ window.CONFIG = {
 				{
 					max: 100,
 					size: 100
+				},
+				together:
+				{
+					max: 0,
+					size: 0
+				}
+			},
+			FILE:
+			{
+				cerebras:
+				{
+					max: 0,
+					size: 0
+				},
+				openai:
+				{
+					max: 100,
+					size: 20
+				},
+				chutes:
+				{
+					max: 0,
+					size: 0
+				},
+				anthropic:
+				{
+					max: 100,
+					size: 5
+				},
+				deepinfra:
+				{
+					max: 0,
+					size: 0
+				},
+				deepseek:
+				{
+					max: 0,
+					size: 0
+				},
+				google:
+				{
+					max: 0,
+					size: 0
+				},
+				x:
+				{
+					max: 0,
+					size: 0
+				},
+				groq:
+				{
+					max: 0,
+					size: 0
+				},
+				hyperbolic:
+				{
+					max: 0,
+					size: 0
+				},
+				minimax:
+				{
+					max: 0,
+					size: 0
+				},
+				ollama:
+				{
+					max: 0,
+					size: 0
+				},
+				openrouter:
+				{
+					max: 0,
+					size: 0
+				},
+				perplexity:
+				{
+					max: 0,
+					size: 0
+				},
+				alibaba:
+				{
+					max: 0,
+					size: 0
+				},
+				sambanova:
+				{
+					max: 0,
+					size: 0
 				},
 				together:
 				{

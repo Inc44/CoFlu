@@ -131,7 +131,7 @@ const AiService = {
 				content: prompt
 			}];
 		}
-		if (options.audios?.length > 0 || options.images?.length > 0 || options.videos?.length > 0)
+		if (options.audios?.length > 0 || options.files || options.images?.length > 0 || options.videos?.length > 0)
 		{
 			let userMsgIdx = msgs.findIndex(m => m.role === 'user');
 			for (let i = msgs.length - 1; i >= 0; --i)
@@ -164,7 +164,7 @@ const AiService = {
 			{
 				userContent = msgs[userMsgIdx].content;
 			}
-			userContent = userContent.concat(this.buildMediaContent(options.audios, options.images, options.videos, model));
+			userContent = userContent.concat(this.buildMediaContent(options.audios, options.images, options.videos, options.files, model, modelConfig));
 			if (userContent.length === 1 && typeof userContent[0] === "object" && userContent[0].text != null)
 			{
 				msgs[userMsgIdx].content = userContent[0].text;
@@ -268,7 +268,7 @@ const AiService = {
 		}
 		return reqBody;
 	},
-	buildMediaContent(audios = [], images = [], videos = [], model)
+	buildMediaContent(audios = [], images = [], videos = [], files = [], model, modelConfig)
 	{
 		let mediaContent = [];
 		if (audios.length > 0)
@@ -340,6 +340,69 @@ const AiService = {
 			mediaContent = mediaContent.concat(imageContent);
 		}
 		mediaContent = mediaContent.concat(this.createMediaContent(videos, "image_url", "image_url"));
+		let fileEntries = [];
+		if (Array.isArray(files))
+		{
+			fileEntries = files.map(dataURL => (
+			{
+				filename: 'file.pdf',
+				dataURL
+			}));
+		}
+		else if (files && typeof files === 'object')
+		{
+			Object.entries(files)
+				.forEach(([filename, dataURL]) =>
+				{
+					fileEntries.push(
+					{
+						filename,
+						dataURL
+					});
+				});
+		}
+		if (fileEntries.length > 0 && model === 'anthropic')
+		{
+			const fileContent = fileEntries.map(item =>
+			{
+				const base64Data = item.dataURL.split(',')[1];
+				const mimeType = item.dataURL.match(/^data:(.*?);base64,/)
+					?.[1] || 'application/pdf';
+				return {
+					type: 'document',
+					source:
+					{
+						type: 'base64',
+						media_type: mimeType,
+						data: base64Data
+					},
+				};
+			});
+			mediaContent = mediaContent.concat(fileContent);
+		}
+		else if (fileEntries.length > 0 && model === 'openai' && modelConfig && modelConfig.responses_api_only)
+		{
+			const fileContent = fileEntries.map(item => (
+			{
+				type: 'input_file',
+				filename: item.filename,
+				file_data: item.dataURL
+			}));
+			mediaContent = mediaContent.concat(fileContent);
+		}
+		else if (fileEntries.length > 0)
+		{
+			const fileContent = fileEntries.map(item => (
+			{
+				type: 'file',
+				file:
+				{
+					filename: item.filename,
+					file_data: item.dataURL
+				},
+			}));
+			mediaContent = mediaContent.concat(fileContent);
+		}
 		return mediaContent;
 	},
 	buildHeaders(apiKey, config)

@@ -108,6 +108,115 @@ const UIComponents = {
 			this.updateDisplay();
 		}
 	},
+	FileUploader: class
+	{
+		constructor(el, options = {})
+		{
+			this.el = el;
+			this.options = options;
+			this.files = {};
+			this.setupEvents();
+		}
+		setupEvents()
+		{
+			this.el.addEventListener('change', (e) =>
+			{
+				this.handleUpload(Array.from(e.target.files));
+				this.el.value = '';
+			});
+		}
+		getTotalSize()
+		{
+			let size = 0;
+			for (const filename in this.files)
+			{
+				const dataURL = this.files[filename];
+				const base64 = dataURL.split(',')[1];
+				const bytes = (base64.length * (3 / 4));
+				size += bytes / (1024 * 1024);
+			}
+			return size;
+		}
+		async handleUpload(files)
+		{
+			const apiModel = this.options.getApiModel?.() || 'openai';
+			const limits = CONFIG.LIMITS.COMPLETION.FILE[apiModel];
+			if (files.length + Object.keys(this.files)
+				.length > limits.max)
+			{
+				alert(`Maximum ${limits.max} files allowed for ${apiModel}`);
+				return;
+			}
+			for (const file of files)
+			{
+				if (!file.type.startsWith('application/pdf'))
+				{
+					alert('Only PDF files are allowed.');
+					continue;
+				}
+				const fileSizeMB = file.size / (1024 * 1024);
+				if (fileSizeMB > limits.size)
+				{
+					alert(`File ${file.name} exceeds the maximum size of ${limits.size}MB.`);
+					continue;
+				}
+				const totalSize = this.getTotalSize();
+				const newSize = totalSize + fileSizeMB;
+				if (newSize > 20)
+				{
+					alert(`Adding this file would exceed the 20MB total size limit.`);
+					continue;
+				}
+				const dataUrl = await this.readAsDataURL(file);
+				this.files[file.name] = dataUrl;
+				this.updateDisplay();
+			}
+		}
+		readAsDataURL(file)
+		{
+			return new Promise(resolve =>
+			{
+				const reader = new FileReader();
+				reader.onload = e => resolve(e.target.result);
+				reader.readAsDataURL(file);
+			});
+		}
+		updateDisplay()
+		{
+			if (!this.options.displayElement) return;
+			const container = this.options.displayElement;
+			container.innerHTML = '';
+			Object.entries(this.files)
+				.forEach(([filename, dataURL]) =>
+				{
+					const fileBox = document.createElement('div');
+					fileBox.className = 'file-container d-flex align-items-center justify-content-between';
+					const nameEl = document.createElement('div');
+					nameEl.textContent = filename;
+					nameEl.classList.add('file-filename', "me-2");
+					const removeBtn = document.createElement('button');
+					removeBtn.className = 'btn btn-sm btn-danger remove-file';
+					removeBtn.textContent = 'X';
+					removeBtn.onclick = () =>
+					{
+						delete this.files[filename];
+						this.updateDisplay();
+					};
+					fileBox.appendChild(nameEl);
+					fileBox.appendChild(removeBtn);
+					container.appendChild(fileBox);
+				});
+		}
+		getFiles()
+		{
+			return this.files;
+		}
+		clear()
+		{
+			this.files = {};
+			this.updateDisplay();
+		}
+	},
 	ImageUploader: class
 	{
 		constructor(el, options = {})

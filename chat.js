@@ -7,6 +7,7 @@ class ChatApp
 			msgs: [],
 			abortCtrl: null,
 			audioUploader: null,
+			fileUploader: null,
 			imageUploader: null,
 			videoUploader: null,
 			isStreaming: false,
@@ -23,16 +24,18 @@ class ChatApp
 			apiModel: document.getElementById('apiModel'),
 			audioList: document.getElementById('audioList'),
 			audioUploadInput: document.getElementById('audioUploadInput'),
+			fileList: document.getElementById('fileList'),
+			fileUploadInput: document.getElementById('fileUploadInput'),
+			imageList: document.getElementById('imageList'),
+			imageUploadInput: document.getElementById('imageUploadInput'),
+			videoList: document.getElementById('videoList'),
+			videoUploadInput: document.getElementById('videoUploadInput'),
 			chatBox: document.getElementById('chatContainer'),
 			cleanChatBtn: document.getElementById('cleanChat'),
 			exportBtn: document.getElementById('exportSettings'),
-			imageList: document.getElementById('imageList'),
-			imageUploadInput: document.getElementById('imageUploadInput'),
 			importBtn: document.getElementById('importSettings'),
 			msgInput: document.getElementById('messageInput'),
 			sendBtn: document.getElementById('sendMessage'),
-			videoList: document.getElementById('videoList'),
-			videoUploadInput: document.getElementById('videoUploadInput')
 		};
 	}
 	init()
@@ -52,6 +55,11 @@ class ChatApp
 		this.state.audioUploader = new UIComponents.AudioUploader(this.els.audioUploadInput,
 		{
 			displayElement: this.els.audioList,
+			getApiModel: () => this.els.apiModel.value
+		});
+		this.state.fileUploader = new UIComponents.FileUploader(this.els.fileUploadInput,
+		{
+			displayElement: this.els.fileList,
 			getApiModel: () => this.els.apiModel.value
 		});
 		this.state.imageUploader = new UIComponents.ImageUploader(this.els.imageUploadInput,
@@ -79,6 +87,7 @@ class ChatApp
 		if (details)
 		{
 			UIState.updateAudioUploadVisibility(details);
+			UIState.updateFileUploadVisibility(details);
 			UIState.updateImageUploadVisibility(details);
 			UIState.updateVideoUploadVisibility(details);
 		}
@@ -112,6 +121,7 @@ class ChatApp
 				if (details)
 				{
 					UIState.updateAudioUploadVisibility(details);
+					UIState.updateFileUploadVisibility(details);
 					UIState.updateImageUploadVisibility(details);
 					UIState.updateVideoUploadVisibility(details);
 				}
@@ -155,6 +165,7 @@ class ChatApp
 		this.els.sendBtn.textContent = 'Stop';
 		this.els.sendBtn.style.backgroundColor = 'red';
 		const audioURLs = Object.values(this.state.audioUploader.getAudios());
+		const fileURLs = this.state.fileUploader.getFiles();
 		const imageURLs = Object.values(this.state.imageUploader.getImages());
 		const videoURLs = Object.values(this.state.videoUploader.getVideos());
 		const streaming = StorageService.load('streaming_enabled', true);
@@ -168,6 +179,7 @@ class ChatApp
 		{
 			messages: messages,
 			audios: audioURLs,
+			files: fileURLs,
 			images: imageURLs,
 			videos: videoURLs,
 			abortSignal: this.state.abortCtrl.signal,
@@ -239,6 +251,7 @@ class ChatApp
 		this.displayMsgs();
 		this.saveMsgs();
 		this.state.audioUploader.clear();
+		this.state.fileUploader.clear();
 		this.state.imageUploader.clear();
 		this.state.videoUploader.clear();
 	}
