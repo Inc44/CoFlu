@@ -6,7 +6,10 @@ const UIComponents = {
 			this.el = el;
 			this.options = options;
 			this.audios = {};
+			this.card = document.getElementById('audioUploadCard');
 			this.setupEvents();
+			this.setupDragAndDrop();
+			this.setupPaste();
 		}
 		setupEvents()
 		{
@@ -14,6 +17,46 @@ const UIComponents = {
 			{
 				this.handleUpload(Array.from(e.target.files));
 				this.el.value = '';
+			});
+		}
+		setupDragAndDrop()
+		{
+			if (!this.card) return;
+			['dragenter', 'dragover'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
+			{
+				event.preventDefault();
+				this.card.classList.add('dragging');
+			}));
+			['dragleave', 'drop'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
+			{
+				event.preventDefault();
+				this.card.classList.remove('dragging');
+			}));
+			this.card.addEventListener('drop', (event) =>
+			{
+				if (event.dataTransfer.files.length)
+				{
+					this.handleUpload(Array.from(event.dataTransfer.files)
+						.filter(file => file.type.startsWith('audio/')));
+				}
+			});
+		}
+		setupPaste()
+		{
+			if (!this.card) return;
+			document.addEventListener('paste', (event) =>
+			{
+				if (this.card.style.display === 'none') return;
+				if (event.clipboardData.files.length)
+				{
+					const audioFiles = Array.from(event.clipboardData.files)
+						.filter(file => file.type.startsWith('audio/'));
+					if (audioFiles.length > 0)
+					{
+						event.preventDefault();
+						this.handleUpload(audioFiles);
+					}
+				}
 			});
 		}
 		getTotalSize()
@@ -115,7 +158,10 @@ const UIComponents = {
 			this.el = el;
 			this.options = options;
 			this.files = {};
+			this.card = document.getElementById('fileUploadCard');
 			this.setupEvents();
+			this.setupDragAndDrop();
+			this.setupPaste();
 		}
 		setupEvents()
 		{
@@ -123,6 +169,46 @@ const UIComponents = {
 			{
 				this.handleUpload(Array.from(e.target.files));
 				this.el.value = '';
+			});
+		}
+		setupDragAndDrop()
+		{
+			if (!this.card) return;
+			['dragenter', 'dragover'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
+			{
+				event.preventDefault();
+				this.card.classList.add('dragging');
+			}));
+			['dragleave', 'drop'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
+			{
+				event.preventDefault();
+				this.card.classList.remove('dragging');
+			}));
+			this.card.addEventListener('drop', (event) =>
+			{
+				if (event.dataTransfer.files.length)
+				{
+					this.handleUpload(Array.from(event.dataTransfer.files)
+						.filter(file => file.type.startsWith('application/pdf')));
+				}
+			});
+		}
+		setupPaste()
+		{
+			if (!this.card) return;
+			document.addEventListener('paste', (event) =>
+			{
+				if (this.card.style.display === 'none') return;
+				if (event.clipboardData.files.length)
+				{
+					const pdfFiles = Array.from(event.clipboardData.files)
+						.filter(file => file.type.startsWith('application/pdf'));
+					if (pdfFiles.length > 0)
+					{
+						event.preventDefault();
+						this.handleUpload(pdfFiles);
+					}
+				}
 			});
 		}
 		getTotalSize()
@@ -224,7 +310,10 @@ const UIComponents = {
 			this.el = el;
 			this.options = options;
 			this.images = {};
+			this.card = document.getElementById('imageUploadCard');
 			this.setupEvents();
+			this.setupDragAndDrop();
+			this.setupPaste();
 		}
 		setupEvents()
 		{
@@ -232,6 +321,46 @@ const UIComponents = {
 			{
 				this.handleUpload(Array.from(e.target.files));
 				this.el.value = '';
+			});
+		}
+		setupDragAndDrop()
+		{
+			if (!this.card) return;
+			['dragenter', 'dragover'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
+			{
+				event.preventDefault();
+				this.card.classList.add('dragging');
+			}));
+			['dragleave', 'drop'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
+			{
+				event.preventDefault();
+				this.card.classList.remove('dragging');
+			}));
+			this.card.addEventListener('drop', (event) =>
+			{
+				if (event.dataTransfer.files.length)
+				{
+					this.handleUpload(Array.from(event.dataTransfer.files)
+						.filter(file => file.type.startsWith('image/')));
+				}
+			});
+		}
+		setupPaste()
+		{
+			if (!this.card) return;
+			document.addEventListener('paste', (event) =>
+			{
+				if (this.card.style.display === 'none') return;
+				if (event.clipboardData.files.length)
+				{
+					const imageFiles = Array.from(event.clipboardData.files)
+						.filter(file => file.type.startsWith('image/'));
+					if (imageFiles.length > 0)
+					{
+						event.preventDefault();
+						this.handleUpload(imageFiles);
+					}
+				}
 			});
 		}
 		getTotalSize()
@@ -334,7 +463,10 @@ const UIComponents = {
 			this.el = el;
 			this.options = options;
 			this.videos = {};
+			this.card = document.getElementById('videoUploadCard');
 			this.setupEvents();
+			this.setupDragAndDrop();
+			this.setupPaste();
 		}
 		setupEvents()
 		{
@@ -342,6 +474,46 @@ const UIComponents = {
 			{
 				this.handleUpload(Array.from(e.target.files));
 				this.el.value = '';
+			});
+		}
+		setupDragAndDrop()
+		{
+			if (!this.card) return;
+			['dragenter', 'dragover'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
+			{
+				event.preventDefault();
+				this.card.classList.add('dragging');
+			}));
+			['dragleave', 'drop'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
+			{
+				event.preventDefault();
+				this.card.classList.remove('dragging');
+			}));
+			this.card.addEventListener('drop', (event) =>
+			{
+				if (event.dataTransfer.files.length)
+				{
+					this.handleUpload(Array.from(event.dataTransfer.files)
+						.filter(file => file.type.startsWith('video/')));
+				}
+			});
+		}
+		setupPaste()
+		{
+			if (!this.card) return;
+			document.addEventListener('paste', (event) =>
+			{
+				if (this.card.style.display === 'none') return;
+				if (event.clipboardData.files.length)
+				{
+					const videoFiles = Array.from(event.clipboardData.files)
+						.filter(file => file.type.startsWith('video/'));
+					if (videoFiles.length > 0)
+					{
+						event.preventDefault();
+						this.handleUpload(videoFiles);
+					}
+				}
 			});
 		}
 		getTotalSize()

@@ -55,7 +55,15 @@ html.wide .container
 .card
 {
 	box-shadow: 0.15rem 0.15rem 0.15rem black;
-	margin: 0.5rem;
+	border: 0.125rem dashed transparent;
+	margin: 0.375rem;
+}
+
+.card.dragging
+{
+	border: 0.125rem dashed rgb(1, 111, 255);
+	margin: 0.375rem;
+	transition: border-color 0.5s;
 }
 
 textarea
