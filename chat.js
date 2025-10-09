@@ -164,10 +164,17 @@ class ChatApp
 		this.accumulatedText = '';
 		this.els.sendBtn.textContent = 'Stop';
 		this.els.sendBtn.style.backgroundColor = 'red';
-		const audioURLs = Object.values(this.state.audioUploader.getAudios());
-		const fileURLs = this.state.fileUploader.getFiles();
-		const imageURLs = Object.values(this.state.imageUploader.getImages());
-		const videoURLs = Object.values(this.state.videoUploader.getVideos());
+		const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
+		let details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(option => option.name === modelName);
+		if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
+		{
+			details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(option => option.name === modelName);
+		}
+		const audioURLs = details && details.audio ? Object.values(this.state.audioUploader.getAudios()) : [];
+		const fileURLs = details && details.file ? this.state.fileUploader.getFiles() :
+		{};
+		const imageURLs = details && details.image ? Object.values(this.state.imageUploader.getImages()) : [];
+		const videoURLs = details && details.video ? Object.values(this.state.videoUploader.getVideos()) : [];
 		const streaming = StorageService.load('streaming_enabled', true);
 		this.state.isStreaming = streaming;
 		const messages = this.state.msgs.map(msg => (

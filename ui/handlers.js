@@ -146,12 +146,23 @@ const UIHandlers = {
 				prompt = `${CONFIG.UI.NO_BS_PLUS_PROMPT}.\n\n${prompt}`;
 			}
 			if (!prompt.trim()) return;
+			const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
+			let details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(option => option.name === modelName);
+			if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
+			{
+				details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(option => option.name === modelName);
+			}
+			const audios = details && details.audio ? Object.values(state.audioUploader.getAudios()) : [];
+			const files = details && details.file ? state.fileUploader.getFiles() :
+			{};
+			const images = details && details.image ? Object.values(state.imageUploader.getImages()) : [];
+			const videos = details && details.video ? Object.values(state.videoUploader.getVideos()) : [];
 			const genOptions = {
 				streaming: StorageService.load('streaming_enabled', true),
-				audios: Object.values(state.audioUploader.getAudios()),
-				files: state.fileUploader.getFiles(),
-				images: Object.values(state.imageUploader.getImages()),
-				videos: Object.values(state.videoUploader.getVideos()),
+				audios,
+				files,
+				images,
+				videos,
 				abortSignal: state.abortCtrl.signal,
 				onProgress: (text) =>
 				{

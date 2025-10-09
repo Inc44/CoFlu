@@ -1,615 +1,276 @@
-const UIComponents = {
-	AudioUploader: class
+const UIComponents = {};
+class BaseUploader
+{
+	constructor(el, options = {}, cfg = {})
 	{
-		constructor(el, options = {})
+		this.el = el;
+		this.options = options;
+		this.items = {};
+		this.card = document.getElementById(cfg.cardId);
+		this.acceptPredicate = cfg.acceptPredicate;
+		this.defaultProvider = cfg.defaultProvider;
+		this.typeName = cfg.typeName;
+		this.setupEvents();
+		this.setupDragAndDrop();
+		this.setupPaste();
+	}
+	setupEvents()
+	{
+		if (!this.el) return;
+		this.el.addEventListener('change', (e) =>
 		{
-			this.el = el;
-			this.options = options;
-			this.audios = {};
-			this.card = document.getElementById('audioUploadCard');
-			this.setupEvents();
-			this.setupDragAndDrop();
-			this.setupPaste();
+			this.handleUpload(Array.from(e.target.files));
+			this.el.value = '';
+		});
+	}
+	setupDragAndDrop()
+	{
+		if (!this.card) return;
+		['dragenter', 'dragover'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
+		{
+			event.preventDefault();
+			this.card.classList.add('dragging');
+		}));
+		['dragleave', 'drop'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
+		{
+			event.preventDefault();
+			this.card.classList.remove('dragging');
+		}));
+		this.card.addEventListener('drop', (event) =>
+		{
+			if (!event.dataTransfer.files.length) return;
+			const files = Array.from(event.dataTransfer.files)
+				.filter(file => this.acceptPredicate(file));
+			if (files.length === 0) return;
+			this.handleUpload(files);
+		});
+	}
+	setupPaste()
+	{
+		if (!this.card) return;
+		document.addEventListener('paste', (event) =>
+		{
+			if (!event.clipboardData.files.length) return;
+			const files = Array.from(event.clipboardData.files)
+				.filter(file => this.acceptPredicate(file));
+			if (files.length === 0) return;
+			event.preventDefault();
+			this.handleUpload(files);
+		});
+	}
+	getTotalSize()
+	{
+		let size = 0;
+		for (const filename in this.items)
+		{
+			const dataURL = this.items[filename];
+			const base64 = dataURL.split(',')[1];
+			const bytes = (base64.length * (3 / 4));
+			size += bytes / (1024 * 1024);
 		}
-		setupEvents()
+		return size;
+	}
+	readAsDataURL(file)
+	{
+		return new Promise(resolve =>
 		{
-			this.el.addEventListener('change', (e) =>
-			{
-				this.handleUpload(Array.from(e.target.files));
-				this.el.value = '';
-			});
+			const reader = new FileReader();
+			reader.onload = e => resolve(e.target.result);
+			reader.readAsDataURL(file);
+		});
+	}
+	async handleUpload(files)
+	{
+		const apiModel = this.options.getApiModel?.() || this.defaultProvider;
+		const limits = CONFIG.LIMITS.COMPLETION[this.typeName.toUpperCase()][apiModel];
+		if (files.length + Object.keys(this.items)
+			.length > limits.max)
+		{
+			alert(`Maximum ${limits.max} ${this.typeName}s allowed for ${apiModel}`);
+			return;
 		}
-		setupDragAndDrop()
+		for (const file of files)
 		{
-			if (!this.card) return;
-			['dragenter', 'dragover'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
+			if (!this.acceptPredicate(file))
 			{
-				event.preventDefault();
-				this.card.classList.add('dragging');
-			}));
-			['dragleave', 'drop'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
-			{
-				event.preventDefault();
-				this.card.classList.remove('dragging');
-			}));
-			this.card.addEventListener('drop', (event) =>
-			{
-				if (event.dataTransfer.files.length)
-				{
-					this.handleUpload(Array.from(event.dataTransfer.files)
-						.filter(file => file.type.startsWith('audio/')));
-				}
-			});
-		}
-		setupPaste()
-		{
-			if (!this.card) return;
-			document.addEventListener('paste', (event) =>
-			{
-				if (this.card.style.display === 'none') return;
-				if (event.clipboardData.files.length)
-				{
-					const audioFiles = Array.from(event.clipboardData.files)
-						.filter(file => file.type.startsWith('audio/'));
-					if (audioFiles.length > 0)
-					{
-						event.preventDefault();
-						this.handleUpload(audioFiles);
-					}
-				}
-			});
-		}
-		getTotalSize()
-		{
-			let size = 0;
-			for (const filename in this.audios)
-			{
-				const dataURL = this.audios[filename];
-				const base64 = dataURL.split(',')[1];
-				const bytes = (base64.length * (3 / 4));
-				size += bytes / (1024 * 1024);
+				alert(`Only ${this.typeName} files are allowed.`);
+				continue;
 			}
-			return size;
-		}
-		async handleUpload(files)
-		{
-			const apiModel = this.options.getApiModel?.() || 'google';
-			const limits = CONFIG.LIMITS.COMPLETION.AUDIO[apiModel];
-			if (files.length + Object.keys(this.audios)
-				.length > limits.max)
+			const fileSizeMB = file.size / (1024 * 1024);
+			if (fileSizeMB > limits.size)
 			{
-				alert(`Maximum ${limits.max} audios allowed for ${apiModel}`);
-				return;
+				alert(`${this.typeName.charAt(0).toUpperCase() + this.typeName.slice(1)} ${file.name} exceeds the maximum size of ${limits.size}MB.`);
+				continue;
 			}
-			for (const file of files)
+			const totalSize = this.getTotalSize();
+			const newSize = totalSize + fileSizeMB;
+			if (newSize > 20)
 			{
-				if (!file.type.startsWith('audio/'))
-				{
-					alert('Only audio files are allowed.');
-					continue;
-				}
-				const fileSizeMB = file.size / (1024 * 1024);
-				if (fileSizeMB > limits.size)
-				{
-					alert(`Audio ${file.name} exceeds the maximum size of ${limits.size}MB.`);
-					continue;
-				}
-				const totalSize = this.getTotalSize();
-				const newSize = totalSize + fileSizeMB;
-				if (newSize > 20)
-				{
-					alert(`Adding this file would exceed the 20MB total size limit.`);
-					continue;
-				}
-				const dataUrl = await this.readAsDataURL(file);
-				this.audios[file.name] = dataUrl;
-				this.updateDisplay();
+				alert(`Adding this ${this.typeName} would exceed the 20MB total size limit.`);
+				continue;
 			}
-		}
-		readAsDataURL(file)
-		{
-			return new Promise(resolve =>
-			{
-				const reader = new FileReader();
-				reader.onload = e => resolve(e.target.result);
-				reader.readAsDataURL(file);
-			});
-		}
-		updateDisplay()
-		{
-			if (!this.options.displayElement) return;
-			const container = this.options.displayElement;
-			container.innerHTML = '';
-			Object.entries(this.audios)
-				.forEach(([filename, dataURL]) =>
-				{
-					const audioBox = document.createElement('div');
-					audioBox.className = 'audio-container d-flex align-items-center justify-content-between';
-					const nameEl = document.createElement('div');
-					nameEl.textContent = filename;
-					nameEl.classList.add('audio-filename', "me-2");
-					const removeBtn = document.createElement('button');
-					removeBtn.className = 'btn btn-sm btn-danger remove-audio';
-					removeBtn.textContent = 'X';
-					removeBtn.onclick = () =>
-					{
-						delete this.audios[filename];
-						this.updateDisplay();
-					};
-					audioBox.appendChild(nameEl);
-					audioBox.appendChild(removeBtn);
-					container.appendChild(audioBox);
-				});
-		}
-		getAudios()
-		{
-			return this.audios;
-		}
-		clear()
-		{
-			this.audios = {};
+			const dataUrl = await this.readAsDataURL(file);
+			this.items[file.name] = dataUrl;
 			this.updateDisplay();
 		}
-	},
-	FileUploader: class
+	}
+	updateDisplay()
 	{
-		constructor(el, options = {})
-		{
-			this.el = el;
-			this.options = options;
-			this.files = {};
-			this.card = document.getElementById('fileUploadCard');
-			this.setupEvents();
-			this.setupDragAndDrop();
-			this.setupPaste();
-		}
-		setupEvents()
-		{
-			this.el.addEventListener('change', (e) =>
+		if (!this.options.displayElement) return;
+		const container = this.options.displayElement;
+		container.innerHTML = '';
+		Object.entries(this.items)
+			.forEach(([filename, dataURL]) =>
 			{
-				this.handleUpload(Array.from(e.target.files));
-				this.el.value = '';
-			});
-		}
-		setupDragAndDrop()
-		{
-			if (!this.card) return;
-			['dragenter', 'dragover'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
-			{
-				event.preventDefault();
-				this.card.classList.add('dragging');
-			}));
-			['dragleave', 'drop'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
-			{
-				event.preventDefault();
-				this.card.classList.remove('dragging');
-			}));
-			this.card.addEventListener('drop', (event) =>
-			{
-				if (event.dataTransfer.files.length)
+				const el = this.createItemElement(filename, dataURL, () =>
 				{
-					this.handleUpload(Array.from(event.dataTransfer.files)
-						.filter(file => file.type.startsWith('application/pdf')));
-				}
-			});
-		}
-		setupPaste()
-		{
-			if (!this.card) return;
-			document.addEventListener('paste', (event) =>
-			{
-				if (this.card.style.display === 'none') return;
-				if (event.clipboardData.files.length)
-				{
-					const pdfFiles = Array.from(event.clipboardData.files)
-						.filter(file => file.type.startsWith('application/pdf'));
-					if (pdfFiles.length > 0)
-					{
-						event.preventDefault();
-						this.handleUpload(pdfFiles);
-					}
-				}
-			});
-		}
-		getTotalSize()
-		{
-			let size = 0;
-			for (const filename in this.files)
-			{
-				const dataURL = this.files[filename];
-				const base64 = dataURL.split(',')[1];
-				const bytes = (base64.length * (3 / 4));
-				size += bytes / (1024 * 1024);
-			}
-			return size;
-		}
-		async handleUpload(files)
-		{
-			const apiModel = this.options.getApiModel?.() || 'openai';
-			const limits = CONFIG.LIMITS.COMPLETION.FILE[apiModel];
-			if (files.length + Object.keys(this.files)
-				.length > limits.max)
-			{
-				alert(`Maximum ${limits.max} files allowed for ${apiModel}`);
-				return;
-			}
-			for (const file of files)
-			{
-				if (!file.type.startsWith('application/pdf'))
-				{
-					alert('Only PDF files are allowed.');
-					continue;
-				}
-				const fileSizeMB = file.size / (1024 * 1024);
-				if (fileSizeMB > limits.size)
-				{
-					alert(`File ${file.name} exceeds the maximum size of ${limits.size}MB.`);
-					continue;
-				}
-				const totalSize = this.getTotalSize();
-				const newSize = totalSize + fileSizeMB;
-				if (newSize > 20)
-				{
-					alert(`Adding this file would exceed the 20MB total size limit.`);
-					continue;
-				}
-				const dataUrl = await this.readAsDataURL(file);
-				this.files[file.name] = dataUrl;
-				this.updateDisplay();
-			}
-		}
-		readAsDataURL(file)
-		{
-			return new Promise(resolve =>
-			{
-				const reader = new FileReader();
-				reader.onload = e => resolve(e.target.result);
-				reader.readAsDataURL(file);
-			});
-		}
-		updateDisplay()
-		{
-			if (!this.options.displayElement) return;
-			const container = this.options.displayElement;
-			container.innerHTML = '';
-			Object.entries(this.files)
-				.forEach(([filename, dataURL]) =>
-				{
-					const fileBox = document.createElement('div');
-					fileBox.className = 'file-container d-flex align-items-center justify-content-between';
-					const nameEl = document.createElement('div');
-					nameEl.textContent = filename;
-					nameEl.classList.add('file-filename', "me-2");
-					const removeBtn = document.createElement('button');
-					removeBtn.className = 'btn btn-sm btn-danger remove-file';
-					removeBtn.textContent = 'X';
-					removeBtn.onclick = () =>
-					{
-						delete this.files[filename];
-						this.updateDisplay();
-					};
-					fileBox.appendChild(nameEl);
-					fileBox.appendChild(removeBtn);
-					container.appendChild(fileBox);
+					delete this.items[filename];
+					this.updateDisplay();
 				});
-		}
-		getFiles()
-		{
-			return this.files;
-		}
-		clear()
-		{
-			this.files = {};
-			this.updateDisplay();
-		}
-	},
-	ImageUploader: class
+				container.appendChild(el);
+			});
+	}
+	clear()
 	{
-		constructor(el, options = {})
-		{
-			this.el = el;
-			this.options = options;
-			this.images = {};
-			this.card = document.getElementById('imageUploadCard');
-			this.setupEvents();
-			this.setupDragAndDrop();
-			this.setupPaste();
-		}
-		setupEvents()
-		{
-			this.el.addEventListener('change', (e) =>
-			{
-				this.handleUpload(Array.from(e.target.files));
-				this.el.value = '';
-			});
-		}
-		setupDragAndDrop()
-		{
-			if (!this.card) return;
-			['dragenter', 'dragover'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
-			{
-				event.preventDefault();
-				this.card.classList.add('dragging');
-			}));
-			['dragleave', 'drop'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
-			{
-				event.preventDefault();
-				this.card.classList.remove('dragging');
-			}));
-			this.card.addEventListener('drop', (event) =>
-			{
-				if (event.dataTransfer.files.length)
-				{
-					this.handleUpload(Array.from(event.dataTransfer.files)
-						.filter(file => file.type.startsWith('image/')));
-				}
-			});
-		}
-		setupPaste()
-		{
-			if (!this.card) return;
-			document.addEventListener('paste', (event) =>
-			{
-				if (this.card.style.display === 'none') return;
-				if (event.clipboardData.files.length)
-				{
-					const imageFiles = Array.from(event.clipboardData.files)
-						.filter(file => file.type.startsWith('image/'));
-					if (imageFiles.length > 0)
-					{
-						event.preventDefault();
-						this.handleUpload(imageFiles);
-					}
-				}
-			});
-		}
-		getTotalSize()
-		{
-			let size = 0;
-			for (const filename in this.images)
-			{
-				const dataURL = this.images[filename];
-				const base64 = dataURL.split(',')[1];
-				const bytes = (base64.length * (3 / 4));
-				size += bytes / (1024 * 1024);
-			}
-			return size;
-		}
-		async handleUpload(files)
-		{
-			const apiModel = this.options.getApiModel?.() || 'openai';
-			const limits = CONFIG.LIMITS.COMPLETION.IMAGE[apiModel];
-			if (files.length + Object.keys(this.images)
-				.length > limits.max)
-			{
-				alert(`Maximum ${limits.max} images allowed for ${apiModel}`);
-				return;
-			}
-			for (const file of files)
-			{
-				if (!file.type.startsWith('image/'))
-				{
-					alert('Only image files are allowed.');
-					continue;
-				}
-				const fileSizeMB = file.size / (1024 * 1024);
-				if (fileSizeMB > limits.size)
-				{
-					alert(`Image ${file.name} exceeds the maximum size of ${limits.size}MB.`);
-					continue;
-				}
-				const totalSize = this.getTotalSize();
-				const newSize = totalSize + fileSizeMB;
-				if (newSize > 20)
-				{
-					alert(`Adding this image would exceed the 20MB total size limit.`);
-					continue;
-				}
-				const dataUrl = await this.readAsDataURL(file);
-				this.images[file.name] = dataUrl;
-				this.updateDisplay();
-			}
-		}
-		readAsDataURL(file)
-		{
-			return new Promise(resolve =>
-			{
-				const reader = new FileReader();
-				reader.onload = e => resolve(e.target.result);
-				reader.readAsDataURL(file);
-			});
-		}
-		updateDisplay()
-		{
-			if (!this.options.displayElement) return;
-			const container = this.options.displayElement;
-			container.innerHTML = '';
-			Object.entries(this.images)
-				.forEach(([filename, dataURL]) =>
-				{
-					const imgBox = document.createElement('div');
-					imgBox.className = 'image-container';
-					const img = document.createElement('img');
-					img.src = dataURL;
-					img.alt = filename;
-					img.title = filename;
-					const removeBtn = document.createElement('button');
-					removeBtn.className = 'btn btn-sm btn-danger remove-image';
-					removeBtn.textContent = 'X';
-					removeBtn.onclick = () =>
-					{
-						delete this.images[filename];
-						this.updateDisplay();
-					};
-					imgBox.appendChild(img);
-					imgBox.appendChild(removeBtn);
-					container.appendChild(imgBox);
-				});
-		}
-		getImages()
-		{
-			return this.images;
-		}
-		clear()
-		{
-			this.images = {};
-			this.updateDisplay();
-		}
-	},
-	VideoUploader: class
+		this.items = {};
+		this.updateDisplay();
+	}
+}
+UIComponents.BaseUploader = BaseUploader;
+UIComponents.AudioUploader = class extends BaseUploader
+{
+	constructor(el, options = {})
 	{
-		constructor(el, options = {})
+		super(el, options,
 		{
-			this.el = el;
-			this.options = options;
-			this.videos = {};
-			this.card = document.getElementById('videoUploadCard');
-			this.setupEvents();
-			this.setupDragAndDrop();
-			this.setupPaste();
-		}
-		setupEvents()
+			cardId: 'audioUploadCard',
+			acceptPredicate: file => file.type.startsWith('audio/'),
+			defaultProvider: 'google',
+			typeName: 'audio'
+		});
+		this.audios = this.items;
+	}
+	createItemElement(filename, dataURL, onRemove)
+	{
+		const audioBox = document.createElement('div');
+		audioBox.className = 'audio-container d-flex align-items-center justify-content-between';
+		const nameEl = document.createElement('div');
+		nameEl.textContent = filename;
+		nameEl.classList.add('audio-filename', 'me-2');
+		const removeBtn = document.createElement('button');
+		removeBtn.className = 'btn btn-sm btn-danger remove-audio';
+		removeBtn.textContent = 'X';
+		removeBtn.onclick = onRemove;
+		audioBox.appendChild(nameEl);
+		audioBox.appendChild(removeBtn);
+		return audioBox;
+	}
+	getAudios()
+	{
+		return this.audios;
+	}
+};
+UIComponents.FileUploader = class extends BaseUploader
+{
+	constructor(el, options = {})
+	{
+		super(el, options,
 		{
-			this.el.addEventListener('change', (e) =>
-			{
-				this.handleUpload(Array.from(e.target.files));
-				this.el.value = '';
-			});
-		}
-		setupDragAndDrop()
+			cardId: 'fileUploadCard',
+			acceptPredicate: file => file.type.startsWith('application/pdf'),
+			defaultProvider: 'openai',
+			typeName: 'file'
+		});
+		this.files = this.items;
+	}
+	createItemElement(filename, dataURL, onRemove)
+	{
+		const fileBox = document.createElement('div');
+		fileBox.className = 'file-container d-flex align-items-center justify-content-between';
+		const nameEl = document.createElement('div');
+		nameEl.textContent = filename;
+		nameEl.classList.add('file-filename', 'me-2');
+		const removeBtn = document.createElement('button');
+		removeBtn.className = 'btn btn-sm btn-danger remove-file';
+		removeBtn.textContent = 'X';
+		removeBtn.onclick = onRemove;
+		fileBox.appendChild(nameEl);
+		fileBox.appendChild(removeBtn);
+		return fileBox;
+	}
+	getFiles()
+	{
+		return this.files;
+	}
+};
+UIComponents.ImageUploader = class extends BaseUploader
+{
+	constructor(el, options = {})
+	{
+		super(el, options,
 		{
-			if (!this.card) return;
-			['dragenter', 'dragover'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
-			{
-				event.preventDefault();
-				this.card.classList.add('dragging');
-			}));
-			['dragleave', 'drop'].forEach((eventName) => this.card.addEventListener(eventName, (event) =>
-			{
-				event.preventDefault();
-				this.card.classList.remove('dragging');
-			}));
-			this.card.addEventListener('drop', (event) =>
-			{
-				if (event.dataTransfer.files.length)
-				{
-					this.handleUpload(Array.from(event.dataTransfer.files)
-						.filter(file => file.type.startsWith('video/')));
-				}
-			});
-		}
-		setupPaste()
+			cardId: 'imageUploadCard',
+			acceptPredicate: file => file.type.startsWith('image/'),
+			defaultProvider: 'openai',
+			typeName: 'image'
+		});
+		this.images = this.items;
+	}
+	createItemElement(filename, dataURL, onRemove)
+	{
+		const imgBox = document.createElement('div');
+		imgBox.className = 'image-container';
+		const img = document.createElement('img');
+		img.src = dataURL;
+		img.alt = filename;
+		img.title = filename;
+		const removeBtn = document.createElement('button');
+		removeBtn.className = 'btn btn-sm btn-danger remove-image';
+		removeBtn.textContent = 'X';
+		removeBtn.onclick = onRemove;
+		imgBox.appendChild(img);
+		imgBox.appendChild(removeBtn);
+		return imgBox;
+	}
+	getImages()
+	{
+		return this.images;
+	}
+};
+UIComponents.VideoUploader = class extends BaseUploader
+{
+	constructor(el, options = {})
+	{
+		super(el, options,
 		{
-			if (!this.card) return;
-			document.addEventListener('paste', (event) =>
-			{
-				if (this.card.style.display === 'none') return;
-				if (event.clipboardData.files.length)
-				{
-					const videoFiles = Array.from(event.clipboardData.files)
-						.filter(file => file.type.startsWith('video/'));
-					if (videoFiles.length > 0)
-					{
-						event.preventDefault();
-						this.handleUpload(videoFiles);
-					}
-				}
-			});
-		}
-		getTotalSize()
-		{
-			let size = 0;
-			for (const filename in this.videos)
-			{
-				const dataURL = this.videos[filename];
-				const base64 = dataURL.split(',')[1];
-				const bytes = (base64.length * (3 / 4));
-				size += bytes / (1024 * 1024);
-			}
-			return size;
-		}
-		async handleUpload(files)
-		{
-			const apiModel = this.options.getApiModel?.() || 'google';
-			const limits = CONFIG.LIMITS.COMPLETION.VIDEO[apiModel];
-			if (files.length + Object.keys(this.videos)
-				.length > limits.max)
-			{
-				alert(`Maximum ${limits.max} videos allowed for ${apiModel}`);
-				return;
-			}
-			for (const file of files)
-			{
-				if (!file.type.startsWith('video/'))
-				{
-					alert('Only video files are allowed.');
-					continue;
-				}
-				const fileSizeMB = file.size / (1024 * 1024);
-				if (fileSizeMB > limits.size)
-				{
-					alert(`Video ${file.name} exceeds the maximum size of ${limits.size}MB.`);
-					continue;
-				}
-				const totalSize = this.getTotalSize();
-				const newSize = totalSize + fileSizeMB;
-				if (newSize > 20)
-				{
-					alert(`Adding this video would exceed the 20MB total size limit.`);
-					continue;
-				}
-				const dataUrl = await this.readAsDataURL(file);
-				this.videos[file.name] = dataUrl;
-				this.updateDisplay();
-			}
-		}
-		readAsDataURL(file)
-		{
-			return new Promise(resolve =>
-			{
-				const reader = new FileReader();
-				reader.onload = e => resolve(e.target.result);
-				reader.readAsDataURL(file);
-			});
-		}
-		updateDisplay()
-		{
-			if (!this.options.displayElement) return;
-			const container = this.options.displayElement;
-			container.innerHTML = '';
-			Object.entries(this.videos)
-				.forEach(([filename, dataURL]) =>
-				{
-					const videoBox = document.createElement('div');
-					videoBox.className = 'video-container';
-					const video = document.createElement('video');
-					video.src = dataURL;
-					video.controls = false;
-					video.muted = true;
-					video.loop = true;
-					video.pause();
-					const removeBtn = document.createElement('button');
-					removeBtn.className = 'btn btn-sm btn-danger remove-video';
-					removeBtn.textContent = 'X';
-					removeBtn.onclick = () =>
-					{
-						delete this.videos[filename];
-						this.updateDisplay();
-					};
-					videoBox.appendChild(video);
-					videoBox.appendChild(removeBtn);
-					container.appendChild(videoBox);
-				});
-		}
-		getVideos()
-		{
-			return this.videos;
-		}
-		clear()
-		{
-			this.videos = {};
-			this.updateDisplay();
-		}
+			cardId: 'videoUploadCard',
+			acceptPredicate: file => file.type.startsWith('video/'),
+			defaultProvider: 'google',
+			typeName: 'video'
+		});
+		this.videos = this.items;
+	}
+	createItemElement(filename, dataURL, onRemove)
+	{
+		const videoBox = document.createElement('div');
+		videoBox.className = 'video-container';
+		const video = document.createElement('video');
+		video.src = dataURL;
+		video.controls = false;
+		video.muted = true;
+		video.loop = true;
+		video.pause();
+		const removeBtn = document.createElement('button');
+		removeBtn.className = 'btn btn-sm btn-danger remove-video';
+		removeBtn.textContent = 'X';
+		removeBtn.onclick = onRemove;
+		videoBox.appendChild(video);
+		videoBox.appendChild(removeBtn);
+		return videoBox;
+	}
+	getVideos()
+	{
+		return this.videos;
 	}
 };
 window.UIComponents = UIComponents;
