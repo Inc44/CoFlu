@@ -44,12 +44,12 @@ class SettingsApp
 			whisperBoxes:
 			{
 				openai: document.getElementById('openaiWhisperModelContainer'),
-				groq: document.getElementById('groqWhisperModelContainer'),
+				groq: document.getElementById('groqWhisperModelContainer')
 			},
 			whisperModels:
 			{
 				openai: document.getElementById('openaiWhisperModel'),
-				groq: document.getElementById('groqWhisperModel'),
+				groq: document.getElementById('groqWhisperModel')
 			},
 			modelBoxes:
 			{
@@ -90,7 +90,7 @@ class SettingsApp
 				alibaba: document.getElementById('alibabaModel'),
 				sambanova: document.getElementById('sambanovaModel'),
 				together: document.getElementById('togetherModel')
-			},
+			}
 		};
 	}
 	async init()
@@ -354,7 +354,7 @@ class SettingsApp
 		{
 			modelDetails = CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider].options.find(m => m.name === modelName);
 		}
-		return modelDetails;
+		return modelDetails || null;
 	}
 	setupEvents()
 	{

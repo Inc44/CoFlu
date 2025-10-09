@@ -157,7 +157,7 @@ window.CONFIG = {
 						image: true,
 						video: true,
 						search: true
-					}, ]
+					}]
 				},
 				x:
 				{
@@ -361,7 +361,7 @@ window.CONFIG = {
 					},
 					{
 						name: "whisper-large-v3"
-					}],
+					}]
 				},
 				openai:
 				{
@@ -375,8 +375,8 @@ window.CONFIG = {
 					},
 					{
 						name: "whisper-1"
-					}],
-				},
+					}]
+				}
 			}
 		},
 		CONFIG:
@@ -406,7 +406,7 @@ window.CONFIG = {
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.output?.find(item => item.type === "message")
 						?.content?.[0]?.text,
-					extractStreamContent: data => data.delta,
+					extractStreamContent: data => data.delta
 				},
 				chutes:
 				{
@@ -487,7 +487,7 @@ window.CONFIG = {
 						return parts.join('\n')
 							.trim();
 					},
-					extractStreamContent: data => data.choices[0]?.delta?.reasoning_content || data.choices[0]?.delta?.content,
+					extractStreamContent: data => data.choices[0]?.delta?.reasoning_content || data.choices[0]?.delta?.content
 				},
 				google:
 				{

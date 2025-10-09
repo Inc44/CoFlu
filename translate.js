@@ -9,7 +9,7 @@ class TranslateApp
 			translatedFileName: null,
 			isTranslating: false,
 			reqQueue: [],
-			lastReqTime: 0,
+			lastReqTime: 0
 		};
 		this.batchSize = this.getNumSetting('translation_batch_size', 10);
 		this.expRetry = this.getNumSetting('exponential_retry', 10);

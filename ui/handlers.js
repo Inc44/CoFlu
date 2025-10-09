@@ -4,28 +4,29 @@ const UIHandlers = {
 		['source', 'target'].forEach(type =>
 		{
 			const textArea = els[`${type}Text`];
+			if (!textArea) return;
 			textArea.addEventListener('input', () =>
 			{
 				TextService.updateStats(textArea, type);
 				StorageService.save(`${type}Text`, textArea.value);
 			});
 			const actions = {
-				[`clear${this.cap(type)}`]: () => this.clearTextArea(textArea, type),
-				[`copy${this.cap(type)}`]: () => navigator.clipboard.writeText(textArea.value),
-				[`uppercase${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.toUpperCase),
-				[`lowercase${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.toLowerCase),
-				[`dedupe${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.dedupe),
-				[`sort${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.sort),
-				[`unbold${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.unbold),
-				[`unspace${this.cap(type)}`]: () => this.transform(textArea, type, TextService.transform.unspace),
-				[`retab${this.cap(type)}`]: () => this.transform(textArea, type, TextService.format.retab),
-				[`latex${this.cap(type)}`]: () => this.transform(textArea, type, TextService.format.latex),
-				[`html${this.cap(type)}`]: () => this.transform(textArea, type, TextService.format.html),
+				clear: () => this.clearTextArea(textArea, type),
+				copy: () => navigator.clipboard.writeText(textArea.value),
+				uppercase: () => this.transform(textArea, type, TextService.transform.toUpperCase),
+				lowercase: () => this.transform(textArea, type, TextService.transform.toLowerCase),
+				dedupe: () => this.transform(textArea, type, TextService.transform.dedupe),
+				sort: () => this.transform(textArea, type, TextService.transform.sort),
+				unbold: () => this.transform(textArea, type, TextService.transform.unbold),
+				unspace: () => this.transform(textArea, type, TextService.transform.unspace),
+				retab: () => this.transform(textArea, type, TextService.format.retab),
+				latex: () => this.transform(textArea, type, TextService.format.latex),
+				html: () => this.transform(textArea, type, TextService.format.html)
 			};
 			Object.entries(actions)
 				.forEach(([id, action]) =>
 				{
-					document.getElementById(id)
+					document.getElementById(`${id}${this.cap(type)}`)
 						?.addEventListener('click', action);
 				});
 		});
@@ -127,7 +128,7 @@ const UIHandlers = {
 			}
 			UIState.setGenerating(true, els);
 			state.abortCtrl = new AbortController();
-			const model = StorageService.load('selected_api_model', 'openai');
+			const provider = StorageService.load('selected_api_model', 'openai');
 			const selectedPrompt = els.promptSelect.value;
 			const customPrompt = els.customPrompt.value;
 			let prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
@@ -146,12 +147,7 @@ const UIHandlers = {
 				prompt = `${CONFIG.UI.NO_BS_PLUS_PROMPT}.\n\n${prompt}`;
 			}
 			if (!prompt.trim()) return;
-			const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
-			let details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(option => option.name === modelName);
-			if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
-			{
-				details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(option => option.name === modelName);
-			}
+			const details = UtilService.getDetails(provider);
 			const audios = details && details.audio ? Object.values(state.audioUploader.getAudios()) : [];
 			const files = details && details.file ? state.fileUploader.getFiles() :
 			{};
@@ -178,10 +174,10 @@ const UIHandlers = {
 			els.targetText.value = '';
 			UIState.showWPM(els);
 			startTime = Date.now();
-			const response = await AiService.generate(prompt, model, genOptions);
+			const response = await AiService.generate(prompt, provider, genOptions);
 			if (!genOptions.streaming)
 			{
-				const modelConfig = CONFIG.API.CONFIG.COMPLETION[model];
+				const modelConfig = CONFIG.API.CONFIG.COMPLETION[provider];
 				els.targetText.value = modelConfig.extractContent(response);
 				TextService.updateStats(els.targetText, 'target');
 				StorageService.save('targetText', els.targetText.value);
@@ -193,39 +189,29 @@ const UIHandlers = {
 	},
 	setupModelSelectionHandler(els)
 	{
-		if (els.apiModel)
+		if (!els.apiModel) return;
+		els.apiModel.addEventListener('change', () =>
 		{
-			els.apiModel.addEventListener('change', () =>
+			const provider = els.apiModel.value;
+			const details = UtilService.getDetails(provider);
+			StorageService.save('selected_api_model', provider);
+			if (details)
 			{
-				const model = els.apiModel.value;
-				const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
-				let details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === modelName);
-				if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
-				{
-					details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(m => m.name === modelName);
-				}
-				StorageService.save('selected_api_model', model);
-				if (details)
-				{
-					UIState.updateAudioUploadVisibility(details);
-					UIState.updateFileUploadVisibility(details);
-					UIState.updateImageUploadVisibility(details);
-					UIState.updateVideoUploadVisibility(details);
-				}
-			});
-		}
+				UIState.updateUploadsVisibility(details);
+			}
+		});
 	},
 	setupSettingsHandlers(els)
 	{
 		els.apiModel?.addEventListener('change', () =>
 		{
-			const model = els.apiModel.value;
-			const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === els.modelSelects[model].value);
-			StorageService.save('selected_api_model', model);
-			UIState.updateAudioUploadVisibility(details);
-			UIState.updateFileUploadVisibility(details);
-			UIState.updateImageUploadVisibility(details);
-			UIState.updateVideoUploadVisibility(details);
+			const provider = els.apiModel.value;
+			const details = UtilService.getDetails(provider);
+			StorageService.save('selected_api_model', provider);
+			if (details)
+			{
+				UIState.updateUploadsVisibility(details);
+			}
 		});
 		if (els.modelSelects)
 		{
@@ -235,13 +221,13 @@ const UIHandlers = {
 					select?.addEventListener('change', () =>
 					{
 						els.apiModel.value = provider;
-						const model = provider;
-						const details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === select.value);
-						StorageService.save('selected_api_model', model);
-						UIState.updateAudioUploadVisibility(details);
-						UIState.updateFileUploadVisibility(details);
-						UIState.updateImageUploadVisibility(details);
-						UIState.updateVideoUploadVisibility(details);
+						const provider = provider;
+						const details = UtilService.getDetails(provider);
+						StorageService.save('selected_api_model', provider);
+						if (details)
+						{
+							UIState.updateUploadsVisibility(details);
+						}
 					});
 				});
 		}
@@ -252,7 +238,7 @@ const UIHandlers = {
 			noBSPlusToggle: 'no_bs_plus_enabled',
 			streamToggle: 'streaming_enabled',
 			translateToggle: 'translation_enabled',
-			wideToggle: 'wide_enabled',
+			wideToggle: 'wide_enabled'
 		};
 		Object.entries(toggles)
 			.forEach(([elemId, storeKey]) =>
@@ -279,6 +265,6 @@ const UIHandlers = {
 		{
 			StorageService.save('transcribe_language', els.transcribeLang.value);
 		});
-	},
+	}
 };
 window.UIHandlers = UIHandlers;

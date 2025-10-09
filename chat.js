@@ -10,7 +10,7 @@ class ChatApp
 			fileUploader: null,
 			imageUploader: null,
 			videoUploader: null,
-			isStreaming: false,
+			isStreaming: false
 		};
 		this.loadMsgs();
 		this.renderer = StorageService.load('selected_renderer', 'katex');
@@ -35,7 +35,7 @@ class ChatApp
 			exportBtn: document.getElementById('exportSettings'),
 			importBtn: document.getElementById('importSettings'),
 			msgInput: document.getElementById('messageInput'),
-			sendBtn: document.getElementById('sendMessage'),
+			sendBtn: document.getElementById('sendMessage')
 		};
 	}
 	init()
@@ -77,19 +77,11 @@ class ChatApp
 	updateUI()
 	{
 		if (!this.els.apiModel) return;
-		const model = this.els.apiModel.value;
-		const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
-		let details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === modelName);
-		if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
-		{
-			details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(m => m.name === modelName);
-		}
+		const provider = this.els.apiModel.value;
+		const details = UtilService.getDetails(provider);
 		if (details)
 		{
-			UIState.updateAudioUploadVisibility(details);
-			UIState.updateFileUploadVisibility(details);
-			UIState.updateImageUploadVisibility(details);
-			UIState.updateVideoUploadVisibility(details);
+			UIState.updateUploadsVisibility(details);
 		}
 	}
 	setupEvents()
@@ -110,20 +102,12 @@ class ChatApp
 		{
 			this.els.apiModel.addEventListener('change', () =>
 			{
-				const model = this.els.apiModel.value;
-				const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
-				let details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === modelName);
-				if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
-				{
-					details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(m => m.name === modelName);
-				}
-				StorageService.save('selected_api_model', model);
+				const provider = this.els.apiModel.value;
+				const details = UtilService.getDetails(provider);
+				StorageService.save('selected_api_model', provider);
 				if (details)
 				{
-					UIState.updateAudioUploadVisibility(details);
-					UIState.updateFileUploadVisibility(details);
-					UIState.updateImageUploadVisibility(details);
-					UIState.updateVideoUploadVisibility(details);
+					UIState.updateUploadsVisibility(details);
 				}
 				this.loadMsgs();
 				this.displayMsgs();
@@ -153,23 +137,18 @@ class ChatApp
 		}
 		this.addUserMsg(text);
 		this.els.msgInput.value = '';
-		const model = this.els.apiModel.value;
-		const apiKey = StorageService.load(CONFIG.API.KEYS[model]);
+		const provider = this.els.apiModel.value;
+		const apiKey = StorageService.load(CONFIG.API.KEYS[provider]);
 		if (!apiKey)
 		{
-			alert(`Please set your API key for ${model} in settings.`);
+			alert(`Please set your API key for ${provider} in settings.`);
 			return;
 		}
 		this.state.abortCtrl = new AbortController();
 		this.accumulatedText = '';
 		this.els.sendBtn.textContent = 'Stop';
 		this.els.sendBtn.style.backgroundColor = 'red';
-		const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
-		let details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(option => option.name === modelName);
-		if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
-		{
-			details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(option => option.name === modelName);
-		}
+		const details = UtilService.getDetails(provider);
 		const audioURLs = details && details.audio ? Object.values(this.state.audioUploader.getAudios()) : [];
 		const fileURLs = details && details.file ? this.state.fileUploader.getFiles() :
 		{};
@@ -182,7 +161,7 @@ class ChatApp
 			role: msg.role,
 			content: msg.content
 		}));
-		const aiResponse = await AiService.generate("", model,
+		const aiResponse = await AiService.generate("", provider,
 		{
 			messages: messages,
 			audios: audioURLs,
@@ -199,7 +178,7 @@ class ChatApp
 		});
 		if (!this.state.isStreaming)
 		{
-			let content = CONFIG.API.CONFIG.COMPLETION[model].extractContent(aiResponse);
+			let content = CONFIG.API.CONFIG.COMPLETION[provider].extractContent(aiResponse);
 			this.addAssistantMsg(content);
 		}
 		this.els.sendBtn.textContent = 'Send';

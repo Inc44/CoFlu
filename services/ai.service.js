@@ -61,7 +61,7 @@ const AiService = {
 			method: 'POST',
 			headers,
 			body: JSON.stringify(reqBody),
-			signal: options.abortSignal,
+			signal: options.abortSignal
 		});
 		if (!response.ok)
 		{
@@ -119,7 +119,7 @@ const AiService = {
 				}
 				return {
 					role: msg.role,
-					content: content.length === 1 ? content[0].text : content
+					content: content.length === 1 && content[0]?.text != null ? content[0].text : content
 				};
 			});
 		}
@@ -136,7 +136,7 @@ const AiService = {
 			let userMsgIdx = msgs.findIndex(m => m.role === 'user');
 			for (let i = msgs.length - 1; i >= 0; --i)
 			{
-				if (msgs[i].role == "user")
+				if (msgs[i].role === "user")
 				{
 					userMsgIdx = i;
 					break;
@@ -165,7 +165,7 @@ const AiService = {
 				userContent = msgs[userMsgIdx].content;
 			}
 			userContent = userContent.concat(this.buildMediaContent(options.audios, options.images, options.videos, options.files, model, modelConfig));
-			if (userContent.length === 1 && typeof userContent[0] === "object" && userContent[0].text != null)
+			if (userContent.length === 1 && typeof userContent[0] === "object" && userContent[0].text !== null)
 			{
 				msgs[userMsgIdx].content = userContent[0].text;
 			}
@@ -182,16 +182,16 @@ const AiService = {
 			}
 			if (Array.isArray(msg.content))
 			{
-				if (msg.content.length > 0 && typeof msg.content[0] === "object" && msg.content[0].text != null)
+				if (msg.content.length > 0 && typeof msg.content[0] === "object" && msg.content[0].text !== null)
 				{
-					return msg.content[0].text.trim() != '';
+					return msg.content[0].text.trim() !== '';
 				}
 			}
 			return true;
 		});
 		let reqBody = {
 			model: modelConfig.name,
-			stream: options.streaming,
+			stream: options.streaming
 		};
 		if (model === 'openai' && modelConfig.responses_api_only)
 		{
@@ -281,7 +281,7 @@ const AiService = {
 					audio_content:
 					{
 						content: dataURL
-					},
+					}
 				}));
 				mediaContent = mediaContent.concat(audioContent);
 			}
@@ -302,7 +302,7 @@ const AiService = {
 						{
 							data: base64Data,
 							format: mimeType.split('/')[1]
-						},
+						}
 					};
 				});
 				mediaContent = mediaContent.concat(audioContent);
@@ -322,7 +322,7 @@ const AiService = {
 						type: 'base64',
 						media_type: mimeType,
 						data: base64Data
-					},
+					}
 				};
 			});
 			mediaContent = mediaContent.concat(imageContent);
@@ -335,7 +335,7 @@ const AiService = {
 				image_url:
 				{
 					url: dataURL
-				},
+				}
 			}));
 			mediaContent = mediaContent.concat(imageContent);
 		}
@@ -375,7 +375,7 @@ const AiService = {
 						type: 'base64',
 						media_type: mimeType,
 						data: base64Data
-					},
+					}
 				};
 			});
 			mediaContent = mediaContent.concat(fileContent);
@@ -399,7 +399,7 @@ const AiService = {
 				{
 					filename: item.filename,
 					file_data: item.dataURL
-				},
+				}
 			}));
 			mediaContent = mediaContent.concat(fileContent);
 		}
@@ -410,7 +410,7 @@ const AiService = {
 		return {
 			'Content-Type': 'application/json',
 			[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
-			...config.additionalHeaders,
+			...config.additionalHeaders
 		};
 	},
 	createMediaContent(mediaItems, typeKey, urlKey)
@@ -421,7 +421,7 @@ const AiService = {
 			[urlKey]:
 			{
 				url: dataURL
-			},
+			}
 		}));
 	},
 	async handleStreamResponse(response, model, onProgress)
@@ -503,7 +503,7 @@ const AiService = {
 			method: 'POST',
 			headers:
 			{
-				[config.apiKeyHeader]: config.apiKeyPrefix + apiKey,
+				[config.apiKeyHeader]: config.apiKeyPrefix + apiKey
 			},
 			body: formData,
 			signal: abortSignal
@@ -523,6 +523,6 @@ const AiService = {
 	wait(ms)
 	{
 		return new Promise(resolve => setTimeout(resolve, ms));
-	},
+	}
 };
 window.AiService = AiService;

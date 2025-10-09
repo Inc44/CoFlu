@@ -74,6 +74,13 @@ const UIState = {
 			videoRow.style.display = modelDetails.video ? '' : 'none';
 		}
 	},
+	updateUploadsVisibility(modelDetails)
+	{
+		this.updateAudioUploadVisibility(modelDetails);
+		this.updateFileUploadVisibility(modelDetails);
+		this.updateImageUploadVisibility(modelDetails);
+		this.updateVideoUploadVisibility(modelDetails);
+	},
 	showWPM(els)
 	{
 		els.wpmBox.style.display = 'inline';

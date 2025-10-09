@@ -308,7 +308,7 @@ class App
 			this.state.transcribeAbortCtrl = new AbortController();
 			const whisperModel = StorageService.load(`${transModel}_whisper_model`, CONFIG.API.MODELS.TRANSCRIPTION[transModel].default);
 			const result = await AiService.transcribe(file, this.els.transcribeLang.value, apiKey, whisperModel, transModel, this.state.transcribeAbortCtrl.signal);
-			if (this.els.sourceText)
+			if (this.els.sourceText && result?.text !== undefined)
 			{
 				this.els.sourceText.value = result.text;
 				TextService.updateStats(this.els.sourceText, 'source');
@@ -321,24 +321,16 @@ class App
 	updateUI()
 	{
 		if (!this.els.apiModel) return;
-		const model = this.els.apiModel.value;
-		const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
-		let details = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === modelName);
-		if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
-		{
-			details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(m => m.name === modelName);
-		}
+		const provider = this.els.apiModel.value;
+		const details = UtilService.getDetails(provider);
 		if (details)
 		{
-			UIState.updateAudioUploadVisibility(details);
-			UIState.updateFileUploadVisibility(details);
-			UIState.updateImageUploadVisibility(details);
-			UIState.updateVideoUploadVisibility(details);
+			UIState.updateUploadsVisibility(details);
 		}
 	}
 	setupErrorHandling()
 	{
-		window.onerror = (msg, url, lineNo, columnNo, error) =>
+		window.onerror = () =>
 		{
 			alert('An unexpected error occurred. Please refresh the page and try again.');
 			return false;
