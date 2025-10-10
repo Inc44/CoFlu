@@ -374,7 +374,7 @@ class ChatApp
 				strict: false
 			});
 		}
-		else if (this.renderer === 'mathjax3')
+		else if (this.renderer === 'mathjax4')
 		{
 			MathJax.typesetPromise([element]);
 		}

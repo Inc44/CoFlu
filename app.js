@@ -266,7 +266,7 @@ class App
 					strict: false
 				});
 			}
-			else if (renderer === 'mathjax3')
+			else if (renderer === 'mathjax4')
 			{
 				MathJax.typesetPromise([el]);
 			}

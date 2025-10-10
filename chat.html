@@ -7,6 +7,7 @@
 	<meta name="description" content="CoFlu is a powerful text manipulation, generation, and comparison tool. It's designed for tasks like proofreading, editing, content creation, version control, and ensuring text consistency. CoFlu offers unique capabilities, including AI-powered text generation, audio transcription, and unprecedented layout-preserving .docx translation using LLMs.">
 	<title>CoFlu Chat</title>
 	<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><text y='25rem' font-size='480'>📝</text></svg>">
+	<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 	<script>
 		const storedDarkMode = localStorage.getItem('dark_enabled');
 		const isDarkMode = storedDarkMode === 'true' || (storedDarkMode === null && true);
@@ -18,14 +19,15 @@
 			document.documentElement.classList.add('wide');
 		}
 	</script>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" defer>
 	<link href="styles.css" rel="stylesheet">
 	<script src="config.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/auto-render.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/auto-render.min.js" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.min.js" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.min.js" defer></script>
 	<script src="services/storage.service.js"></script>
 	<script src="services/util.service.js"></script>
 	<script src="services/text.service.js"></script>
@@ -150,7 +152,7 @@
 						<h5>Image Upload</h5>
 						<div id="imageList"></div>
 						<div class="upload-file">
-							<label for="loadSource" class="btn btn-sm input-file-label">Upload File</label>
+							<label for="imageUploadInput" class="btn btn-sm input-file-label">Upload File</label>
 							<input type="file" id="imageUploadInput" accept=".png,.jpg" class="input-file" multiple>
 						</div>
 					</div>
