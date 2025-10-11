@@ -33,7 +33,7 @@
 	<div class="container" id="content">
 		<nav class="navbar">
 			<a id="homePage" href="index.html">📝 CoFlu</a>
-			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Navbar Toggler">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="collapse navbar-collapse" id="navbarNav">
@@ -260,6 +260,7 @@
 					<div class="card-body">
 						<h5>Rendering Settings</h5>
 						<div class="mb-3">
+							<label for="renderer" class="form-label">Renderer:</label>
 							<select class="form-select" id="renderer">
 								<option value="katex">KaTeX</option>
 								<option value="mathjax4">MathJax4</option>
@@ -340,7 +341,7 @@
 							<small class="form-text text-muted">Faster but more prone to failure (changing is recommended for top-tier API keys only)</small>
 						</div>
 						<div class="mb-3">
-							<label for="batchRMP" class="form-label">Translation Batch RPM (Quota Slowdown):</label>
+							<label for="batchRPM" class="form-label">Translation Batch RPM (Quota Slowdown):</label>
 							<input type="number" id="batchRPM" class="form-control" value="0" min="0" max="60000" step="1">
 							<small class="form-text text-muted">Maximum batches per minute (0 = unlimited, but it may cause errors)</small>
 						</div>
