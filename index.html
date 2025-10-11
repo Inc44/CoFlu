@@ -68,7 +68,7 @@
 		</nav>
 		<div class="row">
 			<div class="col-md-6">
-				<div class="card mb-3">
+				<div class="card">
 					<div class="card-header">
 						<div class="upload-file">
 							<label for="loadSource" class="btn btn-sm input-file-label">Upload File</label>
@@ -93,7 +93,7 @@
 				</div>
 			</div>
 			<div class="col-md-6">
-				<div class="card mb-3">
+				<div class="card">
 					<div class="card-header">
 						<div class="upload-file">
 							<label for="loadTarget" class="btn btn-sm input-file-label">Upload File</label>
@@ -135,7 +135,7 @@
 				<div class="card">
 					<div class="card-body">
 						<h5>AI</h5>
-						<div class="mb-3">
+						<div>
 							<label for="apiModel" class="form-label">API Model:</label>
 							<select class="form-select" id="apiModel">
 								<option value="cerebras">Cerebras</option>
@@ -157,14 +157,14 @@
 								<option value="together">Together</option>
 							</select>
 						</div>
-						<div class="mb-3">
+						<div class="mt-3">
 							<label for="promptSelect" class="form-label">Select Prompt:</label>
 							<select class="form-select" id="promptSelect"></select>
 						</div>
-						<div class="mb-3" id="customPromptContainer">
+						<div class="mt-3" id="customPromptContainer">
 							<label for="customPrompt" class="form-label">Custom Prompt:</label>
 							<input type="text" class="form-control" id="customPrompt" placeholder="Type / Paste Custom Prompt">
-							<button class="btn" id="savePrompt">Save Prompt</button>
+							<button class="btn btn-sm mt-3" id="savePrompt">Save Prompt</button>
 						</div>
 					</div>
 				</div>
@@ -231,7 +231,7 @@
 				<div class="card">
 					<div class="card-body">
 						<h5>Transcribe</h5>
-						<div class="mb-3">
+						<div>
 							<label for="transcribeLanguage" class="form-label">Language:</label>
 							<select class="form-select" id="transcribeLanguage">
 								<option value="de">German</option>
@@ -248,11 +248,11 @@
 								<option value="zh">Chinese</option>
 							</select>
 						</div>
-						<div class="mb-3">
+						<div class="mt-3">
 							<label for="audioFile" class="form-label">Audio File:</label>
 							<input type="file" id="audioFile" class="form-control" accept=".flac,.mp3,.mp4,.mpeg,.mpga,.m4a,.ogg,.wav,.webm">
 						</div>
-						<button class="btn btn-sm" id="transcribeBtn">Start Transcribe</button>
+						<button class="btn btn-sm mt-3" id="transcribeBtn">Start Transcribe</button>
 					</div>
 				</div>
 			</div>
@@ -262,7 +262,7 @@
 				<div class="card">
 					<div class="card-body">
 						<h5>Translate</h5>
-						<div class="mb-3">
+						<div>
 							<label for="language" class="form-label">Language:</label>
 							<select class="form-select" id="language">
 								<option value="Chinese">Chinese</option>
@@ -279,7 +279,7 @@
 								<option value="Ukrainian">Ukrainian</option>
 							</select>
 						</div>
-						<div class="mb-3 form-check">
+						<div class="mt-3 form-check">
 							<input type="checkbox" class="form-check-input" id="translationToggle" checked>
 							<label class="form-check-label" for="translationToggle">Enable Translation</label>
 						</div>

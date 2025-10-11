@@ -60,7 +60,7 @@
 				<div class="card">
 					<div class="card-body">
 						<h5>AI</h5>
-						<div class="mb-3">
+						<div>
 							<label for="apiModel" class="form-label">API Model:</label>
 							<select class="form-select" id="apiModel">
 								<option value="cerebras">Cerebras</option>
@@ -91,7 +91,7 @@
 				<div class="card">
 					<div class="card-body">
 						<h5>Translate</h5>
-						<div class="mb-3">
+						<div>
 							<label for="language" class="form-label">Language:</label>
 							<select class="form-select" id="language">
 								<option value="Chinese">Chinese</option>
@@ -108,11 +108,11 @@
 								<option value="Ukrainian">Ukrainian</option>
 							</select>
 						</div>
-						<div class="mb-3">
+						<div class="mt-3">
 							<label for="documentFile" class="form-label">DOCX Document File:</label>
 							<input type="file" id="documentFile" class="form-control" accept=".docx">
 						</div>
-						<button class="btn btn-sm" id="translateBtn">Start Translation</button>
+						<button class="btn btn-sm mt-3" id="translateBtn">Start Translation</button>
 						<div class="progress mt-3" style="display: none;" id="translateProgress">
 							<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
 						</div>
