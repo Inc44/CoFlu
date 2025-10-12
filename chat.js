@@ -44,6 +44,7 @@ class ChatApp
 		this.initComponents();
 		this.displayMsgs();
 		this.updateUI();
+		this.renderAllWhenReady();
 		const savedModel = StorageService.load('selected_api_model', 'openai');
 		if (this.els.apiModel)
 		{
@@ -111,6 +112,7 @@ class ChatApp
 				}
 				this.loadMsgs();
 				this.displayMsgs();
+				this.renderAllWhenReady();
 			});
 		}
 	}
@@ -344,8 +346,11 @@ class ChatApp
 	}
 	renderMath(element)
 	{
+		const hasKatex = typeof katex !== 'undefined' && typeof renderMathInElement === 'function';
+		const hasMathJax = typeof MathJax !== 'undefined' && MathJax && typeof MathJax.typesetPromise === 'function';
 		if (this.renderer === 'katex')
 		{
+			if (!hasKatex) return;
 			renderMathInElement(element,
 			{
 				delimiters: [
@@ -376,8 +381,40 @@ class ChatApp
 		}
 		else if (this.renderer === 'mathjax4')
 		{
+			if (!hasMathJax) return;
 			MathJax.typesetPromise([element]);
 		}
+	}
+	async renderAllWhenReady()
+	{
+		await this.waitForRenderer();
+		const msgs = this.els.chatBox.querySelectorAll('.message');
+		msgs.forEach(el => this.renderMath(el));
+	}
+	waitForRenderer()
+	{
+		const renderer = this.renderer;
+		const ready = () =>
+		{
+			if (renderer === 'katex')
+			{
+				return typeof katex !== 'undefined' && typeof renderMathInElement === 'function';
+			}
+			return typeof MathJax !== 'undefined' && MathJax && typeof MathJax.typesetPromise === 'function';
+		};
+		if (ready()) return Promise.resolve();
+		return new Promise(resolve =>
+		{
+			let i = 0;
+			const id = setInterval(() =>
+			{
+				if (ready() || i++ > 400)
+				{
+					clearInterval(id);
+					resolve();
+				}
+			}, 25);
+		});
 	}
 	exportChat()
 	{
@@ -417,6 +454,7 @@ class ChatApp
 				StorageService.save('chat_history', parsed);
 				this.loadMsgs();
 				this.displayMsgs();
+				this.renderAllWhenReady();
 				alert('Chat history imported successfully!');
 			};
 			reader.readAsText(file);

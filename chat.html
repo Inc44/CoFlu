@@ -23,11 +23,33 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" defer>
 	<link href="styles.css" rel="stylesheet">
 	<script src="config.js"></script>
+	<script>
+		(function()
+		{
+			var renderer = localStorage.getItem('selected_renderer') || 'katex';
+
+			function load(src, onload)
+			{
+				var script = document.createElement('script');
+				script.src = src;
+				if (onload) script.onload = onload;
+				document.head.appendChild(script);
+			}
+			if (renderer === 'katex')
+			{
+				load('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js', function()
+				{
+					load('https://cdn.jsdelivr.net/npm/katex/dist/contrib/auto-render.min.js');
+				});
+			}
+			else
+			{
+				load('https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.min.js');
+			}
+		})();
+	</script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js" defer></script>
-	<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js" defer></script>
-	<script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/auto-render.min.js" defer></script>
 	<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.min.js" defer></script>
-	<script src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.min.js" defer></script>
 	<script src="services/storage.service.js"></script>
 	<script src="services/util.service.js"></script>
 	<script src="services/text.service.js"></script>

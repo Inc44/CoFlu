@@ -226,6 +226,8 @@ class App
 	renderMath()
 	{
 		const renderer = StorageService.load('selected_renderer', 'katex');
+		const hasKatex = typeof katex !== 'undefined' && typeof renderMathInElement === 'function';
+		const hasMathJax = typeof MathJax !== 'undefined' && MathJax && typeof MathJax.typesetPromise === 'function';
 		const elements = [
 			document.getElementById('leftColumn'),
 			document.getElementById('rightColumn'),
@@ -238,6 +240,7 @@ class App
 			if (!el) return;
 			if (renderer === 'katex')
 			{
+				if (!hasKatex) return;
 				renderMathInElement(el,
 				{
 					delimiters: [
@@ -268,6 +271,7 @@ class App
 			}
 			else if (renderer === 'mathjax4')
 			{
+				if (!hasMathJax) return;
 				MathJax.typesetPromise([el]);
 			}
 		});
