@@ -40,16 +40,16 @@ class ChatApp
 	}
 	init()
 	{
-		this.setupEvents();
-		this.initComponents();
-		this.displayMsgs();
-		this.updateUI();
-		this.renderAllWhenReady();
 		const savedModel = StorageService.load('selected_api_model', 'openai');
 		if (this.els.apiModel)
 		{
 			this.els.apiModel.value = savedModel;
 		}
+		this.setupEvents();
+		this.initComponents();
+		this.displayMsgs();
+		this.updateUI();
+		this.renderAllWhenReady();
 	}
 	initComponents()
 	{
