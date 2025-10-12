@@ -373,6 +373,8 @@ class App
 				{
 					this.state.transcribeAbortCtrl.abort();
 				}
+				UIState.setTranscribing(false, this.els);
+				this.state.transcribeAbortCtrl = null;
 				return;
 			}
 			const transModel = StorageService.load('selected_transcription_api_model', 'groq');
