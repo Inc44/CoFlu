@@ -146,12 +146,17 @@ class ChatApp
 			alert(`Please set your API key for ${provider} in settings.`);
 			return;
 		}
+		const details = UtilService.getDetails(provider);
+		const audioURLs = details && details.audio ? Object.values(this.state.audioUploader.getAudios()) : [];
+		if (provider === 'openai' && details && details.modality === 'audio' && audioURLs.length === 0)
+		{
+			alert('Selected OpenAI audio model requires audio input. Attach at least one audio file.');
+			return;
+		}
 		this.state.abortCtrl = new AbortController();
 		this.accumulatedText = '';
 		this.els.sendBtn.textContent = 'Stop';
 		this.els.sendBtn.style.backgroundColor = 'red';
-		const details = UtilService.getDetails(provider);
-		const audioURLs = details && details.audio ? Object.values(this.state.audioUploader.getAudios()) : [];
 		const fileURLs = details && details.file ? this.state.fileUploader.getFiles() :
 		{};
 		const imageURLs = details && details.image ? Object.values(this.state.imageUploader.getImages()) : [];

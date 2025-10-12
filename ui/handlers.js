@@ -126,9 +126,16 @@ const UIHandlers = {
 				state.abortCtrl = null;
 				return;
 			}
+			const provider = StorageService.load('selected_api_model', 'openai');
+			const details = UtilService.getDetails(provider);
+			const audios = details && details.audio ? Object.values(state.audioUploader.getAudios()) : [];
+			if (provider === 'openai' && details && details.modality === 'audio' && audios.length === 0)
+			{
+				alert('Selected OpenAI audio model requires audio input. Attach at least one audio file.');
+				return;
+			}
 			UIState.setGenerating(true, els);
 			state.abortCtrl = new AbortController();
-			const provider = StorageService.load('selected_api_model', 'openai');
 			const selectedPrompt = els.promptSelect.value;
 			const customPrompt = els.customPrompt.value;
 			const selectedOption = els.promptSelect.options[els.promptSelect.selectedIndex];
@@ -149,8 +156,6 @@ const UIHandlers = {
 				prompt = `${CONFIG.UI.NO_BS_PLUS_PROMPT}.\n\n${prompt}`;
 			}
 			if (!prompt.trim()) return;
-			const details = UtilService.getDetails(provider);
-			const audios = details && details.audio ? Object.values(state.audioUploader.getAudios()) : [];
 			const files = details && details.file ? state.fileUploader.getFiles() :
 			{};
 			const images = details && details.image ? Object.values(state.imageUploader.getImages()) : [];

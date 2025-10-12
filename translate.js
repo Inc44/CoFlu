@@ -153,6 +153,12 @@ class TranslateApp
 			alert(`Please set your API key for ${apiModel} in settings.`);
 			return;
 		}
+		const details = UtilService.getDetails(apiModel);
+		if (apiModel === 'openai' && details && details.modality === 'audio')
+		{
+			alert('Selected OpenAI audio model requires audio input and cannot be used for DOCX translation. Select a different model.');
+			return;
+		}
 		this.state.abortCtrl = new AbortController();
 		this.showProgress();
 		this.hideDownloadBtn();
