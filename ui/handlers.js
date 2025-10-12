@@ -131,7 +131,9 @@ const UIHandlers = {
 			const provider = StorageService.load('selected_api_model', 'openai');
 			const selectedPrompt = els.promptSelect.value;
 			const customPrompt = els.customPrompt.value;
-			let prompt = selectedPrompt === 'custom' ? customPrompt : selectedPrompt;
+			const selectedOption = els.promptSelect.options[els.promptSelect.selectedIndex];
+			const isSavedCustom = selectedOption && selectedOption.dataset && selectedOption.dataset.customIndex !== undefined;
+			let prompt = (selectedPrompt === 'custom' || isSavedCustom) ? customPrompt : selectedPrompt;
 			prompt += "\n\n" + els.sourceText.value;
 			if (els.translateToggle.checked)
 			{

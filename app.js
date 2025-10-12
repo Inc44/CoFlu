@@ -34,6 +34,7 @@ class App
 			promptSelect: document.getElementById('promptSelect'),
 			renderMdBtn: document.getElementById('renderMarkdownBtn'),
 			savePromptBtn: document.getElementById('savePrompt'),
+			deletePromptBtn: document.getElementById('deletePrompt'),
 			sourceText: document.getElementById('sourceText'),
 			streamToggle: document.getElementById('streamingToggle'),
 			switchBtn: document.getElementById('switchBtn'),
@@ -149,6 +150,7 @@ class App
 			const option = document.createElement('option');
 			option.value = prompt;
 			option.textContent = `Custom ${i+1}: ${prompt.substring(0, 30)}...`;
+			option.dataset.customIndex = i;
 			this.els.promptSelect.appendChild(option);
 		});
 		const customOption = document.createElement('option');
@@ -157,7 +159,19 @@ class App
 		this.els.promptSelect.appendChild(customOption);
 		if (this.els.customPromptBox)
 		{
-			this.els.customPromptBox.style.display = this.els.promptSelect.value === 'custom' ? 'block' : 'none';
+			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
+			const isSavedCustom = selectedOption && selectedOption.dataset && selectedOption.dataset.customIndex !== undefined;
+			this.els.customPromptBox.style.display = (this.els.promptSelect.value === 'custom' || isSavedCustom) ? 'block' : 'none';
+			if (isSavedCustom && this.els.customPrompt)
+			{
+				this.els.customPrompt.value = this.els.promptSelect.value || '';
+			}
+		}
+		if (this.els.deletePromptBtn)
+		{
+			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
+			const isSavedCustom = selectedOption && selectedOption.dataset && selectedOption.dataset.customIndex !== undefined;
+			this.els.deletePromptBtn.disabled = !isSavedCustom;
 		}
 	}
 	setupEvents()
@@ -181,9 +195,26 @@ class App
 		if (!this.els.promptSelect) return;
 		this.els.promptSelect.addEventListener('change', () =>
 		{
+			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
+			const isSavedCustom = selectedOption && selectedOption.dataset && selectedOption.dataset.customIndex !== undefined;
 			if (this.els.customPromptBox)
 			{
-				this.els.customPromptBox.style.display = this.els.promptSelect.value === 'custom' ? 'block' : 'none';
+				this.els.customPromptBox.style.display = (this.els.promptSelect.value === 'custom' || isSavedCustom) ? 'block' : 'none';
+			}
+			if (this.els.customPrompt)
+			{
+				if (this.els.promptSelect.value === 'custom')
+				{
+					this.els.customPrompt.value = '';
+				}
+				else if (isSavedCustom)
+				{
+					this.els.customPrompt.value = this.els.promptSelect.value;
+				}
+			}
+			if (this.els.deletePromptBtn)
+			{
+				this.els.deletePromptBtn.disabled = !isSavedCustom;
 			}
 		});
 		if (this.els.savePromptBtn)
@@ -197,14 +228,69 @@ class App
 					return;
 				}
 				const prompts = StorageService.load('prompts', []);
-				prompts.push(text);
+				const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
+				const idxStr = selectedOption?.dataset?.customIndex;
+				if (idxStr !== undefined)
+				{
+					const idx = parseInt(idxStr, 10);
+					if (!isNaN(idx) && idx >= 0 && idx < prompts.length)
+					{
+						prompts[idx] = text;
+					}
+					else
+					{
+						prompts.push(text);
+					}
+				}
+				else
+				{
+					prompts.push(text);
+				}
 				StorageService.save('prompts', prompts);
 				this.loadPrompts();
 				if (this.els.customPrompt)
 				{
 					this.els.customPrompt.value = '';
 				}
+				if (this.els.promptSelect)
+				{
+					this.els.promptSelect.value = 'custom';
+					this.els.promptSelect.dispatchEvent(new Event('change'));
+				}
 				alert('Custom prompt saved!');
+			});
+		}
+		if (this.els.deletePromptBtn)
+		{
+			this.els.deletePromptBtn.addEventListener('click', () =>
+			{
+				const prompts = StorageService.load('prompts', []);
+				const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
+				const idxStr = selectedOption?.dataset?.customIndex;
+				if (idxStr === undefined)
+				{
+					alert('Please select a saved custom prompt to delete.');
+					return;
+				}
+				const idx = parseInt(idxStr, 10);
+				if (isNaN(idx) || idx < 0 || idx >= prompts.length)
+				{
+					alert('Invalid custom prompt selection.');
+					return;
+				}
+				prompts.splice(idx, 1);
+				StorageService.save('prompts', prompts);
+				this.loadPrompts();
+				if (this.els.customPrompt)
+				{
+					this.els.customPrompt.value = '';
+				}
+				if (this.els.promptSelect)
+				{
+					this.els.promptSelect.value = 'custom';
+					this.els.promptSelect.dispatchEvent(new Event('change'));
+				}
+				alert('Custom prompt deleted!');
 			});
 		}
 	}

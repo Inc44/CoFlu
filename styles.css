@@ -136,11 +136,17 @@ textarea
 #clearSource,
 #clearTarget,
 #cleanChat,
+#deletePrompt,
 .delete-button,
 .delete-button:hover
 {
 	background-color: rgb(237, 53, 36);
 	color: white;
+}
+
+#deletePrompt:disabled
+{
+	border-color: rgb(237, 53, 36);
 }
 
 #switchBtn,
