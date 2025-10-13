@@ -81,9 +81,9 @@ const UIState = {
 		this.updateImageUploadVisibility(modelDetails);
 		this.updateVideoUploadVisibility(modelDetails);
 	},
-	showWPM(els)
+	showSpeed(els)
 	{
-		els.wpmBox.style.display = 'inline';
+		els.speedBox.style.display = 'inline';
 	}
 };
 window.UIState = UIState;

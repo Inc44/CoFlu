@@ -42,8 +42,8 @@ class App
 			transcribeBtn: document.getElementById('transcribeBtn'),
 			transcribeLang: document.getElementById('transcribeLanguage'),
 			translateToggle: document.getElementById('translationToggle'),
-			wpmBox: document.getElementById('wpm-container'),
-			wpmDisplay: document.getElementById('wpm')
+			speedBox: document.getElementById('speed-container'),
+			speedDisplay: document.getElementById('speed')
 		};
 	}
 	async init()

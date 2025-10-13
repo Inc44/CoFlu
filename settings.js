@@ -41,6 +41,7 @@ class SettingsApp
 			transcribeLang: document.getElementById('transcribeLanguage'),
 			transcribeModel: document.getElementById('transcriptionApiModel'),
 			wideToggle: document.getElementById('wideToggle'),
+			tokensToggle: document.getElementById('tokensToggle'),
 			whisperBoxes:
 			{
 				openai: document.getElementById('openaiWhisperModelContainer'),
@@ -123,6 +124,7 @@ class SettingsApp
 		this.loadCheckbox('searchToggle', 'search_enabled', false);
 		this.loadCheckbox('streamToggle', 'streaming_enabled', true);
 		this.loadCheckbox('wideToggle', 'wide_enabled', false);
+		this.loadCheckbox('tokensToggle', 'tokens_enabled', false);
 		this.loadInput('apiKey', CONFIG.API.KEYS[this.els.apiModel.value] || '', this.els.apiModel.value);
 		this.loadInput('batchRPM', 'translation_batch_rpm', 0, 'number');
 		this.loadInput('batchSize', 'translation_batch_size', 10, 'number');
@@ -385,6 +387,7 @@ class SettingsApp
 		this.els.transcribeLang?.addEventListener('change', this.handleTranscribeLangChange.bind(this));
 		this.els.transcribeModel?.addEventListener('change', this.handleTranscribeModelChange.bind(this));
 		this.els.wideToggle?.addEventListener('change', this.handleWideToggleChange.bind(this));
+		this.els.tokensToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'tokensToggle', 'tokens_enabled'));
 		this.setupThinkingEvents();
 		this.setupModelSelectEvents();
 		this.setupWhisperModelEvents();
@@ -581,7 +584,8 @@ class SettingsApp
 			translation_batch_rpm: parseInt(this.els.batchRPM.value, 10),
 			translation_batch_size: parseInt(this.els.batchSize.value, 10),
 			translation_enabled: StorageService.load('translation_enabled', false),
-			wide_enabled: this.els.wideToggle.checked
+			wide_enabled: this.els.wideToggle.checked,
+			tokens_enabled: this.els.tokensToggle.checked
 		};
 		if (this.els.reasoningEffort)
 		{

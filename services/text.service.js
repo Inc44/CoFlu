@@ -1,14 +1,33 @@
 const TextService = {
 	updateStats(textArea, type)
 	{
-		const words = textArea.value.trim()
-			.split(/\s+/)
-			.length;
+		const tokensEnabled = StorageService.load('tokens_enabled', false) === true;
+		const words = tokensEnabled ? this.countTokens(textArea.value) : this.countWords(textArea.value);
 		const chars = textArea.value.length;
+		document.getElementById(`${type}WordsLabel`)
+			.textContent = tokensEnabled ? 'Tokens' : 'Words';
+		document.getElementById('speedLabel')
+			.textContent = tokensEnabled ? 'Tokens/s' : 'WPM';
 		document.getElementById(`${type}Words`)
 			.textContent = words;
 		document.getElementById(`${type}Chars`)
 			.textContent = chars;
+	},
+	countWords(text)
+	{
+		if (!text) return 0;
+		return text.trim()
+			.split(/\s+/)
+			.length;
+	},
+	countTokens(text)
+	{
+		if (!text) return 0;
+		if (typeof GPTTokenizer_o200k_base === 'undefined')
+		{
+			return this.countWords(text);
+		}
+		return GPTTokenizer_o200k_base.countTokens(text);
 	},
 	transform:
 	{

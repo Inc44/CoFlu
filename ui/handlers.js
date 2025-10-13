@@ -43,7 +43,7 @@ const UIHandlers = {
 		StorageService.save(`${type}Text`, '');
 		if (type === 'target')
 		{
-			document.getElementById('wpm-container')
+			document.getElementById('speed-container')
 				.style.display = 'none';
 		}
 	},
@@ -106,11 +106,15 @@ const UIHandlers = {
 			StorageService.save('targetText', els.targetText.value);
 		});
 	},
-	calcWPM(text, secs)
+	calcSpeed(text, secs)
 	{
-		const words = text.trim()
-			.split(/\s+/)
-			.length;
+		const tokensEnabled = StorageService.load('tokens_enabled', false) === true;
+		if (tokensEnabled)
+		{
+			const tokens = TextService.countTokens(text);
+			return secs > 0 ? Math.round(tokens / secs) : 0;
+		}
+		const words = TextService.countWords(text);
 		const mins = secs / 60;
 		return mins > 0 ? Math.round(words / mins) : 0;
 	},
@@ -174,12 +178,12 @@ const UIHandlers = {
 					StorageService.save('targetText', text);
 					els.targetText.scrollTop = els.targetText.scrollHeight;
 					const elapsed = (Date.now() - startTime) / 1000;
-					const wpm = this.calcWPM(text, elapsed);
-					els.wpmDisplay.textContent = wpm;
+					const speed = this.calcSpeed(text, elapsed);
+					els.speedDisplay.textContent = speed;
 				}
 			};
 			els.targetText.value = '';
-			UIState.showWPM(els);
+			UIState.showSpeed(els);
 			startTime = Date.now();
 			const response = await AiService.generate(prompt, provider, genOptions);
 			if (!genOptions.streaming)

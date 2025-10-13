@@ -27,8 +27,6 @@
 	<script>
 		(function()
 		{
-			var renderer = localStorage.getItem('selected_renderer') || 'katex';
-
 			function load(src, onload)
 			{
 				var script = document.createElement('script');
@@ -36,6 +34,7 @@
 				if (onload) script.onload = onload;
 				document.head.appendChild(script);
 			}
+			const renderer = localStorage.getItem('selected_renderer') || 'katex';
 			if (renderer === 'katex')
 			{
 				load('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js', function()
@@ -46,6 +45,11 @@
 			else
 			{
 				load('https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.min.js');
+			}
+			const tokensEnabled = localStorage.getItem('tokens_enabled') === 'true';
+			if (tokensEnabled)
+			{
+				load('https://cdn.jsdelivr.net/npm/gpt-tokenizer/dist/o200k_base.min.js');
 			}
 		})();
 	</script>
@@ -108,7 +112,7 @@
 						<button class="btn btn-sm" id="latexSource">LaTeX</button>
 						<button class="btn btn-sm" id="htmlSource">HTML</button>
 					</div>
-					<div class="card-body"> Words: <span id="sourceWords">0</span>, Characters: <span id="sourceChars">0</span>
+					<div class="card-body"><span id="sourceWordsLabel">Words</span>: <span id="sourceWords">0</span>, Characters: <span id="sourceChars">0</span>
 						<p></p>
 						<textarea id="sourceText" class="form-control" rows="10" placeholder="Type / Paste Source Text"></textarea>
 					</div>
@@ -133,8 +137,8 @@
 						<button class="btn btn-sm" id="latexTarget">LaTeX</button>
 						<button class="btn btn-sm" id="htmlTarget">HTML</button>
 					</div>
-					<div class="card-body"> Words: <span id="targetWords">0</span>, Characters: <span id="targetChars">0</span>
-						<span id="wpm-container" style="display: none;">, WPM: <span id="wpm">0</span>
+					<div class="card-body"><span id="targetWordsLabel">Words</span>: <span id="targetWords">0</span>, Characters: <span id="targetChars">0</span>
+						<span id="speed-container" style="display: none;">, <span id="speedLabel">WPM</span>: <span id="speed">0</span>
 						</span>
 						<p></p>
 						<textarea id="targetText" class="form-control" rows="10" placeholder="Type / Paste Target Text"></textarea>
