@@ -13,35 +13,36 @@ class SettingsApp
 			batchSize: document.getElementById('batchSize'),
 			cleanupToggle: document.getElementById('cleanupToggle'),
 			darkToggle: document.getElementById('darkToggle'),
+			downloadOptimizedToggle: document.getElementById('downloadOptimizedToggle'),
 			expRetry: document.getElementById('exponentialRetry'),
 			exportBtn: document.getElementById('exportSettings'),
+			externalModelsToggle: document.getElementById('externalModelsToggle'),
 			googleCompatToggle: document.getElementById('googleCompatToggle'),
 			highCostToggle: document.getElementById('highCostToggle'),
-			externalModelsToggle: document.getElementById('externalModelsToggle'),
 			importBtn: document.getElementById('importSettings'),
 			langSelect: document.getElementById('language'),
-			noBSToggle: document.getElementById('noBSToggle'),
 			noBSPlusToggle: document.getElementById('noBSPlusToggle'),
+			noBSToggle: document.getElementById('noBSToggle'),
 			numberedLinesToggle: document.getElementById('numberedLinesToggle'),
-			reasoningEffortBox: document.getElementById('reasoningEffortContainer'),
 			reasoningEffort: document.getElementById('reasoningEffort'),
-			thinkingBox: document.getElementById('thinkingBudgetContainer'),
-			thinkingNum: document.getElementById('thinkingBudgetNumber'),
-			thinkingRange: document.getElementById('thinkingBudgetRange'),
-			searchContextSizeBox: document.getElementById('searchContextContainer'),
-			searchContextSize: document.getElementById('searchContext'),
+			reasoningEffortBox: document.getElementById('reasoningEffortContainer'),
 			receiveAudioToggle: document.getElementById('receiveAudioToggle'),
 			receiveImagesToggle: document.getElementById('receiveImagesToggle'),
 			rendererSelect: document.getElementById('renderer'),
 			saveBtn: document.getElementById('saveSettings'),
-			settingsText: document.getElementById('settingsTextArea'),
 			searchBox: document.getElementById('searchContainer'),
+			searchContextSize: document.getElementById('searchContext'),
+			searchContextSizeBox: document.getElementById('searchContextContainer'),
 			searchToggle: document.getElementById('searchToggle'),
+			settingsText: document.getElementById('settingsTextArea'),
 			streamToggle: document.getElementById('streamingToggle'),
+			thinkingBox: document.getElementById('thinkingBudgetContainer'),
+			thinkingNum: document.getElementById('thinkingBudgetNumber'),
+			thinkingRange: document.getElementById('thinkingBudgetRange'),
+			tokensToggle: document.getElementById('tokensToggle'),
 			transcribeLang: document.getElementById('transcribeLanguage'),
 			transcribeModel: document.getElementById('transcriptionApiModel'),
 			wideToggle: document.getElementById('wideToggle'),
-			tokensToggle: document.getElementById('tokensToggle'),
 			whisperBoxes:
 			{
 				openai: document.getElementById('openaiWhisperModelContainer'),
@@ -113,18 +114,19 @@ class SettingsApp
 	{
 		this.loadCheckbox('cleanupToggle', 'cleanup_enabled', true);
 		this.loadCheckbox('darkToggle', 'dark_enabled', true);
+		this.loadCheckbox('downloadOptimizedToggle', 'download_optimized_enabled', false);
+		this.loadCheckbox('externalModelsToggle', 'external_models_enabled', false);
 		this.loadCheckbox('googleCompatToggle', 'google_compat_enabled', true);
 		this.loadCheckbox('highCostToggle', 'high_cost_enabled', false);
-		this.loadCheckbox('externalModelsToggle', 'external_models_enabled', false);
-		this.loadCheckbox('noBSToggle', 'no_bs_enabled', false);
 		this.loadCheckbox('noBSPlusToggle', 'no_bs_plus_enabled', false);
+		this.loadCheckbox('noBSToggle', 'no_bs_enabled', false);
 		this.loadCheckbox('numberedLinesToggle', 'numbered_lines_enabled', false);
 		this.loadCheckbox('receiveAudioToggle', 'receive_audio_enabled', false);
 		this.loadCheckbox('receiveImagesToggle', 'receive_images_enabled', false);
 		this.loadCheckbox('searchToggle', 'search_enabled', false);
 		this.loadCheckbox('streamToggle', 'streaming_enabled', true);
-		this.loadCheckbox('wideToggle', 'wide_enabled', false);
 		this.loadCheckbox('tokensToggle', 'tokens_enabled', false);
+		this.loadCheckbox('wideToggle', 'wide_enabled', false);
 		this.loadInput('apiKey', CONFIG.API.KEYS[this.els.apiModel.value] || '', this.els.apiModel.value);
 		this.loadInput('batchRPM', 'translation_batch_rpm', 0, 'number');
 		this.loadInput('batchSize', 'translation_batch_size', 10, 'number');
@@ -366,28 +368,29 @@ class SettingsApp
 		this.els.batchSize?.addEventListener('change', this.handleNumericChange.bind(this, 'batchSize', 'translation_batch_size', 1, 60000));
 		this.els.cleanupToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'cleanupToggle', 'cleanup_enabled'));
 		this.els.darkToggle?.addEventListener('change', this.handleDarkToggleChange.bind(this));
+		this.els.downloadOptimizedToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'downloadOptimizedToggle', 'download_optimized_enabled'));
 		this.els.expRetry?.addEventListener('change', this.handleNumericChange.bind(this, 'expRetry', 'exponential_retry', 0));
 		this.els.exportBtn?.addEventListener('click', this.exportSettings.bind(this));
+		this.els.externalModelsToggle?.addEventListener('change', this.handleExternalModelsToggleChange.bind(this));
 		this.els.googleCompatToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'googleCompatToggle', 'google_compat_enabled'));
 		this.els.highCostToggle?.addEventListener('change', this.handleHighCostToggleChange.bind(this));
-		this.els.externalModelsToggle?.addEventListener('change', this.handleExternalModelsToggleChange.bind(this));
 		this.els.importBtn?.addEventListener('click', this.importSettings.bind(this));
 		this.els.langSelect?.addEventListener('change', this.handleLangChange.bind(this));
-		this.els.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
 		this.els.noBSPlusToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSPlusToggle', 'no_bs_plus_enabled'));
+		this.els.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
 		this.els.numberedLinesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'numberedLinesToggle', 'numbered_lines_enabled'));
 		this.els.reasoningEffort?.addEventListener('change', this.handleReasoningEffortChange.bind(this));
-		this.els.searchContextSize?.addEventListener('change', this.handleSearchContextSizeChange.bind(this));
 		this.els.receiveAudioToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'receiveAudioToggle', 'receive_audio_enabled'));
 		this.els.receiveImagesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'receiveImagesToggle', 'receive_images_enabled'));
 		this.els.rendererSelect?.addEventListener('change', this.handleRendererChange.bind(this));
 		this.els.saveBtn?.addEventListener('click', this.saveSettings.bind(this));
+		this.els.searchContextSize?.addEventListener('change', this.handleSearchContextSizeChange.bind(this));
 		this.els.searchToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'searchToggle', 'search_enabled'));
 		this.els.streamToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'streamToggle', 'streaming_enabled'));
+		this.els.tokensToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'tokensToggle', 'tokens_enabled'));
 		this.els.transcribeLang?.addEventListener('change', this.handleTranscribeLangChange.bind(this));
 		this.els.transcribeModel?.addEventListener('change', this.handleTranscribeModelChange.bind(this));
 		this.els.wideToggle?.addEventListener('change', this.handleWideToggleChange.bind(this));
-		this.els.tokensToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'tokensToggle', 'tokens_enabled'));
 		this.setupThinkingEvents();
 		this.setupModelSelectEvents();
 		this.setupWhisperModelEvents();
@@ -564,10 +567,11 @@ class SettingsApp
 		const settings = {
 			cleanup_enabled: this.els.cleanupToggle.checked,
 			dark_enabled: this.els.darkToggle.checked,
+			download_optimized_enabled: this.els.downloadOptimizedToggle.checked,
 			exponential_retry: parseInt(this.els.expRetry.value, 10),
+			external_models_enabled: this.els.externalModelsToggle.checked,
 			google_compat_enabled: this.els.googleCompatToggle.checked,
 			high_cost_enabled: this.els.highCostToggle.checked,
-			external_models_enabled: this.els.externalModelsToggle.checked,
 			no_bs_enabled: this.els.noBSToggle.checked,
 			no_bs_plus_enabled: this.els.noBSPlusToggle.checked,
 			numbered_lines_enabled: this.els.numberedLinesToggle.checked,
@@ -580,12 +584,12 @@ class SettingsApp
 			selected_transcription_api_model: this.els.transcribeModel.value,
 			streaming_enabled: this.els.streamToggle.checked,
 			thinking: parseInt(this.els.thinkingNum.value, 10),
+			tokens_enabled: this.els.tokensToggle.checked,
 			transcribe_language: this.els.transcribeLang.value,
 			translation_batch_rpm: parseInt(this.els.batchRPM.value, 10),
 			translation_batch_size: parseInt(this.els.batchSize.value, 10),
 			translation_enabled: StorageService.load('translation_enabled', false),
 			wide_enabled: this.els.wideToggle.checked,
-			tokens_enabled: this.els.tokensToggle.checked
 		};
 		if (this.els.reasoningEffort)
 		{

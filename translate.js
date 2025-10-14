@@ -5,6 +5,8 @@ class TranslateApp
 		this.els = this.getElements();
 		this.state = {
 			abortCtrl: null,
+			optimizedBlob: null,
+			optimizedFileName: null,
 			translatedBlob: null,
 			translatedFileName: null,
 			isTranslating: false,
@@ -20,6 +22,7 @@ class TranslateApp
 		return {
 			apiModel: document.getElementById('apiModel'),
 			docFile: document.getElementById('documentFile'),
+			optimizeBtn: document.getElementById('downloadOptimized'),
 			downloadBtn: document.getElementById('downloadTranslated'),
 			langSelect: document.getElementById('language'),
 			progressBar: document.getElementById('translateProgress'),
@@ -43,12 +46,18 @@ class TranslateApp
 		{
 			this.els.langSelect.value = StorageService.load('selected_language', 'English');
 		}
+		const showDownloadOptimizedButton = StorageService.load('download_optimized_enabled', false) === true;
+		if (this.els.optimizeBtn)
+		{
+			this.els.optimizeBtn.style.display = showDownloadOptimizedButton ? 'block' : 'none';
+		}
 	}
 	setupEvents()
 	{
 		this.els.apiModel?.addEventListener('change', this.handleApiModelChange.bind(this));
 		this.els.downloadBtn?.addEventListener('click', this.downloadFile.bind(this));
 		this.els.langSelect?.addEventListener('change', this.handleLangChange.bind(this));
+		this.els.optimizeBtn?.addEventListener('click', this.handleOptimizeClick.bind(this));
 		this.els.translateBtn?.addEventListener('click', this.handleTranslateClick.bind(this));
 	}
 	handleApiModelChange()
@@ -123,20 +132,24 @@ class TranslateApp
 		}
 		return value;
 	}
+	downloadBlob(blob, fileName)
+	{
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = fileName;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(url);
+	}
 	downloadFile()
 	{
 		if (!this.state.translatedBlob || !this.state.translatedFileName)
 		{
 			return;
 		}
-		const url = URL.createObjectURL(this.state.translatedBlob);
-		const link = document.createElement('a');
-		link.href = url;
-		link.download = this.state.translatedFileName;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-		URL.revokeObjectURL(url);
+		this.downloadBlob(this.state.translatedBlob, this.state.translatedFileName);
 	}
 	async startTranslation()
 	{
@@ -195,7 +208,9 @@ class TranslateApp
 			.async("string");
 		const parser = new DOMParser();
 		const xmlDoc = parser.parseFromString(docXml, "application/xml");
-		const textElems = Array.from(xmlDoc.getElementsByTagNameNS("http://schemas.openxmlformats.org/wordprocessingml/2006/main", 't'));
+		this.optimizeLayout(xmlDoc);
+		const wNS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+		const textElems = Array.from(xmlDoc.getElementsByTagNameNS(wNS, 't'));
 		if (textElems.length === 0)
 		{
 			alert("No text elements found in the document.");
@@ -259,6 +274,7 @@ class TranslateApp
 	{
 		const origText = element.textContent.trim();
 		if (!origText) return;
+		if (this.isASCIIPrintableNonLettersOnly(origText)) return;
 		const targetLang = this.els.langSelect.value;
 		const prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${origText}`;
 		const translatedText = await this.getTranslatedText(prompt, apiModel, apiKey);
@@ -319,6 +335,157 @@ class TranslateApp
 		{
 			setTimeout(() => this.processQueue(), 0);
 		}
+	}
+	async handleOptimizeClick()
+	{
+		const file = this.els.docFile.files[0];
+		if (!file)
+		{
+			alert('Please select a DOCX file.');
+			return;
+		}
+		const optimizedData = await this.optimizeDocx(file);
+		this.state.optimizedBlob = optimizedData.blob;
+		this.state.optimizedFileName = optimizedData.fileName;
+		this.downloadBlob(this.state.optimizedBlob, this.state.optimizedFileName);
+	}
+	async optimizeDocx(file)
+	{
+		const zip = new JSZip();
+		const docxData = await zip.loadAsync(file);
+		if (!docxData.file("word/document.xml"))
+		{
+			alert("Invalid DOCX file: 'word/document.xml' not found.");
+			return;
+		}
+		const docXml = await docxData.file("word/document.xml")
+			.async("string");
+		const parser = new DOMParser();
+		const xmlDoc = parser.parseFromString(docXml, "application/xml");
+		this.optimizeLayout(xmlDoc);
+		const serializer = new XMLSerializer();
+		const modifiedDocXml = serializer.serializeToString(xmlDoc);
+		docxData.file("word/document.xml", modifiedDocXml);
+		const origName = file.name;
+		const baseName = origName.substring(0, origName.lastIndexOf('.'));
+		const ext = origName.substring(origName.lastIndexOf('.'));
+		const optimizedName = `${baseName} optimized${ext}`;
+		const optimizedBlob = await docxData.generateAsync(
+		{
+			type: "blob",
+			compression: "DEFLATE",
+			compressionOptions:
+			{
+				level: 9
+			}
+		});
+		return {
+			blob: optimizedBlob,
+			fileName: optimizedName
+		};
+	}
+	optimizeLayout(xmlDoc)
+	{
+		const wNS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+		const serializer = new XMLSerializer();
+		this.removeProofErr(xmlDoc, wNS);
+		const ps = Array.from(xmlDoc.getElementsByTagNameNS(wNS, 'p'));
+		for (const p of ps)
+		{
+			this.collapseAdjacentRunsInParagraph(p, wNS, serializer);
+		}
+	}
+	removeProofErr(xmlDoc, wNS)
+	{
+		const proofErrs = Array.from(xmlDoc.getElementsByTagNameNS(wNS, 'proofErr'));
+		for (const proofErr of proofErrs)
+		{
+			if (proofErr.parentNode) proofErr.parentNode.removeChild(proofErr);
+		}
+	}
+	collapseAdjacentRunsInParagraph(p, wNS, serializer)
+	{
+		for (let child = p.firstChild; child; child = child.nextSibling)
+		{
+			if (!this.isElem(child, wNS, 'r')) continue;
+			this.mergeAdjacentRuns(child, wNS);
+			for (let sibling = child.nextSibling; sibling && this.isElem(sibling, wNS, 'r') && this.isMergeable(child, sibling, wNS, serializer);)
+			{
+				const next = sibling.nextSibling;
+				this.mergeRuns(child, sibling, wNS);
+				p.removeChild(sibling);
+				sibling = next;
+			}
+		}
+	}
+	isElem(node, wNS, name)
+	{
+		return node && node.nodeType === 1 && node.namespaceURI === wNS && node.localName === name;
+	}
+	isMergeable(child, sibling, wNS, serializer)
+	{
+		const childPr = this.getChild(child, wNS, 'rPr');
+		const siblingPr = this.getChild(sibling, wNS, 'rPr');
+		if (!(this.isSimpleRun(child, wNS) && this.isSimpleRun(sibling, wNS))) return false;
+		if (childPr !== siblingPr) return false;
+		return !childPr || serializer.serializeToString(childPr) === serializer.serializeToString(siblingPr);
+	}
+	getChild(node, wNS, name)
+	{
+		for (let child = node.firstChild; child; child = child.nextSibling)
+		{
+			if (this.isElem(child, wNS, name)) return child;
+		}
+		return null;
+	}
+	isSimpleRun(run, wNS)
+	{
+		for (let node = run.firstChild; node; node = node.nextSibling)
+		{
+			if (node.nodeType !== 1) continue;
+			if (!(this.isElem(node, wNS, 'rPr') || this.isElem(node, wNS, 't'))) return false;
+		}
+		return true;
+	}
+	mergeRuns(child, sibling, wNS)
+	{
+		for (let node = sibling.firstChild, next; node; node = next)
+		{
+			next = node.nextSibling;
+			if (this.isElem(node, wNS, 't')) child.appendChild(node);
+		}
+		this.mergeAdjacentRuns(child, wNS);
+	}
+	mergeAdjacentRuns(run, wNS)
+	{
+		const xmlNS = "http://www.w3.org/XML/1998/namespace";
+		for (let child = run.firstChild; child; child = child.nextSibling)
+		{
+			if (!this.isElem(child, wNS, 't')) continue;
+			let text = child.textContent || '';
+			let preserve = child.getAttributeNS(xmlNS, 'space') === 'preserve';
+			for (let sibling = child.nextSibling, next; sibling && this.isElem(sibling, wNS, 't'); sibling = next)
+			{
+				if (sibling.getAttributeNS(xmlNS, 'space') === 'preserve') preserve = true;
+				text += sibling.textContent || '';
+				next = sibling.nextSibling;
+				run.removeChild(sibling);
+			}
+			child.textContent = text;
+			if (preserve) child.setAttributeNS(xmlNS, 'xml:space', 'preserve');
+			else child.removeAttributeNS(xmlNS, 'space');
+		}
+	}
+	isASCIIPrintableNonLettersOnly(text)
+	{
+		for (let i = 0; i < text.length; i++)
+		{
+			const code = text.charCodeAt(i);
+			if (code < 32 || code > 127) return false;
+			const char = text[i];
+			if ((char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z')) return false;
+		}
+		return true;
 	}
 }
 document.addEventListener('DOMContentLoaded', () =>
