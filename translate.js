@@ -427,7 +427,7 @@ class TranslateApp
 		const childPr = this.getChild(child, wNS, 'rPr');
 		const siblingPr = this.getChild(sibling, wNS, 'rPr');
 		if (!(this.isSimpleRun(child, wNS) && this.isSimpleRun(sibling, wNS))) return false;
-		if (childPr !== siblingPr) return false;
+		if (!!childPr !== !!siblingPr) return false;
 		return !childPr || serializer.serializeToString(childPr) === serializer.serializeToString(siblingPr);
 	}
 	getChild(node, wNS, name)
