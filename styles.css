@@ -1,43 +1,57 @@
 :root
 {
+	--red: rgb(237, 53, 36);
+	--orange: rgb(250, 157, 1);
+	--green: rgb(46, 218, 119);
+	--cyan: rgb(20, 199, 222);
+	--blue: rgb(1, 111, 255);
+	--indigo: rgb(68, 79, 173);
+	--purple: rgb(140, 84, 208);
+	--beige: rgb(199, 195, 189);
+	--gray: rgb(56, 60, 66);
+	--dark-red: rgb(94, 15, 8);
+	--dark-green: rgb(15, 87, 46);
+	--dark-gray: rgb(30, 35, 40);
+	--light-red: rgb(253, 233, 231);
+	--light-green: rgb(233, 251, 241);
 	--bs-border-color-translucent: unset;
 }
 
 html[data-bs-theme="light"] body
 {
-	background-color: rgb(199, 195, 189);
+	background-color: var(--beige);
 	color: black;
 }
 
 html[data-bs-theme="dark"] body
 {
-	background-color: rgb(56, 60, 66);
+	background-color: var(--gray);
 	color: white;
 }
 
 html[data-bs-theme="dark"] body .diff-deletion
 {
-	background-color: rgb(94, 15, 8);
+	background-color: var(--dark-red);
 }
 
 html[data-bs-theme="dark"] body .diff-insertion
 {
-	background-color: rgb(15, 87, 46);
+	background-color: var(--dark-green);
 }
 
 html[data-bs-theme="light"] .line-number
 {
-	color: rgb(56, 60, 66);
+	color: var(--gray);
 }
 
 html[data-bs-theme="dark"] .line-number
 {
-	color: rgb(199, 195, 189);
+	color: var(--beige);
 }
 
 html[data-bs-theme="light"] body #homePage
 {
-	color: rgb(30, 35, 40);
+	color: var(--dark-gray);
 }
 
 html:not(.wide) .container
@@ -59,7 +73,7 @@ html.wide .container
 
 .card.dragging
 {
-	border: 0.125rem dashed rgb(1, 111, 255);
+	border: 0.125rem dashed var(--blue);
 	margin: 0.375rem;
 	transition: border-color 0.5s;
 }
@@ -96,14 +110,14 @@ textarea
 
 .diff-deletion
 {
-	background-color: rgb(253, 233, 231);
-	color: rgb(237, 53, 36);
+	background-color: var(--light-red);
+	color: var(--red);
 }
 
 .diff-insertion
 {
-	background-color: rgb(233, 251, 241);
-	color: rgb(46, 218, 119);
+	background-color: var(--light-green);
+	color: var(--green);
 }
 
 #customPromptContainer
@@ -140,20 +154,20 @@ textarea
 .delete-button,
 .delete-button:hover
 {
-	background-color: rgb(237, 53, 36);
+	background-color: var(--red);
 	color: white;
 }
 
 #deletePrompt:disabled
 {
-	border-color: rgb(237, 53, 36);
+	border-color: var(--red);
 }
 
 #switchBtn,
 .edit-button,
 .edit-button:hover
 {
-	background-color: rgb(250, 157, 1);
+	background-color: var(--orange);
 	color: white;
 }
 
@@ -165,7 +179,7 @@ textarea
 .copy-button,
 .copy-button:hover
 {
-	background-color: rgb(46, 218, 119);
+	background-color: var(--green);
 	color: white;
 }
 
@@ -181,7 +195,7 @@ textarea
 #htmlSource,
 #htmlTarget
 {
-	background-color: rgb(20, 199, 222);
+	background-color: var(--cyan);
 	color: white;
 }
 
@@ -195,7 +209,7 @@ textarea
 #saveSettings,
 #sendMessage
 {
-	background-color: rgb(1, 111, 255);
+	background-color: var(--blue);
 	color: white;
 }
 
@@ -206,7 +220,7 @@ textarea
 #lowercaseTarget,
 .assistant-message
 {
-	background-color: rgb(68, 79, 173);
+	background-color: var(--indigo);
 	color: white;
 }
 
@@ -216,7 +230,7 @@ textarea
 .progress-bar,
 .user-message
 {
-	background-color: rgb(140, 84, 208);
+	background-color: var(--purple);
 	color: white;
 }
 
@@ -291,7 +305,7 @@ textarea
 
 #homePage:hover
 {
-	color: rgb(1, 111, 255);
+	color: var(--blue);
 }
 
 #printContainer
