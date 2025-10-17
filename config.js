@@ -81,11 +81,13 @@ window.CONFIG = {
 				},
 				anthropic:
 				{
-					default: "claude-3-5-haiku-20241022",
+					default: "claude-haiku-4-5-20251001",
 					options: [
 					{
-						name: "claude-3-5-haiku-20241022",
-						max_tokens: 8192,
+						name: "claude-haiku-4-5-20251001",
+						max_tokens: 64000,
+						thinking_budget: [1024, 63999],
+						thinking: true,
 						file: true,
 						image: true
 					}]
@@ -270,26 +272,26 @@ window.CONFIG = {
 					default: "chatgpt-4o-latest",
 					options: [
 					{
-						name: "o3-deep-research",
-						max_tokens: 100000,
-						responses_api_only: true,
-						tools: ["web_search_preview"],
-						image: false
-					},
-					{
-						name: "gpt-4o-search-preview",
-						max_tokens: 16384,
+						name: "gpt-5-search-api",
+						max_tokens: 0,
 						completions_api_only: true,
 						search_context_size: ["low", "medium", "high"],
 						image: false
 					},
 					{
-						name: "gpt-4o-audio-preview",
+						name: "gpt-audio",
 						max_tokens: 16384,
 						completions_api_only: true,
 						audio: true,
 						image: false,
 						modality: "audio"
+					},
+					{
+						name: "o3-deep-research",
+						max_tokens: 100000,
+						responses_api_only: true,
+						tools: ["web_search_preview"],
+						image: false
 					},
 					{
 						name: "chatgpt-4o-latest",
@@ -367,6 +369,9 @@ window.CONFIG = {
 				{
 					default: "whisper-1",
 					options: [
+					{
+						name: "gpt-4o-transcribe-diarize"
+					},
 					{
 						name: "gpt-4o-mini-transcribe"
 					},
