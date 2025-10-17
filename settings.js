@@ -7,6 +7,7 @@ class SettingsApp
 	getElements()
 	{
 		return {
+			accessibilityToggle: document.getElementById('accessibilityToggle'),
 			apiKey: document.getElementById('apiKey'),
 			apiModel: document.getElementById('apiModel'),
 			batchRPM: document.getElementById('batchRPM'),
@@ -109,9 +110,11 @@ class SettingsApp
 	{
 		UIState.updateTheme(this.els.darkToggle.checked);
 		UIState.updateLayout(this.els.wideToggle.checked);
+		UIState.updateAccessibility(this.els.accessibilityToggle.checked);
 	}
 	loadSettings()
 	{
+		this.loadCheckbox('accessibilityToggle', 'accessibility_enabled', false);
 		this.loadCheckbox('cleanupToggle', 'cleanup_enabled', true);
 		this.loadCheckbox('darkToggle', 'dark_enabled', true);
 		this.loadCheckbox('downloadOptimizedToggle', 'download_optimized_enabled', false);
@@ -362,6 +365,7 @@ class SettingsApp
 	}
 	setupEvents()
 	{
+		this.els.accessibilityToggle?.addEventListener('change', this.handleAccessibilityToggleChange.bind(this, 'accessibilityToggle', 'accessibility_enabled'));
 		this.els.apiKey?.addEventListener('change', this.handleApiKeyChange.bind(this));
 		this.els.apiModel?.addEventListener('change', this.handleApiModelChange.bind(this));
 		this.els.batchRPM?.addEventListener('change', this.handleNumericChange.bind(this, 'batchRPM', 'translation_batch_rpm', 0, 60000));
@@ -471,6 +475,12 @@ class SettingsApp
 		UIState.updateLayout(isWide);
 		StorageService.save('wide_enabled', isWide);
 	}
+	handleAccessibilityToggleChange()
+	{
+		const isAccessibility = this.els.accessibilityToggle.checked;
+		UIState.updateAccessibility(isAccessibility);
+		StorageService.save('accessibility_enabled', isAccessibility);
+	}
 	handleHighCostToggleChange()
 	{
 		const isHighCostEnabled = this.els.highCostToggle.checked;
@@ -565,6 +575,7 @@ class SettingsApp
 	getSettings()
 	{
 		const settings = {
+			accessibility_enabled: this.els.accessibilityToggle.checked,
 			cleanup_enabled: this.els.cleanupToggle.checked,
 			dark_enabled: this.els.darkToggle.checked,
 			download_optimized_enabled: this.els.downloadOptimizedToggle.checked,

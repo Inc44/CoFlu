@@ -17,6 +17,15 @@
 	--bs-border-color-translucent: unset;
 }
 
+html.accessibility button
+{
+	--red: rgb(230, 37, 19);
+	--orange: rgb(167, 105, 1);
+	--green: rgb(24, 136, 72);
+	--cyan: rgb(13, 130, 146);
+	--blue: rgb(0, 110, 254);
+}
+
 html[data-bs-theme="light"] body
 {
 	background-color: var(--beige);

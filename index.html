@@ -19,6 +19,12 @@
 		{
 			document.documentElement.classList.add('wide');
 		}
+		const storedAccessibilityMode = localStorage.getItem('accessibility_enabled');
+		const isAccessibilityMode = storedAccessibilityMode === 'true' || (storedAccessibilityMode === null && false);
+		if (isAccessibilityMode)
+		{
+			document.documentElement.classList.add('accessibility');
+		}
 	</script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" defer>

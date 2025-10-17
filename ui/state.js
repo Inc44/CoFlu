@@ -42,6 +42,22 @@ const UIState = {
 			wideToggle.checked = isWide;
 		}
 	},
+	updateAccessibility(isEnabled)
+	{
+		if (isEnabled)
+		{
+			document.documentElement.classList.add('accessibility');
+		}
+		else
+		{
+			document.documentElement.classList.remove('accessibility');
+		}
+		const accessibilityToggle = document.getElementById('accessibilityToggle');
+		if (accessibilityToggle)
+		{
+			accessibilityToggle.checked = isEnabled;
+		}
+	},
 	updateAudioUploadVisibility(modelDetails)
 	{
 		const audioRow = document.querySelector('.row:has(#audioList)');

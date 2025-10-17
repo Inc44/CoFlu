@@ -243,6 +243,7 @@ const UIHandlers = {
 				});
 		}
 		const toggles = {
+			accessibilityToggle: 'accessibility_enabled',
 			cleanupToggle: 'cleanup_enabled',
 			darkToggle: 'dark_enabled',
 			noBSToggle: 'no_bs_enabled',
@@ -264,6 +265,10 @@ const UIHandlers = {
 					else if (elemId === 'wideToggle')
 					{
 						UIState.updateLayout(value);
+					}
+					else if (elemId === 'accessibilityToggle')
+					{
+						UIState.updateAccessibility(value);
 					}
 					StorageService.save(storeKey, value);
 				});
