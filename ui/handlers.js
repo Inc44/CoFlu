@@ -232,7 +232,6 @@ const UIHandlers = {
 					select?.addEventListener('change', () =>
 					{
 						els.apiModel.value = provider;
-						const provider = provider;
 						const details = UtilService.getDetails(provider);
 						StorageService.save('selected_api_model', provider);
 						if (details)

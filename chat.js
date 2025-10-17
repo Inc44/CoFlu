@@ -200,7 +200,6 @@ class ChatApp
 			this.throttleTimer = setTimeout(() =>
 			{
 				this.updateAssistantMsg(this.accumulatedText);
-				this.displayMsgs();
 				this.throttleTimer = null;
 			}, this.throttleDelay);
 		}

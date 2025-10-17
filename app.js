@@ -46,6 +46,10 @@ class App
 			speedDisplay: document.getElementById('speed')
 		};
 	}
+	isSavedCustomOption(option)
+	{
+		return !!(option && option.dataset && option.dataset.customIndex !== undefined);
+	}
 	async init()
 	{
 		await this.initComponents();
@@ -160,7 +164,7 @@ class App
 		if (this.els.customPromptBox)
 		{
 			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
-			const isSavedCustom = selectedOption && selectedOption.dataset && selectedOption.dataset.customIndex !== undefined;
+			const isSavedCustom = this.isSavedCustomOption(selectedOption);
 			this.els.customPromptBox.style.display = (this.els.promptSelect.value === 'custom' || isSavedCustom) ? 'block' : 'none';
 			if (isSavedCustom && this.els.customPrompt)
 			{
@@ -170,7 +174,7 @@ class App
 		if (this.els.deletePromptBtn)
 		{
 			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
-			const isSavedCustom = selectedOption && selectedOption.dataset && selectedOption.dataset.customIndex !== undefined;
+			const isSavedCustom = this.isSavedCustomOption(selectedOption);
 			this.els.deletePromptBtn.disabled = !isSavedCustom;
 		}
 	}
@@ -196,7 +200,7 @@ class App
 		this.els.promptSelect.addEventListener('change', () =>
 		{
 			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
-			const isSavedCustom = selectedOption && selectedOption.dataset && selectedOption.dataset.customIndex !== undefined;
+			const isSavedCustom = this.isSavedCustomOption(selectedOption);
 			if (this.els.customPromptBox)
 			{
 				this.els.customPromptBox.style.display = (this.els.promptSelect.value === 'custom' || isSavedCustom) ? 'block' : 'none';
