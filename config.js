@@ -195,12 +195,12 @@ window.CONFIG = {
 				},
 				minimax:
 				{
-					default: "MiniMax-M1",
+					default: "MiniMax-M2",
 					options: [
 					{
-						name: "MiniMax-M1",
-						max_tokens: 1000192,
-						image: true
+						name: "MiniMax-M2",
+						max_tokens: 196608,
+						image: false
 					}]
 				},
 				ollama:
@@ -528,7 +528,7 @@ window.CONFIG = {
 				},
 				minimax:
 				{
-					url: 'https://api.minimax.io/v1/text/chatcompletion_v2',
+					url: 'https://api.minimax.io/v1/chat/completions',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
