@@ -323,6 +323,19 @@ window.CONFIG = {
 						image: true
 					}]
 				},
+				google:
+				{
+					default: "gemini-3-pro-preview",
+					options: [
+					{
+						name: "gemini-3-pro-preview",
+						max_tokens: 65536,
+						audio: true,
+						image: true,
+						video: true,
+						search: true
+					}]
+				},
 				x:
 				{
 					default: "grok-4-0709",
