@@ -125,7 +125,7 @@ window.CONFIG = {
 					{
 						name: "gemini-2.5-pro",
 						max_tokens: 65536,
-						thinking_budget: [128, 32768],
+						reasoning_effort: ["low", "medium", "high"],
 						audio: true,
 						image: true,
 						video: true,
@@ -134,7 +134,7 @@ window.CONFIG = {
 					{
 						name: "gemini-flash-latest",
 						max_tokens: 65536,
-						thinking_budget: [1, 24576],
+						reasoning_effort: ["none", "low", "medium", "high"],
 						thinking: true,
 						audio: true,
 						image: true,
@@ -144,7 +144,7 @@ window.CONFIG = {
 					{
 						name: "gemini-flash-lite-latest",
 						max_tokens: 65536,
-						thinking_budget: [512, 24576],
+						reasoning_effort: ["none", "low", "medium", "high"],
 						thinking: true,
 						audio: true,
 						image: true,
@@ -154,7 +154,7 @@ window.CONFIG = {
 					{
 						name: "gemini-pro-latest",
 						max_tokens: 65536,
-						thinking_budget: [128, 32768],
+						easoning_effort: ["low", "medium", "high"],
 						audio: true,
 						image: true,
 						video: true,
@@ -330,6 +330,7 @@ window.CONFIG = {
 					{
 						name: "gemini-3-pro-preview",
 						max_tokens: 65536,
+						reasoning_effort: ["low", "high"],
 						audio: true,
 						image: true,
 						video: true,
