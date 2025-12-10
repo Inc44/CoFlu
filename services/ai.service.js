@@ -230,7 +230,7 @@ const AiService = {
 				reqBody.reasoning_effort = reasoningEffort;
 			}
 		}
-		if (!modelConfig.reasoning_effort && !modelConfig.responses_api_only && !modelConfig.search_context_size)
+		if (!modelConfig.reasoning_effort && !modelConfig.responses_api_only && !modelConfig.search_context_size && !(modelConfig.thinking_budget && modelConfig.name.startsWith('claude-')))
 		{
 			reqBody.temperature = 0;
 		}

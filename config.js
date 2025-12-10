@@ -312,8 +312,16 @@ window.CONFIG = {
 				},
 				anthropic:
 				{
-					default: "claude-sonnet-4-5-20250929",
+					default: "claude-opus-4-5-20251101",
 					options: [
+					{
+						name: "claude-opus-4-5-20251101",
+						max_tokens: 64000,
+						thinking_budget: [1024, 63999],
+						thinking: true,
+						file: true,
+						image: true
+					},
 					{
 						name: "claude-sonnet-4-5-20250929",
 						max_tokens: 64000,
