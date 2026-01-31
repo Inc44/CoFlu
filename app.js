@@ -116,7 +116,7 @@ class App
 			});
 		if (this.els.langSelect)
 		{
-			this.els.langSelect.value = StorageService.load('selected_language', 'English');
+			this.els.langSelect.value = StorageService.load('selected_language', 'English (American)');
 		}
 		if (this.els.transcribeLang)
 		{

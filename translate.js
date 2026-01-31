@@ -44,7 +44,7 @@ class TranslateApp
 		}
 		if (this.els.langSelect)
 		{
-			this.els.langSelect.value = StorageService.load('selected_language', 'English');
+			this.els.langSelect.value = StorageService.load('selected_language', 'English (American)');
 		}
 		const showDownloadOptimizedButton = StorageService.load('download_optimized_enabled', false) === true;
 		if (this.els.optimizeBtn)

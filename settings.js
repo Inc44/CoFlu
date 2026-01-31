@@ -134,7 +134,7 @@ class SettingsApp
 		this.loadInput('batchRPM', 'translation_batch_rpm', 0, 'number');
 		this.loadInput('batchSize', 'translation_batch_size', 10, 'number');
 		this.loadInput('expRetry', 'exponential_retry', 10, 'number');
-		this.loadInput('langSelect', 'selected_language', 'English');
+		this.loadInput('langSelect', 'selected_language', 'English (American)');
 		this.loadInput('transcribeLang', 'transcribe_language', 'en');
 		this.loadSelect('apiModel', 'selected_api_model', 'openai');
 		this.loadSelect('rendererSelect', 'selected_renderer', 'katex');
