@@ -395,20 +395,44 @@ class App
 				return;
 			}
 			const limits = CONFIG.LIMITS.TRANSCRIPTION.AUDIO[transModel];
-			if (file.size / (1024 * 1024) > limits.size)
+			const fileSizeMB = file.size / (1024 * 1024);
+			const autoSplitEnabled = StorageService.load('auto_split_enabled', false) === true;
+			if (!autoSplitEnabled && fileSizeMB > limits.size)
 			{
-				alert(`Audio file exceeds the maximum size of ${limits.size}MB for ${transModel}.`);
+				alert(`Audio file exceeds the maximum size of ${limits.size}MB for ${transModel}. Enable Auto-Split in settings.`);
 				return;
 			}
 			UIState.setTranscribing(true, this.els);
 			this.state.transcribeAbortCtrl = new AbortController();
+			const abortSignal = this.state.transcribeAbortCtrl.signal;
 			const whisperModel = StorageService.load(`${transModel}_whisper_model`, CONFIG.API.MODELS.TRANSCRIPTION[transModel].default);
-			const result = await AiService.transcribe(file, this.els.transcribeLang.value, apiKey, whisperModel, transModel, this.state.transcribeAbortCtrl.signal);
-			if (this.els.sourceText && result?.text !== undefined)
+			let text = '';
+			if (autoSplitEnabled && fileSizeMB > limits.size)
 			{
-				this.els.sourceText.value = result.text;
+				const chunks = await AiService.splitAudio(file, limits.size);
+				for (let i = 0; i < chunks.length; i++)
+				{
+					if (abortSignal.aborted) break;
+					const result = await AiService.transcribe(chunks[i], this.els.transcribeLang.value, apiKey, whisperModel, transModel, abortSignal);
+					if (result?.text)
+					{
+						text += (text ? ' ' : '') + result.text;
+					}
+				}
+			}
+			else
+			{
+				const result = await AiService.transcribe(file, this.els.transcribeLang.value, apiKey, whisperModel, transModel, abortSignal);
+				if (result?.text !== undefined)
+				{
+					text = result.text;
+				}
+			}
+			if (this.els.sourceText)
+			{
+				this.els.sourceText.value = text;
 				TextService.updateStats(this.els.sourceText, 'source');
-				StorageService.save('sourceText', result.text);
+				StorageService.save('sourceText', text);
 			}
 			UIState.setTranscribing(false, this.els);
 			this.state.transcribeAbortCtrl = null;

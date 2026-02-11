@@ -486,6 +486,17 @@ const AiService = {
 			}]
 		};
 	},
+	async splitAudio(file, maxSizeMB)
+	{
+		if (typeof FFmpegWASM === 'undefined')
+		{
+			alert('FFmpeg is not loaded. Please refresh the page.');
+			return [];
+		}
+		const ffmpeg = new FFmpegWASM.FFmpeg();
+		const chunks = [];
+		return chunks;
+	},
 	async transcribe(file, language, apiKey, modelName, transModel, abortSignal)
 	{
 		const formData = new FormData();
