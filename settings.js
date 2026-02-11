@@ -10,6 +10,7 @@ class SettingsApp
 			accessibilityToggle: document.getElementById('accessibilityToggle'),
 			apiKey: document.getElementById('apiKey'),
 			apiModel: document.getElementById('apiModel'),
+			autoSplitToggle: document.getElementById('autoSplitToggle'),
 			batchRPM: document.getElementById('batchRPM'),
 			batchSize: document.getElementById('batchSize'),
 			cleanupToggle: document.getElementById('cleanupToggle'),
@@ -115,6 +116,7 @@ class SettingsApp
 	loadSettings()
 	{
 		this.loadCheckbox('accessibilityToggle', 'accessibility_enabled', false);
+		this.loadCheckbox('autoSplitToggle', 'auto_split_enabled', false);
 		this.loadCheckbox('cleanupToggle', 'cleanup_enabled', true);
 		this.loadCheckbox('darkToggle', 'dark_enabled', true);
 		this.loadCheckbox('downloadOptimizedToggle', 'download_optimized_enabled', false);
@@ -368,6 +370,7 @@ class SettingsApp
 		this.els.accessibilityToggle?.addEventListener('change', this.handleAccessibilityToggleChange.bind(this, 'accessibilityToggle', 'accessibility_enabled'));
 		this.els.apiKey?.addEventListener('change', this.handleApiKeyChange.bind(this));
 		this.els.apiModel?.addEventListener('change', this.handleApiModelChange.bind(this));
+		this.els.autoSplitToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'autoSplitToggle', 'auto_split_enabled'));
 		this.els.batchRPM?.addEventListener('change', this.handleNumericChange.bind(this, 'batchRPM', 'translation_batch_rpm', 0, 60000));
 		this.els.batchSize?.addEventListener('change', this.handleNumericChange.bind(this, 'batchSize', 'translation_batch_size', 1, 60000));
 		this.els.cleanupToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'cleanupToggle', 'cleanup_enabled'));
@@ -576,6 +579,7 @@ class SettingsApp
 	{
 		const settings = {
 			accessibility_enabled: this.els.accessibilityToggle.checked,
+			auto_split_enabled: this.els.autoSplitToggle.checked,
 			cleanup_enabled: this.els.cleanupToggle.checked,
 			dark_enabled: this.els.darkToggle.checked,
 			download_optimized_enabled: this.els.downloadOptimizedToggle.checked,
