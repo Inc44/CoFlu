@@ -185,6 +185,7 @@ textarea
 #compareBtn,
 #downloadTranslated,
 #exportSettings,
+#downloadEdited,
 .copy-button,
 .copy-button:hover
 {
@@ -202,7 +203,8 @@ textarea
 #latexSource,
 #latexTarget,
 #htmlSource,
-#htmlTarget
+#htmlTarget,
+#generateAll
 {
 	background-color: var(--cyan);
 	color: white;
@@ -235,6 +237,7 @@ textarea
 
 #renderMarkdownBtn,
 #importSettings,
+#editorBtn,
 .input-file-label,
 .progress-bar,
 .user-message
