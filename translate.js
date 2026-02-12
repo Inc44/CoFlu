@@ -725,7 +725,8 @@ class TranslateApp
 		{
 			const source = translation.querySelector('.editor-source');
 			const target = translation.querySelector('.editor-target');
-			if (source && target)
+			const isEmptyTarget = !target.value.trim();
+			if (source && target && isEmptyTarget)
 			{
 				textElems.push(
 				{
