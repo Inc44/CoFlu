@@ -535,6 +535,11 @@ class TranslateApp
 		textarea.style.height = 'auto';
 		textarea.style.height = textarea.scrollHeight + 'px';
 	}
+	autoResizeAllTextareas()
+	{
+		this.els.editorContainer.querySelectorAll('.editor-target')
+			.forEach(textarea => this.autoResizeTextarea(textarea));
+	}
 	async generateEditorTranslation(index, origText, textarea)
 	{
 		const apiModel = this.els.apiModel.value;
@@ -608,7 +613,6 @@ class TranslateApp
 			translation.appendChild(target);
 			translation.appendChild(buttons);
 			container.appendChild(translation);
-			this.autoResizeTextarea(target);
 		});
 	}
 	async handleEditorOpen()
@@ -639,6 +643,7 @@ class TranslateApp
 		const translations = this.loadEditorTranslations(hash);
 		this.renderEditor(textElems, translations);
 		this.els.editorSection.style.display = '';
+		this.autoResizeAllTextareas();
 	}
 	updateEditorProgress(current, total)
 	{
