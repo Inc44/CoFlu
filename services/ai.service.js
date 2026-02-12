@@ -1,4 +1,51 @@
 const AiService = {
+	ffmpegLoaded: false,
+	ffmpeg: null,
+	ffmpegDuration: 0,
+	async toBlobURL(url, mimeType, patcher)
+	{
+		const resp = await fetch(url);
+		const body = patcher ? patcher(await resp.text()) : await resp.blob();
+		const blob = new Blob([body],
+		{
+			type: mimeType
+		});
+		return URL.createObjectURL(blob);
+	},
+	async loadFFmpeg()
+	{
+		if (this.ffmpegLoaded) return;
+		const baseURLFFMPEG = 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg/dist/umd';
+		const ffmpegBlobURL = await this.toBlobURL(baseURLFFMPEG + '/ffmpeg.js', 'text/javascript', (js) =>
+		{
+			return js.replace('new URL(e.p+e.u(814),e.b)', 'r.worker814URL');
+		});
+		const baseURLCore = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core/dist/umd';
+		const config = {
+			worker814URL: await this.toBlobURL(baseURLFFMPEG + '/814.ffmpeg.js', 'text/javascript'),
+			coreURL: await this.toBlobURL(baseURLCore + '/ffmpeg-core.js', 'text/javascript'),
+			wasmURL: await this.toBlobURL(baseURLCore + '/ffmpeg-core.wasm', 'application/wasm'),
+		};
+		await import(ffmpegBlobURL);
+		this.ffmpeg = new FFmpegWASM.FFmpeg();
+		this.ffmpeg.on('log', (
+		{
+			message
+		}) =>
+		{
+			const regex = /Duration: (\d+):(\d+):(\d+)\.(\d+)/
+			const match = message.match(regex);
+			if (match) this.ffmpegDuration = parseInt(match[1]) * 3600 + parseInt(match[2]) * 60 + parseInt(match[3]) + parseInt(match[4]) / 100;
+		});
+		await this.ffmpeg.load(config);
+		this.ffmpegLoaded = true;
+	},
+	async getFFmpegDuration(filename)
+	{
+		this.ffmpegDuration = 0;
+		await this.ffmpeg.exec(['-i', filename]);
+		return this.ffmpegDuration;
+	},
 	async generate(prompt, model, options = {})
 	{
 		const apiKey = StorageService.load(CONFIG.API.KEYS[model]);
@@ -488,13 +535,36 @@ const AiService = {
 	},
 	async splitAudio(file, maxSizeMB)
 	{
-		if (typeof FFmpegWASM === 'undefined')
-		{
-			alert('FFmpeg is not loaded. Please refresh the page.');
-			return [];
-		}
-		const ffmpeg = new FFmpegWASM.FFmpeg();
+		await this.loadFFmpeg();
+		const filename = file.name;
+		const filenameParts = filename.split('.');
+		const extension = filenameParts.length > 1 ? filenameParts.pop() : 'mp4';
+		const basename = filenameParts.join('.');
+		const mimeType = file.type || 'application/octet-stream';
+		await this.ffmpeg.writeFile(filename, new Uint8Array(await file.arrayBuffer()));
+		const totalDuration = await this.getFFmpegDuration(filename);
 		const chunks = [];
+		let currentDuration = 0;
+		let i = 1;
+		while (currentDuration < totalDuration)
+		{
+			const chunkFilename = basename + '_' + i + '.' + extension;
+			await this.ffmpeg.exec(['-ss', String(currentDuration), '-i', filename, '-fs', maxSizeMB + 'M', '-c', 'copy', chunkFilename]);
+			const chunkDuration = await this.getFFmpegDuration(chunkFilename);
+			if (chunkDuration <= 0) break;
+			const data = await this.ffmpeg.readFile(chunkFilename);
+			const blob = new Blob([data.buffer],
+			{
+				type: mimeType
+			});
+			const chunkFile = new File([blob], chunkFilename,
+			{
+				type: mimeType
+			});
+			chunks.push(chunkFile);
+			currentDuration += chunkDuration;
+			i++;
+		}
 		return chunks;
 	},
 	async transcribe(file, language, apiKey, modelName, transModel, abortSignal)
