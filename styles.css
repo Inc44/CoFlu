@@ -48,12 +48,14 @@ html[data-bs-theme="dark"] body .diff-insertion
 	background-color: var(--dark-green);
 }
 
-html[data-bs-theme="light"] .line-number
+html[data-bs-theme="light"] .line-number,
+html[data-bs-theme="light"] .text-element-number
 {
 	color: var(--gray);
 }
 
-html[data-bs-theme="dark"] .line-number
+html[data-bs-theme="dark"] .line-number,
+html[data-bs-theme="dark"] .text-element-number
 {
 	color: var(--beige);
 }
@@ -160,8 +162,10 @@ textarea
 #clearTarget,
 #cleanChat,
 #deletePrompt,
+#clearAll,
 .delete-button,
-.delete-button:hover
+.delete-button:hover,
+.editor-clear
 {
 	background-color: var(--red);
 	color: white;
@@ -187,7 +191,8 @@ textarea
 #exportSettings,
 #downloadEdited,
 .copy-button,
-.copy-button:hover
+.copy-button:hover,
+.editor-copy
 {
 	background-color: var(--green);
 	color: white;
@@ -204,7 +209,8 @@ textarea
 #latexTarget,
 #htmlSource,
 #htmlTarget,
-#generateAll
+#generateAll,
+.editor-generate
 {
 	background-color: var(--cyan);
 	color: white;
@@ -439,6 +445,41 @@ textarea
 	border: 0.1rem solid var(--bs-border-color);
 	margin: 0.5rem;
 	padding: 0.5rem;
+}
+
+.editor-translation
+{
+	display: flex;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.text-element-number
+{
+	min-width: 2.25rem;
+}
+
+.editor-source
+{
+	background-color: var(--bs-tertiary-bg);
+	border-radius: var(--bs-border-radius);
+	border: 0.1rem solid var(--bs-border-color);
+	flex: 1;
+	padding: 0.375rem 0.75rem;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.editor-target
+{
+	flex: 1;
+}
+
+.editor-buttons
+{
+	display: flex;
+	flex-direction: column;
+	gap: 0.0625rem;
 }
 
 @media print
