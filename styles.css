@@ -165,7 +165,8 @@ textarea
 #clearAll,
 .delete-button,
 .delete-button:hover,
-.editor-clear
+.editor-clear,
+.editor-clear:hover
 {
 	background-color: var(--red);
 	color: white;
@@ -192,7 +193,8 @@ textarea
 #downloadEdited,
 .copy-button,
 .copy-button:hover,
-.editor-copy
+.editor-copy,
+.editor-copy:hover
 {
 	background-color: var(--green);
 	color: white;
@@ -210,7 +212,8 @@ textarea
 #htmlSource,
 #htmlTarget,
 #generateAll,
-.editor-generate
+.editor-generate,
+.editor-generate:hover
 {
 	background-color: var(--cyan);
 	color: white;
