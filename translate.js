@@ -305,8 +305,8 @@ class TranslateApp
 		{
 			abortSignal: this.state.abortCtrl.signal
 		});
-		const response = await this.rateLimitRequests(apiCall);
-		return CONFIG.API.CONFIG.COMPLETION[apiModel].extractContent(response) || "[Translation Failed]";
+		const resp = await this.rateLimitRequests(apiCall);
+		return CONFIG.API.CONFIG.COMPLETION[apiModel].extractContent(resp) || "[Translation Failed]";
 	}
 	async rateLimitRequests(apiCall)
 	{
@@ -551,9 +551,9 @@ class TranslateApp
 		}
 		const targetLang = this.els.langSelect.value;
 		const prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${origText}`;
-		const response = await AiService.generate(prompt, apiModel,
+		const resp = await AiService.generate(prompt, apiModel,
 		{});
-		const translatedText = CONFIG.API.CONFIG.COMPLETION[apiModel].extractContent(response) || "[Translation Failed]";
+		const translatedText = CONFIG.API.CONFIG.COMPLETION[apiModel].extractContent(resp) || "[Translation Failed]";
 		textarea.value = translatedText;
 		this.saveEditorTranslation(this.state.editorDocHash, index, translatedText);
 		this.autoResizeTextarea(textarea);
@@ -688,11 +688,11 @@ class TranslateApp
 			{
 				const targetLang = this.els.langSelect.value;
 				const prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${element.origText}`;
-				const response = await AiService.generate(prompt, apiModel,
+				const resp = await AiService.generate(prompt, apiModel,
 				{
 					abortSignal: this.state.editorAbortCtrl.signal
 				});
-				const translated = CONFIG.API.CONFIG.COMPLETION[apiModel].extractContent(response) || "[Translation Failed]";
+				const translated = CONFIG.API.CONFIG.COMPLETION[apiModel].extractContent(resp) || "[Translation Failed]";
 				element.target.value = translated;
 				this.saveEditorTranslation(this.state.editorDocHash, element.index, translated);
 				this.autoResizeTextarea(element.target);

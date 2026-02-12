@@ -103,32 +103,32 @@ const AiService = {
 		}
 		const reqBody = this.buildReqBody(prompt, model, modelConfig, options);
 		const headers = this.buildHeaders(apiKey, config);
-		const response = await fetch(config.url,
+		const resp = await fetch(config.url,
 		{
 			method: 'POST',
 			headers,
 			body: JSON.stringify(reqBody),
 			signal: options.abortSignal
 		});
-		if (!response.ok)
+		if (!resp.ok)
 		{
-			const errText = await response.text();
+			const errText = await resp.text();
 			if (attempt < maxRetries)
 			{
 				const delay = this.calcRetryDelay(attempt);
 				await this.wait(delay);
 				return this.complete(apiKey, prompt, model, options, attempt + 1);
 			}
-			alert(`API request failed: ${response.status} - ${errText}`);
+			alert(`API request failed: ${resp.status} - ${errText}`);
 			return;
 		}
 		if (options.streaming)
 		{
-			return await this.handleStreamResponse(response, endpoint, options.onProgress);
+			return await this.handleStreamResponse(resp, endpoint, options.onProgress);
 		}
 		else
 		{
-			const jsonResponse = await response.json();
+			const jsonResponse = await resp.json();
 			const content = config.extractContent(jsonResponse);
 			return {
 				choices: [
@@ -471,9 +471,9 @@ const AiService = {
 			}
 		}));
 	},
-	async handleStreamResponse(response, model, onProgress)
+	async handleStreamResponse(resp, model, onProgress)
 	{
-		const reader = response.body.getReader();
+		const reader = resp.body.getReader();
 		const decoder = new TextDecoder();
 		let buffer = '';
 		let accumulatedText = '';
@@ -579,7 +579,7 @@ const AiService = {
 			alert(`Config not found for transcription model: ${transModel}`);
 			return;
 		}
-		const response = await fetch(config.url,
+		const resp = await fetch(config.url,
 		{
 			method: 'POST',
 			headers:
@@ -589,13 +589,13 @@ const AiService = {
 			body: formData,
 			signal: abortSignal
 		});
-		if (!response.ok)
+		if (!resp.ok)
 		{
-			const errText = await response.text();
-			alert(`Transcription failed with status ${response.status}: ${errText}`);
+			const errText = await resp.text();
+			alert(`Transcription failed with status ${resp.status}: ${errText}`);
 			return;
 		}
-		return await response.json();
+		return await resp.json();
 	},
 	calcRetryDelay(attempt)
 	{

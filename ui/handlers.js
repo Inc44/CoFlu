@@ -185,11 +185,11 @@ const UIHandlers = {
 			els.targetText.value = '';
 			UIState.showSpeed(els);
 			startTime = Date.now();
-			const response = await AiService.generate(prompt, provider, genOptions);
+			const resp = await AiService.generate(prompt, provider, genOptions);
 			if (!genOptions.streaming)
 			{
 				const modelConfig = CONFIG.API.CONFIG.COMPLETION[provider];
-				els.targetText.value = modelConfig.extractContent(response);
+				els.targetText.value = modelConfig.extractContent(resp);
 				TextService.updateStats(els.targetText, 'target');
 				StorageService.save('targetText', els.targetText.value);
 			}
