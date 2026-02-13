@@ -420,6 +420,7 @@ class TranslateApp
 		const wNS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 		const serializer = new XMLSerializer();
 		this.removeProofErr(xmlDoc, wNS);
+		this.removeLastRenderedPageBreak(xmlDoc, wNS);
 		const ps = Array.from(xmlDoc.getElementsByTagNameNS(wNS, 'p'));
 		for (const p of ps)
 		{
@@ -432,6 +433,14 @@ class TranslateApp
 		for (const proofErr of proofErrs)
 		{
 			if (proofErr.parentNode) proofErr.parentNode.removeChild(proofErr);
+		}
+	}
+	removeLastRenderedPageBreak(xmlDoc, wNS)
+	{
+		const lastRenderedPageBreaks = Array.from(xmlDoc.getElementsByTagNameNS(wNS, 'lastRenderedPageBreak'));
+		for (const lastRenderedPageBreak of lastRenderedPageBreaks)
+		{
+			if (lastRenderedPageBreak.parentNode) lastRenderedPageBreak.parentNode.removeChild(lastRenderedPageBreak);
 		}
 	}
 	collapseAdjacentRunsInParagraph(p, wNS, serializer)
