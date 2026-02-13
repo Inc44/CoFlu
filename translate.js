@@ -542,8 +542,19 @@ class TranslateApp
 		this.els.editorContainer.querySelectorAll('.editor-target')
 			.forEach(textarea => this.autoResizeTextarea(textarea));
 	}
-	async generateEditorTranslation(index, origText, textarea)
+	setGenerateButtonState(button, isGenerating)
 	{
+		button.style.minWidth = isGenerating ? button.offsetWidth + 'px' : '';
+		button.style.backgroundColor = isGenerating ? 'var(--red) !important' : '';
+		button.textContent = isGenerating ? 'Stop' : 'Generate';
+	}
+	async generateEditorTranslation(index, origText, textarea, button)
+	{
+		if (button.abortCtrl)
+		{
+			button.abortCtrl.abort();
+			return;
+		}
 		const apiModel = this.els.apiModel.value;
 		const apiKey = StorageService.load(CONFIG.API.KEYS[apiModel]);
 		if (!apiKey)
@@ -551,14 +562,34 @@ class TranslateApp
 			alert(`Please set your API key for ${apiModel} in settings.`);
 			return;
 		}
+		const abortCtrl = new AbortController();
+		button.abortCtrl = abortCtrl;
+		this.setGenerateButtonState(button, true);
 		const targetLang = this.els.langSelect.value;
 		const prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${origText}`;
-		const resp = await AiService.generate(prompt, apiModel,
-		{});
-		const translatedText = CONFIG.API.CONFIG.COMPLETION[apiModel].extractContent(resp) || "[Translation Failed]";
-		textarea.value = translatedText;
-		this.saveEditorTranslation(this.state.editorDocHash, index, translatedText);
-		this.autoResizeTextarea(textarea);
+		try
+		{
+			const resp = await AiService.generate(prompt, apiModel,
+			{
+				abortSignal: abortCtrl.signal
+			});
+			const translatedText = CONFIG.API.CONFIG.COMPLETION[apiModel].extractContent(resp) || "[Translation Failed]";
+			textarea.value = translatedText;
+			this.saveEditorTranslation(this.state.editorDocHash, index, translatedText);
+			this.autoResizeTextarea(textarea);
+		}
+		catch (e)
+		{
+			if (e.name !== 'AbortError')
+			{
+				console.error('Error translating text:', e);
+			}
+		}
+		finally
+		{
+			button.abortCtrl = null;
+			this.setGenerateButtonState(button, false);
+		}
 	}
 	renderEditor(textElems, translations)
 	{
@@ -593,7 +624,7 @@ class TranslateApp
 			const generate = document.createElement('button');
 			generate.className = 'btn btn-sm editor-generate';
 			generate.textContent = 'Generate';
-			generate.addEventListener('click', () => this.generateEditorTranslation(i, origText, target));
+			generate.addEventListener('click', () => this.generateEditorTranslation(i, origText, target, generate));
 			const copy = document.createElement('button');
 			copy.className = 'btn btn-sm editor-copy';
 			copy.textContent = 'Copy';
