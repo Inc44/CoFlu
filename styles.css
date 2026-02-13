@@ -164,9 +164,7 @@ textarea
 #deletePrompt,
 #clearAll,
 .delete-button,
-.delete-button:hover,
-.editor-clear,
-.editor-clear:hover
+.delete-button:hover
 {
 	background-color: var(--red);
 	color: white;
@@ -192,9 +190,7 @@ textarea
 #exportSettings,
 #downloadEdited,
 .copy-button,
-.copy-button:hover,
-.editor-copy,
-.editor-copy:hover
+.copy-button:hover
 {
 	background-color: var(--green);
 	color: white;
@@ -211,9 +207,7 @@ textarea
 #latexTarget,
 #htmlSource,
 #htmlTarget,
-#generateAll,
-.editor-generate,
-.editor-generate:hover
+#generateAll
 {
 	background-color: var(--cyan);
 	color: white;
@@ -483,6 +477,24 @@ textarea
 	display: flex;
 	flex-direction: column;
 	gap: 0.0625rem;
+}
+
+.editor-clear
+{
+	background-color: var(--red) !important;
+	color: white !important;
+}
+
+.editor-copy
+{
+	background-color: var(--green) !important;
+	color: white !important;
+}
+
+.editor-generate
+{
+	background-color: var(--cyan) !important;
+	color: white !important;
 }
 
 @media print
