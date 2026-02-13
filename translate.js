@@ -12,6 +12,7 @@ class TranslateApp
 			translatedFileName: null,
 			isTranslating: false,
 			isGeneratingAll: false,
+			isEditorActive: false,
 			reqQueue: [],
 			lastReqTime: 0,
 			editorDocHash: null,
@@ -71,7 +72,7 @@ class TranslateApp
 		this.els.langSelect?.addEventListener('change', this.handleLangChange.bind(this));
 		this.els.optimizeBtn?.addEventListener('click', this.handleOptimizeClick.bind(this));
 		this.els.translateBtn?.addEventListener('click', this.handleTranslateClick.bind(this));
-		this.els.editorBtn?.addEventListener('click', this.handleEditorOpen.bind(this));
+		this.els.editorBtn?.addEventListener('click', this.handleEditorToggleChange.bind(this));
 		this.els.generateAll?.addEventListener('click', this.handleGenerateAll.bind(this));
 		this.els.clearAll?.addEventListener('click', this.handleClearAll.bind(this));
 		this.els.downloadEdited?.addEventListener('click', this.handleEditorDownload.bind(this));
@@ -615,8 +616,16 @@ class TranslateApp
 			container.appendChild(translation);
 		});
 	}
-	async handleEditorOpen()
+	setEditorState(isEditorActive)
 	{
+		this.els.editorSection.style.display = isEditorActive ? '' : 'none';
+		this.els.editorBtn.style.backgroundColor = isEditorActive ? 'red' : '';
+		this.els.editorBtn.textContent = isEditorActive ? 'Close Editor' : 'Open Editor';
+		this.state.isEditorActive = isEditorActive;
+	}
+	async handleEditorToggleChange()
+	{
+		this.setEditorState(!this.state.isEditorActive);
 		const file = this.els.docFile.files[0];
 		if (!file)
 		{
@@ -642,7 +651,6 @@ class TranslateApp
 		const textElems = Array.from(xmlDoc.getElementsByTagNameNS(wNS, 't'));
 		const translations = this.loadEditorTranslations(hash);
 		this.renderEditor(textElems, translations);
-		this.els.editorSection.style.display = '';
 		this.autoResizeAllTextareas();
 	}
 	updateEditorProgress(current, total)
