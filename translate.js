@@ -455,7 +455,7 @@ class TranslateApp
 	}
 	containsCJK(text)
 	{
-		const regex = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u
+		const regex = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
 		return regex.test(text);
 	}
 	getRPrSignature(rPr, wNS, serializer, isLatin)
