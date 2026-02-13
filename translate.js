@@ -471,13 +471,13 @@ class TranslateApp
 	{
 		if (!rPr) return '';
 		const clone = rPr.cloneNode(true);
-		const langs = [];
+		const skips = [];
 		for (let node = clone.firstChild; node; node = node.nextSibling)
 		{
 			if (node.nodeType !== 1) continue;
-			if (this.isElem(node, wNS, 'lang')) langs.push(node);
+			if (this.isElem(node, wNS, 'lang') || this.isElem(node, wNS, 'rStyle')) skips.push(node);
 		}
-		langs.forEach(elem => clone.removeChild(elem));
+		skips.forEach(elem => clone.removeChild(elem));
 		const rFonts = this.getChild(clone, wNS, 'rFonts');
 		if (rFonts && isLatin)
 		{
