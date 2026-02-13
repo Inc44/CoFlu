@@ -470,6 +470,8 @@ textarea
 .editor-target
 {
 	flex: 1;
+	overflow: hidden;
+	resize: none;
 }
 
 .editor-buttons
