@@ -76,6 +76,7 @@ class TranslateApp
 		this.els.generateAll?.addEventListener('click', this.handleGenerateAll.bind(this));
 		this.els.clearAll?.addEventListener('click', this.handleClearAll.bind(this));
 		this.els.downloadEdited?.addEventListener('click', this.handleEditorDownload.bind(this));
+		window.addEventListener('resize', this.autoResizeAllTextareas.bind(this));
 	}
 	handleApiModelChange()
 	{
