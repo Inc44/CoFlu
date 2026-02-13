@@ -453,13 +453,37 @@ class TranslateApp
 	{
 		return node && node.nodeType === 1 && node.namespaceURI === wNS && node.localName === name;
 	}
+	containsCJK(text)
+	{
+		const regex = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u
+		return regex.test(text);
+	}
+	getRPrSignature(rPr, wNS, serializer, isLatin)
+	{
+		if (!rPr) return '';
+		if (!isLatin) return serializer.serializeToString(rPr);
+		const clone = rPr.cloneNode(true);
+		const rFonts = this.getChild(clone, wNS, 'rFonts');
+		if (rFonts)
+		{
+			rFonts.removeAttributeNS(wNS, 'eastAsia');
+			if (rFonts.attributes.length === 0)
+			{
+				clone.removeChild(rFonts);
+			}
+		}
+		if (clone.childNodes.length === 0) return '';
+		return serializer.serializeToString(clone);
+	}
 	isMergeable(child, sibling, wNS, serializer)
 	{
+		if (!(this.isSimpleRun(child, wNS) && this.isSimpleRun(sibling, wNS))) return false;
 		const childPr = this.getChild(child, wNS, 'rPr');
 		const siblingPr = this.getChild(sibling, wNS, 'rPr');
-		if (!(this.isSimpleRun(child, wNS) && this.isSimpleRun(sibling, wNS))) return false;
-		if (!!childPr !== !!siblingPr) return false;
-		return !childPr || serializer.serializeToString(childPr) === serializer.serializeToString(siblingPr);
+		const isLatin = !this.containsCJK(child.textContent) && !this.containsCJK(sibling.textContent);
+		const childSignature = this.getRPrSignature(childPr, wNS, serializer, isLatin);
+		const siblingSignature = this.getRPrSignature(siblingPr, wNS, serializer, isLatin);
+		return childSignature === siblingSignature;
 	}
 	getChild(node, wNS, name)
 	{
