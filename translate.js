@@ -76,6 +76,7 @@ class TranslateApp
 		this.els.generateAll?.addEventListener('click', this.handleGenerateAll.bind(this));
 		this.els.clearAll?.addEventListener('click', this.handleClearAll.bind(this));
 		this.els.downloadEdited?.addEventListener('click', this.handleEditorDownload.bind(this));
+		this.els.docFile?.addEventListener('change', this.handleDocFileChange.bind(this));
 		window.addEventListener('resize', this.autoResizeAllTextareas.bind(this));
 	}
 	handleApiModelChange()
@@ -655,15 +656,33 @@ class TranslateApp
 		this.els.editorBtn.textContent = isEditorActive ? 'Close Editor' : 'Open Editor';
 		this.state.isEditorActive = isEditorActive;
 	}
+	async handleDocFileChange()
+	{
+		if (this.state.isEditorActive && this.els.docFile.files[0])
+		{
+			await this.loadEditorDocument();
+		}
+	}
 	async handleEditorToggleChange()
 	{
-		this.setEditorState(!this.state.isEditorActive);
+		if (this.state.isEditorActive)
+		{
+			this.setEditorState(false);
+			return;
+		}
 		const file = this.els.docFile.files[0];
 		if (!file)
 		{
 			alert('Please select a DOCX file.');
 			return;
 		}
+		this.setEditorState(true);
+		await this.loadEditorDocument();
+	}
+	async loadEditorDocument()
+	{
+		const file = this.els.docFile.files[0];
+		if (!file) return;
 		const hash = await this.computeFileHash(file);
 		this.state.editorDocHash = hash;
 		this.state.editorDocFile = file;
