@@ -169,6 +169,11 @@ class TranslateApp
 		}
 		this.downloadBlob(this.state.translatedBlob, this.state.translatedFileName);
 	}
+	zeroTrim(text)
+	{
+		return text.replace(/[\u200B-\u200D\uFEFF]/g, '')
+			.trim();
+	}
 	async startTranslation()
 	{
 		const file = this.els.docFile.files[0];
@@ -303,7 +308,7 @@ class TranslateApp
 	}
 	async translateElement(element, xmlDoc, apiModel, apiKey)
 	{
-		const origText = element.textContent.trim();
+		const origText = this.zeroTrim(element.textContent);
 		if (!origText) return;
 		if (this.isASCIIPrintableNonLettersOnly(origText)) return;
 		const targetLang = this.els.langSelect.value;
@@ -650,7 +655,7 @@ class TranslateApp
 		container.innerHTML = '';
 		textElems.forEach((elem, i) =>
 		{
-			const origText = elem.textContent.trim();
+			const origText = this.zeroTrim(elem.textContent);
 			if (!origText) return;
 			if (this.isASCIIPrintableNonLettersOnly(origText)) return;
 			const translation = document.createElement('div');
