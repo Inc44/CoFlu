@@ -40,12 +40,18 @@ class TranslateApp
 			clearAll: document.getElementById('clearAll'),
 			downloadEdited: document.getElementById('downloadEdited'),
 			editorProgress: document.getElementById('editorProgress'),
-			editorProgressInner: document.querySelector('#editorProgress .progress-bar')
+			editorProgressInner: document.querySelector('#editorProgress .progress-bar'),
+			customPromptBox: document.getElementById('customPromptContainer'),
+			customPrompt: document.getElementById('customPrompt'),
+			promptSelect: document.getElementById('promptSelect'),
+			savePromptBtn: document.getElementById('savePrompt'),
+			deletePromptBtn: document.getElementById('deletePrompt')
 		};
 	}
 	init()
 	{
 		this.loadSettings();
+		this.loadPrompts();
 		this.setupEvents();
 	}
 	loadSettings()
@@ -65,6 +71,66 @@ class TranslateApp
 			this.els.optimizeBtn.style.display = showDownloadOptimizedButton ? 'block' : 'none';
 		}
 	}
+	isSavedCustomOption(option)
+	{
+		return !!(option && option.dataset && option.dataset.customIndex !== undefined);
+	}
+	loadPrompts()
+	{
+		if (!this.els.promptSelect) return;
+		const savedPrompts = StorageService.load('prompts', []);
+		this.els.promptSelect.innerHTML = '';
+		const defaultOption = document.createElement('option');
+		defaultOption.value = '';
+		defaultOption.textContent = 'None';
+		this.els.promptSelect.appendChild(defaultOption);
+		CONFIG.UI.STANDARD_PROMPTS.forEach(prompt =>
+		{
+			const option = document.createElement('option');
+			option.value = prompt;
+			option.textContent = prompt;
+			this.els.promptSelect.appendChild(option);
+		});
+		savedPrompts.forEach((prompt, i) =>
+		{
+			const option = document.createElement('option');
+			option.value = prompt;
+			option.textContent = `Custom ${i+1}: ${prompt.substring(0, 30)}...`;
+			option.dataset.customIndex = i;
+			this.els.promptSelect.appendChild(option);
+		});
+		const customOption = document.createElement('option');
+		customOption.value = 'custom';
+		customOption.textContent = 'Custom prompt';
+		this.els.promptSelect.appendChild(customOption);
+		if (this.els.customPromptBox)
+		{
+			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
+			const isSavedCustom = this.isSavedCustomOption(selectedOption);
+			this.els.customPromptBox.style.display = (this.els.promptSelect.value === 'custom' || isSavedCustom) ? 'block' : 'none';
+			if (isSavedCustom && this.els.customPrompt)
+			{
+				this.els.customPrompt.value = this.els.promptSelect.value || '';
+			}
+		}
+		if (this.els.deletePromptBtn)
+		{
+			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
+			const isSavedCustom = this.isSavedCustomOption(selectedOption);
+			this.els.deletePromptBtn.disabled = !isSavedCustom;
+		}
+	}
+	getCustomPrompt()
+	{
+		if (!this.els.promptSelect) return '';
+		const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
+		const isSavedCustom = this.isSavedCustomOption(selectedOption);
+		if (this.els.promptSelect.value === 'custom' || isSavedCustom)
+		{
+			return this.els.customPrompt.value || '';
+		}
+		return this.els.promptSelect.value || '';
+	}
 	setupEvents()
 	{
 		this.els.apiModel?.addEventListener('change', this.handleApiModelChange.bind(this));
@@ -78,6 +144,111 @@ class TranslateApp
 		this.els.downloadEdited?.addEventListener('click', this.handleEditorDownload.bind(this));
 		this.els.docFile?.addEventListener('change', this.handleDocFileChange.bind(this));
 		window.addEventListener('resize', this.autoResizeAllTextareas.bind(this));
+		this.setupPromptEvents();
+	}
+	setupPromptEvents()
+	{
+		if (!this.els.promptSelect) return;
+		this.els.promptSelect.addEventListener('change', () =>
+		{
+			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
+			const isSavedCustom = this.isSavedCustomOption(selectedOption);
+			if (this.els.customPromptBox)
+			{
+				this.els.customPromptBox.style.display = (this.els.promptSelect.value === 'custom' || isSavedCustom) ? 'block' : 'none';
+			}
+			if (this.els.customPrompt)
+			{
+				if (this.els.promptSelect.value === 'custom')
+				{
+					this.els.customPrompt.value = '';
+				}
+				else if (isSavedCustom)
+				{
+					this.els.customPrompt.value = this.els.promptSelect.value;
+				}
+			}
+			if (this.els.deletePromptBtn)
+			{
+				this.els.deletePromptBtn.disabled = !isSavedCustom;
+			}
+		});
+		if (this.els.savePromptBtn)
+		{
+			this.els.savePromptBtn.addEventListener('click', () =>
+			{
+				const text = this.els.customPrompt?.value.trim();
+				if (!text)
+				{
+					alert('Please enter a custom prompt before saving.');
+					return;
+				}
+				const prompts = StorageService.load('prompts', []);
+				const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
+				const idxStr = selectedOption?.dataset?.customIndex;
+				if (idxStr !== undefined)
+				{
+					const idx = parseInt(idxStr, 10);
+					if (!isNaN(idx) && idx >= 0 && idx < prompts.length)
+					{
+						prompts[idx] = text;
+					}
+					else
+					{
+						prompts.push(text);
+					}
+				}
+				else
+				{
+					prompts.push(text);
+				}
+				StorageService.save('prompts', prompts);
+				this.loadPrompts();
+				if (this.els.customPrompt)
+				{
+					this.els.customPrompt.value = '';
+				}
+				if (this.els.promptSelect)
+				{
+					this.els.promptSelect.value = 'custom';
+					this.els.promptSelect.dispatchEvent(new Event('change'));
+				}
+				alert('Custom prompt saved!');
+			});
+		}
+		if (this.els.deletePromptBtn)
+		{
+			this.els.deletePromptBtn.addEventListener('click', () =>
+			{
+				const prompts = StorageService.load('prompts', []);
+				const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
+				const idxStr = selectedOption?.dataset?.customIndex;
+				if (idxStr === undefined)
+				{
+					alert('Please select a saved custom prompt to delete.');
+					return;
+				}
+				const idx = parseInt(idxStr, 10);
+				if (isNaN(idx) || idx < 0 || idx >= prompts.length)
+				{
+					alert('Invalid custom prompt selection.');
+					return;
+				}
+				prompts.splice(idx, 1);
+				StorageService.save('prompts', prompts);
+				this.loadPrompts();
+				if (this.els.customPrompt)
+				{
+					this.els.customPrompt.value = '';
+				}
+				if (this.els.promptSelect)
+				{
+					this.els.promptSelect.value = 'custom';
+					this.els.promptSelect.dispatchEvent(new Event('change'));
+				}
+				alert('Custom prompt deleted!');
+			});
+		}
 	}
 	handleApiModelChange()
 	{
@@ -312,7 +483,9 @@ class TranslateApp
 		if (!origText) return;
 		if (this.isASCIIPrintableNonLettersOnly(origText)) return;
 		const targetLang = this.els.langSelect.value;
-		const prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${origText}`;
+		const customPrompt = this.getCustomPrompt();
+		let prompt = customPrompt ? `${customPrompt}\n\n` : '';
+		prompt += `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${origText}`;
 		const translatedText = await this.getTranslatedText(prompt, apiModel, apiKey);
 		while (element.firstChild)
 		{
@@ -624,7 +797,9 @@ class TranslateApp
 		button.abortCtrl = abortCtrl;
 		this.setGenerateButtonState(button, true);
 		const targetLang = this.els.langSelect.value;
-		const prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${origText}`;
+		const customPrompt = this.getCustomPrompt();
+		let prompt = customPrompt ? `${customPrompt}\n\n` : '';
+		prompt += `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${origText}`;
 		try
 		{
 			const resp = await AiService.generate(prompt, apiModel,
@@ -803,7 +978,9 @@ class TranslateApp
 			const translatePromises = batch.map(async (element) =>
 			{
 				const targetLang = this.els.langSelect.value;
-				const prompt = `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${element.origText}`;
+				const customPrompt = this.getCustomPrompt();
+				let prompt = customPrompt ? `${customPrompt}\n\n` : '';
+				prompt += `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${element.origText}`;
 				const resp = await AiService.generate(prompt, apiModel,
 				{
 					abortSignal: this.state.editorAbortCtrl.signal
