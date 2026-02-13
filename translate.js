@@ -470,10 +470,16 @@ class TranslateApp
 	getRPrSignature(rPr, wNS, serializer, isLatin)
 	{
 		if (!rPr) return '';
-		if (!isLatin) return serializer.serializeToString(rPr);
 		const clone = rPr.cloneNode(true);
+		const langs = [];
+		for (let node = clone.firstChild; node; node = node.nextSibling)
+		{
+			if (node.nodeType !== 1) continue;
+			if (this.isElem(node, wNS, 'lang')) langs.push(node);
+		}
+		langs.forEach(elem => clone.removeChild(elem));
 		const rFonts = this.getChild(clone, wNS, 'rFonts');
-		if (rFonts)
+		if (rFonts && isLatin)
 		{
 			rFonts.removeAttributeNS(wNS, 'eastAsia');
 			if (rFonts.attributes.length === 0)
