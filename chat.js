@@ -156,7 +156,7 @@ class ChatApp
 		this.state.abortCtrl = new AbortController();
 		this.accumulatedText = '';
 		this.els.sendBtn.textContent = 'Stop';
-		this.els.sendBtn.style.backgroundColor = 'red';
+		this.els.sendBtn.style.backgroundColor = 'var(--red)';
 		const fileURLs = details && details.file ? this.state.fileUploader.getFiles() :
 		{};
 		const imageURLs = details && details.image ? Object.values(this.state.imageUploader.getImages()) : [];

@@ -1,19 +1,19 @@
 const UIState = {
 	setGenerating(isGenerating, els)
 	{
-		els.genTargetBtn.style.backgroundColor = isGenerating ? 'red' : '';
+		els.genTargetBtn.style.backgroundColor = isGenerating ? 'var(--red)' : '';
 		els.genTargetBtn.textContent = isGenerating ? 'Stop Generating' : 'Generate';
 		els.genTargetBtn.dataset.generating = isGenerating;
 	},
 	setTranscribing(isTranscribing, els)
 	{
-		els.transcribeBtn.style.backgroundColor = isTranscribing ? 'red' : '';
+		els.transcribeBtn.style.backgroundColor = isTranscribing ? 'var(--red)' : '';
 		els.transcribeBtn.textContent = isTranscribing ? 'Stop Transcribe' : 'Start Transcribe';
 		els.transcribeBtn.dataset.transcribing = isTranscribing;
 	},
 	setTranslating(isTranslating, els)
 	{
-		els.translateBtn.style.backgroundColor = isTranslating ? 'red' : '';
+		els.translateBtn.style.backgroundColor = isTranslating ? 'var(--red)' : '';
 		els.translateBtn.textContent = isTranslating ? 'Stop Translation' : 'Start Translation';
 		els.translateBtn.dataset.translating = isTranslating;
 	},
