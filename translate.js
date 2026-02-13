@@ -190,15 +190,20 @@ class TranslateApp
 			alert('Selected OpenAI audio model requires audio input and cannot be used for DOCX translation. Select a different model.');
 			return;
 		}
+		const hash = await this.computeFileHash(file);
+		const translations = this.loadEditorTranslations(hash);
 		this.state.abortCtrl = new AbortController();
 		this.showProgress();
 		this.hideDownloadBtn();
 		this.setTranslateButtonState(true);
-		const translatedData = await this.processDocx(file, apiModel, apiKey);
-		this.state.translatedBlob = translatedData.blob;
-		this.state.translatedFileName = translatedData.fileName;
-		this.showDownloadBtn();
-		this.downloadFile();
+		const translatedData = await this.processDocx(file, apiModel, apiKey, translations);
+		if (translatedData)
+		{
+			this.state.translatedBlob = translatedData.blob;
+			this.state.translatedFileName = translatedData.fileName;
+			this.showDownloadBtn();
+			this.downloadFile();
+		}
 		this.setTranslateButtonState(false);
 		this.hideProgress();
 		this.state.abortCtrl = null;
@@ -213,7 +218,7 @@ class TranslateApp
 		this.setTranslateButtonState(false);
 		this.hideProgress();
 	}
-	async processDocx(file, apiModel, apiKey)
+	async processDocx(file, apiModel, apiKey, translations = {})
 	{
 		const zip = new JSZip();
 		const docxData = await zip.loadAsync(file);
@@ -235,7 +240,7 @@ class TranslateApp
 			return;
 		}
 		const batches = this.createBatches(textElems, this.batchSize);
-		await this.processBatches(batches, xmlDoc, apiModel, apiKey);
+		await this.processBatches(batches, xmlDoc, apiModel, apiKey, textElems.length, translations);
 		const serializer = new XMLSerializer();
 		const modifiedDocXml = serializer.serializeToString(xmlDoc);
 		docxData.file("word/document.xml", modifiedDocXml);
@@ -266,24 +271,32 @@ class TranslateApp
 		}
 		return batches;
 	}
-	async processBatches(batches, xmlDoc, apiModel, apiKey)
+	async processBatches(batches, xmlDoc, apiModel, apiKey, total, translations = {})
 	{
 		let processedElems = 0;
-		const totalElems = batches.reduce((acc, batch) => acc + batch.length, 0);
-		for (const batch of batches)
+		for (const [batchIndex, batch] of batches.entries())
 		{
 			if (this.state.abortCtrl.signal.aborted)
 			{
 				return;
 			}
-			const translatePromises = batch.map(async (element) =>
+			const translatePromises = batch.map(async (elem, elemIndex) =>
 			{
-				return this.translateElement(element, xmlDoc, apiModel, apiKey)
-					.then(() =>
+				const i = batchIndex * this.batchSize + elemIndex;
+				if (translations[i] !== undefined && translations[i] !== '')
+				{
+					while (elem.firstChild)
 					{
-						processedElems++;
-						this.updateProgress(processedElems, totalElems);
-					});
+						elem.removeChild(elem.firstChild);
+					}
+					elem.appendChild(xmlDoc.createTextNode(translations[i]));
+				}
+				else
+				{
+					await this.translateElement(elem, xmlDoc, apiModel, apiKey);
+				}
+				processedElems++;
+				this.updateProgress(processedElems, total);
 			});
 			await Promise.all(translatePromises);
 		}
