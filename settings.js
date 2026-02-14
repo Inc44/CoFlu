@@ -14,6 +14,8 @@ class SettingsApp
 			batchRPM: document.getElementById('batchRPM'),
 			batchSize: document.getElementById('batchSize'),
 			cleanupToggle: document.getElementById('cleanupToggle'),
+			customModel: document.getElementById('customModel'),
+			customModelBox: document.getElementById('customModelContainer'),
 			darkToggle: document.getElementById('darkToggle'),
 			downloadOptimizedToggle: document.getElementById('downloadOptimizedToggle'),
 			expRetry: document.getElementById('exponentialRetry'),
@@ -194,19 +196,35 @@ class SettingsApp
 					const highCostConfig = CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider];
 					this.addModelsToSelect(modelSelect, highCostConfig.options, true);
 				}
-				modelSelect.value = StorageService.load(`${provider}_model`, config.default);
-				const available = Array.from(modelSelect.options)
-					.filter(option => !option.disabled)
-					.map(option => option.value);
-				if (!available.includes(modelSelect.value))
+				const customOption = document.createElement('option');
+				customOption.value = 'custom';
+				customOption.textContent = 'Custom model';
+				modelSelect.appendChild(customOption);
+				const storedOrDefaultValue = StorageService.load(`${provider}_model`, config.default);
+				const customModel = StorageService.load(`${provider}_custom_model`, '');
+				if (customModel)
 				{
-					let fallback = config.default;
-					if (!available.includes(fallback) && available.length > 0)
+					modelSelect.value = 'custom';
+				}
+				else
+				{
+					const available = Array.from(modelSelect.options)
+						.filter(option => !option.disabled)
+						.map(option => option.value);
+					if (!available.includes(storedOrDefaultValue))
 					{
-						fallback = available[0];
+						let fallback = config.default;
+						if (!available.includes(fallback) && available.length > 0)
+						{
+							fallback = available[0];
+						}
+						modelSelect.value = fallback;
+						StorageService.save(`${provider}_model`, fallback);
 					}
-					modelSelect.value = fallback;
-					StorageService.save(`${provider}_model`, fallback);
+					else
+					{
+						modelSelect.value = storedOrDefaultValue;
+					}
 				}
 			});
 	}
@@ -261,6 +279,7 @@ class SettingsApp
 		if (selectedBox)
 		{
 			selectedBox.classList.add('active');
+			this.updateCustomModelVisibility(provider);
 			this.updateReasoningEffortVisibility(provider);
 			this.updateThinkingVisibility(provider);
 			this.updateSearchContextSizeVisibility(provider);
@@ -279,10 +298,24 @@ class SettingsApp
 			selectedBox.style.display = 'block';
 		}
 	}
+	updateCustomModelVisibility(provider)
+	{
+		const modelSelect = this.els.modelSelects[provider];
+		if (modelSelect && modelSelect.value === 'custom')
+		{
+			this.els.customModelBox.style.display = 'block';
+			const customModel = StorageService.load(`${provider}_custom_model`, '');
+			this.els.customModel.value = customModel;
+		}
+		else
+		{
+			this.els.customModelBox.style.display = 'none';
+		}
+	}
 	updateReasoningEffortVisibility(provider)
 	{
 		const modelSelect = this.els.modelSelects[provider];
-		const modelName = modelSelect ? modelSelect.value : null;
+		const modelName = modelSelect && modelSelect.value !== 'custom' ? modelSelect.value : null;
 		const modelDetails = this.getModelDetails(provider, modelName);
 		if (modelDetails && modelDetails.reasoning_effort)
 		{
@@ -307,7 +340,7 @@ class SettingsApp
 	updateThinkingVisibility(provider)
 	{
 		const modelSelect = this.els.modelSelects[provider];
-		const modelName = modelSelect ? modelSelect.value : null;
+		const modelName = modelSelect && modelSelect.value !== 'custom' ? modelSelect.value : null;
 		const modelDetails = this.getModelDetails(provider, modelName);
 		if (modelDetails && modelDetails.thinking_budget)
 		{
@@ -334,7 +367,7 @@ class SettingsApp
 	updateSearchContextSizeVisibility(provider)
 	{
 		const modelSelect = this.els.modelSelects[provider];
-		const modelName = modelSelect ? modelSelect.value : null;
+		const modelName = modelSelect && modelSelect.value !== 'custom' ? modelSelect.value : null;
 		const modelDetails = this.getModelDetails(provider, modelName);
 		if (modelDetails && modelDetails.search_context_size)
 		{
@@ -358,6 +391,7 @@ class SettingsApp
 	}
 	getModelDetails(provider, modelName)
 	{
+		if (!modelName) return null;
 		let modelDetails = CONFIG.API.MODELS.COMPLETION[provider]?.options.find(m => m.name === modelName);
 		if (!modelDetails && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider])
 		{
@@ -374,6 +408,7 @@ class SettingsApp
 		this.els.batchRPM?.addEventListener('change', this.handleNumericChange.bind(this, 'batchRPM', 'translation_batch_rpm', 0, 60000));
 		this.els.batchSize?.addEventListener('change', this.handleNumericChange.bind(this, 'batchSize', 'translation_batch_size', 1, 60000));
 		this.els.cleanupToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'cleanupToggle', 'cleanup_enabled'));
+		this.els.customModel?.addEventListener('input', this.handleCustomModelChange.bind(this));
 		this.els.darkToggle?.addEventListener('change', this.handleDarkToggleChange.bind(this));
 		this.els.downloadOptimizedToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'downloadOptimizedToggle', 'download_optimized_enabled'));
 		this.els.expRetry?.addEventListener('change', this.handleNumericChange.bind(this, 'expRetry', 'exponential_retry', 0));
@@ -423,7 +458,18 @@ class SettingsApp
 				select?.addEventListener('change', () =>
 				{
 					const selectedModel = select.value;
-					StorageService.save(`${provider}_model`, selectedModel);
+					if (selectedModel === 'custom')
+					{
+						this.els.customModelBox.style.display = 'block';
+						const customModel = StorageService.load(`${provider}_custom_model`, '');
+						this.els.customModel.value = customModel;
+					}
+					else
+					{
+						this.els.customModelBox.style.display = 'none';
+						StorageService.save(`${provider}_model`, selectedModel);
+						StorageService.remove(`${provider}_custom_model`);
+					}
 					this.updateReasoningEffortVisibility(provider);
 					this.updateThinkingVisibility(provider);
 					this.updateSearchContextSizeVisibility(provider);
@@ -490,6 +536,7 @@ class SettingsApp
 		StorageService.save('high_cost_enabled', isHighCostEnabled);
 		this.loadModelOptions();
 		const provider = this.els.apiModel.value;
+		this.updateCustomModelVisibility(provider);
 		this.updateReasoningEffortVisibility(provider);
 		this.updateThinkingVisibility(provider);
 		this.updateSearchContextSizeVisibility(provider);
@@ -506,6 +553,7 @@ class SettingsApp
 					this.loadModelOptions();
 					this.loadWhisperOptions();
 					const provider = this.els.apiModel.value;
+					this.updateCustomModelVisibility(provider);
 					this.updateReasoningEffortVisibility(provider);
 					this.updateThinkingVisibility(provider);
 					this.updateSearchContextSizeVisibility(provider);
@@ -518,6 +566,7 @@ class SettingsApp
 			this.loadModelOptions();
 			this.loadWhisperOptions();
 			const provider = this.els.apiModel.value;
+			this.updateCustomModelVisibility(provider);
 			this.updateReasoningEffortVisibility(provider);
 			this.updateThinkingVisibility(provider);
 			this.updateSearchContextSizeVisibility(provider);
@@ -548,6 +597,12 @@ class SettingsApp
 	handleTranscribeLangChange()
 	{
 		StorageService.save('transcribe_language', this.els.transcribeLang.value);
+	}
+	handleCustomModelChange()
+	{
+		const provider = this.els.apiModel.value;
+		const customModel = this.els.customModel.value.trim();
+		StorageService.save(`${provider}_custom_model`, customModel);
 	}
 	handleNumericChange(elemKey, storeKey, min = null, max = null)
 	{
@@ -635,7 +690,15 @@ class SettingsApp
 				const selectElement = this.els.modelSelects[provider];
 				if (selectElement)
 				{
-					settings[`${provider}_model`] = selectElement.value;
+					if (selectElement.value === 'custom')
+					{
+						settings[`${provider}_model`] = 'custom';
+						settings[`${provider}_custom_model`] = StorageService.load(`${provider}_custom_model`, '');
+					}
+					else
+					{
+						settings[`${provider}_model`] = selectElement.value;
+					}
 				}
 				else
 				{

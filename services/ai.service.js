@@ -83,11 +83,19 @@ const AiService = {
 	async complete(apiKey, prompt, model, options, attempt)
 	{
 		const maxRetries = StorageService.load('exponential_retry', 4);
-		const modelName = StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
+		const customModel = StorageService.load(`${model}_custom_model`, '');
+		const modelName = customModel ? customModel : StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
 		let modelConfig = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === modelName);
 		if (!modelConfig && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
 		{
 			modelConfig = CONFIG.API.MODELS.COMPLETION_HIGH_COST[model].options.find(m => m.name === modelName);
+		}
+		if (!modelConfig && modelName)
+		{
+			modelConfig = {
+				name: modelName,
+				custom_model: true
+			};
 		}
 		if (!modelConfig)
 		{
@@ -309,7 +317,7 @@ const AiService = {
 				reqBody.temperature = 0;
 			}
 		}
-		if (!['chutes', 'openrouter', 'perplexity', 'sambanova', 'together'].includes(model) && !modelConfig.reasoning_effort && !modelConfig.responses_api_only && !modelConfig.search_context_size && modelConfig.name !== 'grok-2-1212')
+		if (!['chutes', 'openrouter', 'perplexity', 'sambanova', 'together'].includes(model) && !modelConfig.reasoning_effort && !modelConfig.responses_api_only && !modelConfig.search_context_size && !modelConfig.custom_model && modelConfig.name !== 'grok-2-1212')
 		{
 			reqBody.max_tokens = modelConfig.max_tokens;
 		}
