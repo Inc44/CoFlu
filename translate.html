@@ -8,23 +8,7 @@
 	<title>CoFlu Translator</title>
 	<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><text y='25rem' font-size='480'>📝</text></svg>">
 	<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-	<script>
-		const storedDarkMode = localStorage.getItem('dark_enabled');
-		const isDarkMode = storedDarkMode === 'true' || (storedDarkMode === null && true);
-		document.documentElement.setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
-		const storedWideMode = localStorage.getItem('wide_enabled');
-		const isWideMode = storedWideMode === 'true' || (storedWideMode === null && false);
-		if (isWideMode)
-		{
-			document.documentElement.classList.add('wide');
-		}
-		const storedAccessibilityMode = localStorage.getItem('accessibility_enabled');
-		const isAccessibilityMode = storedAccessibilityMode === 'true' || (storedAccessibilityMode === null && false);
-		if (isAccessibilityMode)
-		{
-			document.documentElement.classList.add('accessibility');
-		}
-	</script>
+	<script src="ui/init.js"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
 	<link href="styles.css" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js" defer></script>
@@ -32,6 +16,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js" defer></script>
 	<script src="services/storage.service.js"></script>
 	<script src="services/util.service.js"></script>
+	<script src="services/prompt.service.js"></script>
 	<script src="services/ai.service.js"></script>
 	<script src="ui/state.js"></script>
 	<script src="translate.js"></script>

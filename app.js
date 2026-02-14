@@ -46,10 +46,6 @@ class App
 			speedDisplay: document.getElementById('speed')
 		};
 	}
-	isSavedCustomOption(option)
-	{
-		return !!(option && option.dataset && option.dataset.customIndex !== undefined);
-	}
 	async init()
 	{
 		await this.initComponents();
@@ -135,55 +131,14 @@ class App
 			this.els.targetText.value = StorageService.load('targetText', '');
 			TextService.updateStats(this.els.targetText, 'target');
 		}
-		this.loadPrompts();
-	}
-	loadPrompts()
-	{
-		if (!this.els.promptSelect) return;
-		const savedPrompts = StorageService.load('prompts', []);
-		this.els.promptSelect.innerHTML = '';
-		CONFIG.UI.STANDARD_PROMPTS.forEach(prompt =>
-		{
-			const option = document.createElement('option');
-			option.value = prompt;
-			option.textContent = prompt;
-			this.els.promptSelect.appendChild(option);
-		});
-		savedPrompts.forEach((prompt, i) =>
-		{
-			const option = document.createElement('option');
-			option.value = prompt;
-			option.textContent = `Custom ${i+1}: ${prompt.substring(0, 30)}...`;
-			option.dataset.customIndex = i;
-			this.els.promptSelect.appendChild(option);
-		});
-		const customOption = document.createElement('option');
-		customOption.value = 'custom';
-		customOption.textContent = 'Custom prompt';
-		this.els.promptSelect.appendChild(customOption);
-		if (this.els.customPromptBox)
-		{
-			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
-			const isSavedCustom = this.isSavedCustomOption(selectedOption);
-			this.els.customPromptBox.style.display = (this.els.promptSelect.value === 'custom' || isSavedCustom) ? 'block' : 'none';
-			if (isSavedCustom && this.els.customPrompt)
-			{
-				this.els.customPrompt.value = this.els.promptSelect.value || '';
-			}
-		}
-		if (this.els.deletePromptBtn)
-		{
-			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
-			const isSavedCustom = this.isSavedCustomOption(selectedOption);
-			this.els.deletePromptBtn.disabled = !isSavedCustom;
-		}
+		PromptService.loadPrompts(this.els, false);
 	}
 	setupEvents()
 	{
 		UIHandlers.setupCompareButton(this.els);
 		UIHandlers.setupSwitchButton(this.els);
 		UIHandlers.setupGenerateButton(this.els, this.state);
-		this.setupPromptEvents();
+		PromptService.setupPromptEvents(this.els, false);
 		this.setupMarkdownEvent();
 		this.setupTranscribeEvent();
 		if (this.els.langSelect)
@@ -191,110 +146,6 @@ class App
 			this.els.langSelect.addEventListener('change', () =>
 			{
 				StorageService.save('selected_language', this.els.langSelect.value);
-			});
-		}
-	}
-	setupPromptEvents()
-	{
-		if (!this.els.promptSelect) return;
-		this.els.promptSelect.addEventListener('change', () =>
-		{
-			const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
-			const isSavedCustom = this.isSavedCustomOption(selectedOption);
-			if (this.els.customPromptBox)
-			{
-				this.els.customPromptBox.style.display = (this.els.promptSelect.value === 'custom' || isSavedCustom) ? 'block' : 'none';
-			}
-			if (this.els.customPrompt)
-			{
-				if (this.els.promptSelect.value === 'custom')
-				{
-					this.els.customPrompt.value = '';
-				}
-				else if (isSavedCustom)
-				{
-					this.els.customPrompt.value = this.els.promptSelect.value;
-				}
-			}
-			if (this.els.deletePromptBtn)
-			{
-				this.els.deletePromptBtn.disabled = !isSavedCustom;
-			}
-		});
-		if (this.els.savePromptBtn)
-		{
-			this.els.savePromptBtn.addEventListener('click', () =>
-			{
-				const text = this.els.customPrompt?.value.trim();
-				if (!text)
-				{
-					alert('Please enter a custom prompt before saving.');
-					return;
-				}
-				const prompts = StorageService.load('prompts', []);
-				const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
-				const idxStr = selectedOption?.dataset?.customIndex;
-				if (idxStr !== undefined)
-				{
-					const idx = parseInt(idxStr, 10);
-					if (!isNaN(idx) && idx >= 0 && idx < prompts.length)
-					{
-						prompts[idx] = text;
-					}
-					else
-					{
-						prompts.push(text);
-					}
-				}
-				else
-				{
-					prompts.push(text);
-				}
-				StorageService.save('prompts', prompts);
-				this.loadPrompts();
-				if (this.els.customPrompt)
-				{
-					this.els.customPrompt.value = '';
-				}
-				if (this.els.promptSelect)
-				{
-					this.els.promptSelect.value = 'custom';
-					this.els.promptSelect.dispatchEvent(new Event('change'));
-				}
-				alert('Custom prompt saved!');
-			});
-		}
-		if (this.els.deletePromptBtn)
-		{
-			this.els.deletePromptBtn.addEventListener('click', () =>
-			{
-				const prompts = StorageService.load('prompts', []);
-				const selectedOption = this.els.promptSelect.options[this.els.promptSelect.selectedIndex];
-				const idxStr = selectedOption?.dataset?.customIndex;
-				if (idxStr === undefined)
-				{
-					alert('Please select a saved custom prompt to delete.');
-					return;
-				}
-				const idx = parseInt(idxStr, 10);
-				if (isNaN(idx) || idx < 0 || idx >= prompts.length)
-				{
-					alert('Invalid custom prompt selection.');
-					return;
-				}
-				prompts.splice(idx, 1);
-				StorageService.save('prompts', prompts);
-				this.loadPrompts();
-				if (this.els.customPrompt)
-				{
-					this.els.customPrompt.value = '';
-				}
-				if (this.els.promptSelect)
-				{
-					this.els.promptSelect.value = 'custom';
-					this.els.promptSelect.dispatchEvent(new Event('change'));
-				}
-				alert('Custom prompt deleted!');
 			});
 		}
 	}
@@ -316,55 +167,13 @@ class App
 	renderMath()
 	{
 		const renderer = StorageService.load('selected_renderer', 'katex');
-		const hasKatex = typeof katex !== 'undefined' && typeof renderMathInElement === 'function';
-		const hasMathJax = typeof MathJax !== 'undefined' && MathJax && typeof MathJax.typesetPromise === 'function';
-		const elements = [
+		[
 			document.getElementById('leftColumn'),
 			document.getElementById('rightColumn'),
 			this.els.printBox,
 			this.els.sourceText,
 			this.els.targetText
-		];
-		elements.forEach(el =>
-		{
-			if (!el) return;
-			if (renderer === 'katex')
-			{
-				if (!hasKatex) return;
-				renderMathInElement(el,
-				{
-					delimiters: [
-					{
-						left: '$$',
-						right: '$$',
-						display: true
-					},
-					{
-						left: '$',
-						right: '$',
-						display: false
-					},
-					{
-						left: '\\\[',
-						right: '\\\]',
-						display: true
-					},
-					{
-						left: '\\\(',
-						right: '\\\)',
-						display: false
-					}],
-					throwOnError: false,
-					trust: true,
-					strict: false
-				});
-			}
-			else if (renderer === 'mathjax4')
-			{
-				if (!hasMathJax) return;
-				MathJax.typesetPromise([el]);
-			}
-		});
+		].forEach(el => MathService.renderMath(el, renderer));
 	}
 	setupTranscribeEvent()
 	{

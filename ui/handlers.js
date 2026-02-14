@@ -140,11 +140,7 @@ const UIHandlers = {
 			}
 			UIState.setGenerating(true, els);
 			state.abortCtrl = new AbortController();
-			const selectedPrompt = els.promptSelect.value;
-			const customPrompt = els.customPrompt.value;
-			const selectedOption = els.promptSelect.options[els.promptSelect.selectedIndex];
-			const isSavedCustom = selectedOption && selectedOption.dataset && selectedOption.dataset.customIndex !== undefined;
-			let prompt = (selectedPrompt === 'custom' || isSavedCustom) ? customPrompt : selectedPrompt;
+			let prompt = PromptService.getCustomPrompt(els);
 			prompt += "\n\n" + els.sourceText.value;
 			if (els.translateToggle.checked)
 			{
