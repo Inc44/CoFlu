@@ -486,6 +486,7 @@ const AiService = {
 		let buffer = '';
 		let accumulatedText = '';
 		let latestCitations = null;
+		const thinkingOutputEnabled = StorageService.load('thinking_output_enabled', false);
 		while (true)
 		{
 			const
@@ -510,7 +511,7 @@ const AiService = {
 						{
 							latestCitations = parsed.citations;
 						}
-						const content = CONFIG.API.CONFIG.COMPLETION[model].extractStreamContent(parsed);
+						const content = CONFIG.API.CONFIG.COMPLETION[model].extractStreamContent(parsed, thinkingOutputEnabled);
 						if (content)
 						{
 							accumulatedText += content;

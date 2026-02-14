@@ -42,6 +42,7 @@ class SettingsApp
 			streamToggle: document.getElementById('streamingToggle'),
 			thinkingBox: document.getElementById('thinkingBudgetContainer'),
 			thinkingNum: document.getElementById('thinkingBudgetNumber'),
+			thinkingOutputToggle: document.getElementById('thinkingOutputToggle'),
 			thinkingRange: document.getElementById('thinkingBudgetRange'),
 			tokensToggle: document.getElementById('tokensToggle'),
 			transcribeLang: document.getElementById('transcribeLanguage'),
@@ -132,6 +133,7 @@ class SettingsApp
 		this.loadCheckbox('receiveImagesToggle', 'receive_images_enabled', false);
 		this.loadCheckbox('searchToggle', 'search_enabled', false);
 		this.loadCheckbox('streamToggle', 'streaming_enabled', true);
+		this.loadCheckbox('thinkingOutputToggle', 'thinking_output_enabled', false);
 		this.loadCheckbox('tokensToggle', 'tokens_enabled', false);
 		this.loadCheckbox('wideToggle', 'wide_enabled', false);
 		this.loadInput('apiKey', CONFIG.API.KEYS[this.els.apiModel.value] || '', this.els.apiModel.value);
@@ -429,6 +431,7 @@ class SettingsApp
 		this.els.searchContextSize?.addEventListener('change', this.handleSearchContextSizeChange.bind(this));
 		this.els.searchToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'searchToggle', 'search_enabled'));
 		this.els.streamToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'streamToggle', 'streaming_enabled'));
+		this.els.thinkingOutputToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'thinkingOutputToggle', 'thinking_output_enabled'));
 		this.els.tokensToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'tokensToggle', 'tokens_enabled'));
 		this.els.transcribeLang?.addEventListener('change', this.handleTranscribeLangChange.bind(this));
 		this.els.transcribeModel?.addEventListener('change', this.handleTranscribeModelChange.bind(this));
@@ -654,6 +657,7 @@ class SettingsApp
 			selected_transcription_api_model: this.els.transcribeModel.value,
 			streaming_enabled: this.els.streamToggle.checked,
 			thinking: parseInt(this.els.thinkingNum.value, 10),
+			thinking_output_enabled: this.els.thinkingOutputToggle.checked,
 			tokens_enabled: this.els.tokensToggle.checked,
 			transcribe_language: this.els.transcribeLang.value,
 			translation_batch_rpm: parseInt(this.els.batchRPM.value, 10),

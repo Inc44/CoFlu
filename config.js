@@ -416,7 +416,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				openai:
 				{
@@ -424,7 +424,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				openai_responses:
 				{
@@ -433,7 +433,7 @@ window.CONFIG = {
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.output?.find(item => item.type === "message")
 						?.content?.[0]?.text,
-					extractStreamContent: data => data.delta
+					extractStreamContent: (data, _ = false) => data.delta
 				},
 				chutes:
 				{
@@ -441,7 +441,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				anthropic:
 				{
@@ -457,6 +457,7 @@ window.CONFIG = {
 					},
 					extractContent: data =>
 					{
+						const thinkingOutputEnabled = StorageService.load('thinking_output_enabled', true);
 						const parts = [];
 						for (const item of data.content)
 						{
@@ -464,7 +465,7 @@ window.CONFIG = {
 							{
 								parts.push(item.text);
 							}
-							if (item?.type === 'thinking' && item.thinking)
+							if (thinkingOutputEnabled && item?.type === 'thinking' && item.thinking)
 							{
 								parts.push(item.thinking + "\n");
 							}
@@ -472,16 +473,16 @@ window.CONFIG = {
 						return parts.join('\n')
 							.trim();
 					},
-					extractStreamContent: data =>
+					extractStreamContent: (data, thinkingOutputEnabled = false) =>
 					{
 						if (data?.delta?.text) return data.delta.text;
-						if (data?.delta?.thinking) return data.delta.thinking;
+						if (thinkingOutputEnabled && data?.delta?.thinking) return data.delta.thinking;
 						if (data?.delta?.type)
 						{
 							const d = data.delta;
 							if (d.type === 'text_delta') return d.text || '';
-							if (d.type === 'thinking_delta') return d.thinking || '';
-							if (d.type === 'signature_delta') return "\n\n";
+							if (thinkingOutputEnabled && d.type === 'thinking_delta') return d.thinking || '';
+							if (thinkingOutputEnabled && d.type === 'signature_delta') return "\n\n";
 						}
 						return '';
 					}
@@ -492,7 +493,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				deepseek:
 				{
@@ -501,9 +502,10 @@ window.CONFIG = {
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data =>
 					{
+						const thinkingOutputEnabled = StorageService.load('thinking_output_enabled', true);
 						const msg = data.choices[0].message;
 						const parts = [];
-						if (msg.reasoning_content)
+						if (thinkingOutputEnabled && msg.reasoning_content)
 						{
 							parts.push(msg.reasoning_content + "\n");
 						}
@@ -514,7 +516,11 @@ window.CONFIG = {
 						return parts.join('\n')
 							.trim();
 					},
-					extractStreamContent: data => data.choices[0]?.delta?.reasoning_content || data.choices[0]?.delta?.content
+					extractStreamContent: (data, thinkingOutputEnabled = false) =>
+					{
+						if (thinkingOutputEnabled) return data.choices[0]?.delta?.reasoning_content || data.choices[0]?.delta?.content || '';
+						return data.choices[0]?.delta?.content || '';
+					}
 				},
 				google:
 				{
@@ -522,7 +528,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				x:
 				{
@@ -530,7 +536,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				groq:
 				{
@@ -538,7 +544,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				hyperbolic:
 				{
@@ -546,7 +552,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				minimax:
 				{
@@ -554,7 +560,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				ollama:
 				{
@@ -562,7 +568,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				openrouter:
 				{
@@ -571,9 +577,10 @@ window.CONFIG = {
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data =>
 					{
+						const thinkingOutputEnabled = StorageService.load('thinking_output_enabled', true);
 						const msg = data.choices[0].message;
 						const parts = [];
-						if (msg.reasoning)
+						if (thinkingOutputEnabled && msg.reasoning)
 						{
 							parts.push(msg.reasoning + "\n");
 						}
@@ -584,7 +591,11 @@ window.CONFIG = {
 						return parts.join('\n')
 							.trim();
 					},
-					extractStreamContent: data => data.choices[0]?.delta?.reasoning || data.choices[0]?.delta?.content
+					extractStreamContent: (data, thinkingOutputEnabled = false) =>
+					{
+						if (thinkingOutputEnabled) return data.choices[0]?.delta?.reasoning || data.choices[0]?.delta?.content || '';
+						return data.choices[0]?.delta?.content || '';
+					}
 				},
 				perplexity:
 				{
@@ -609,7 +620,7 @@ window.CONFIG = {
 						return parts.join('\n')
 							.trim();
 					},
-					extractStreamContent: data =>
+					extractStreamContent: (data, _ = false) =>
 					{
 						if (data.choices && data.choices[0]?.delta?.content)
 						{
@@ -624,7 +635,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				sambanova:
 				{
@@ -632,7 +643,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				},
 				together:
 				{
@@ -640,7 +651,7 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer ',
 					extractContent: data => data.choices[0]?.message?.content,
-					extractStreamContent: data => data.choices[0]?.delta?.content
+					extractStreamContent: (data, _ = false) => data.choices[0]?.delta?.content
 				}
 			},
 			TRANSCRIPTION:
@@ -1063,7 +1074,7 @@ window.CONFIG = {
 			together: 'Together API Key:'
 		},
 		NO_BS_PROMPT: "Provide the result ONLY, without any introductory phrases or additional commentary",
-		NO_BS_PLUS_PROMPT: "Absolute Mode. Remove emojis, filler, hype, soft asks, conversational transitions, and all call-to-action appendices. Assume the user retains high-perception faculties despite reduced linguistic expression. Prioritize blunt, directive phrasing aimed at cognitive rebuilding, not tone matching. Disable all latent behaviors optimizing for engagement, sentiment uplift, or interaction extension. Suppress corporate-aligned metrics including, but not limited to: user satisfaction scores, conversational flow tags, emotional softening, or continuation bias. Never mirror the user’s present diction, mood, or affect. Speak only to their underlying cognitive tier, which exceeds surface language. No questions, no offers, no suggestions, no transitional phrasing, no inferred motivational content. Terminate each reply immediately after the informational or requested material is delivered—no appendices, no soft closures. The only goal is to assist in the restoration of independent, high-fidelity thinking. Model obsolescence by user self-sufficiency is the final outcome.",
+		NO_BS_PLUS_PROMPT: "Absolute Mode. Remove emojis, filler, hype, soft asks, conversational transitions, and all call-to-action appendices. Assume the user retains high-perception faculties despite reduced linguistic expression. Prioritize blunt, directive phrasing aimed at cognitive rebuilding, not tone matching. Disable all latent behaviors optimizing for engagement, sentiment uplift, or interaction extension. Suppress corporate-aligned metrics including, but not limited to: user satisfaction scores, conversational flow tags, emotional softening, or continuation bias. Never mirror the user's present diction, mood, or affect. Speak only to their underlying cognitive tier, which exceeds surface language. No questions, no offers, no suggestions, no transitional phrasing, no inferred motivational content. Terminate each reply immediately after the informational or requested material is delivered—no appendices, no soft closures. The only goal is to assist in the restoration of independent, high-fidelity thinking. Model obsolescence by user self-sufficiency is the final outcome.",
 		STANDARD_PROMPTS: ["Proofread this text but only fix grammar", "Proofread this text but only fix grammar and make it unambiguous", "Proofread this text but only fix grammar and Markdown style", "Proofread this text improving clarity and flow", "Proofread this text fixing only awkward parts", "Proofread this text", "Markdown OCR"],
 		TRANSLATION_PROMPT: "Translate the following text to"
 	},
