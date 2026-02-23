@@ -152,12 +152,6 @@ textarea
 	margin-right: 0.5rem;
 }
 
-.btn-sm
-{
-	margin-top: 0.1rem;
-	margin-bottom: 0.1rem;
-}
-
 #clearSource,
 #clearTarget,
 #cleanChat,
@@ -478,7 +472,7 @@ textarea
 {
 	display: flex;
 	flex-direction: column;
-	gap: 0.0625rem;
+	gap: 0.25rem;
 }
 
 .editor-clear

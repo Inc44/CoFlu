@@ -87,7 +87,7 @@
 		<div class="row">
 			<div class="col-md-6">
 				<div class="card">
-					<div class="card-header">
+					<div class="card-header d-flex flex-wrap gap-1">
 						<div class="upload-file">
 							<label for="loadSource" class="btn btn-sm input-file-label">Upload File</label>
 							<input type="file" id="loadSource" accept=".epub,.txt,.html,.htm,.css,.xml,.json" class="input-file" multiple>
@@ -112,7 +112,7 @@
 			</div>
 			<div class="col-md-6">
 				<div class="card">
-					<div class="card-header">
+					<div class="card-header d-flex flex-wrap gap-1">
 						<div class="upload-file">
 							<label for="loadTarget" class="btn btn-sm input-file-label">Upload File</label>
 							<input type="file" id="loadTarget" accept=".epub,.txt,.html,.htm,.css,.xml,.json" class="input-file" multiple>
@@ -182,8 +182,10 @@
 						<div class="mt-3" id="customPromptContainer">
 							<label for="customPrompt" class="form-label">Custom Prompt:</label>
 							<input type="text" class="form-control" id="customPrompt" placeholder="Type / Paste Custom Prompt">
-							<button class="btn btn-sm mt-3" id="savePrompt">Save Prompt</button>
-							<button class="btn btn-sm mt-3" id="deletePrompt">Delete Prompt</button>
+							<div class="d-flex flex-wrap gap-1 mt-3">
+								<button class="btn btn-sm" id="savePrompt">Save Prompt</button>
+								<button class="btn btn-sm" id="deletePrompt">Delete Prompt</button>
+							</div>
 						</div>
 					</div>
 				</div>
