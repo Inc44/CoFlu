@@ -102,7 +102,20 @@ const TextService = {
 		},
 		html(text)
 		{
-			return text.replace(/&nbsp;/g, ' ');
+			const parser = document.createElement('div');
+			parser.innerHTML = text;
+			return parser.textContent;
+		},
+		url(text)
+		{
+			try
+			{
+				return decodeURIComponent(text);
+			}
+			catch (e)
+			{
+				return text;
+			}
 		},
 		escape(text)
 		{

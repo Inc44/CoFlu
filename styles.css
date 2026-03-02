@@ -201,6 +201,8 @@ textarea
 #latexTarget,
 #htmlSource,
 #htmlTarget,
+#urlSource,
+#urlTarget,
 #generateAll
 {
 	background-color: var(--cyan);

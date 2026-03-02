@@ -21,7 +21,8 @@ const UIHandlers = {
 				unspace: () => this.transform(textArea, type, TextService.transform.unspace),
 				retab: () => this.transform(textArea, type, TextService.format.retab),
 				latex: () => this.transform(textArea, type, TextService.format.latex),
-				html: () => this.transform(textArea, type, TextService.format.html)
+				html: () => this.transform(textArea, type, TextService.format.html),
+				url: () => this.transform(textArea, type, TextService.format.url)
 			};
 			Object.entries(actions)
 				.forEach(([id, action]) =>
