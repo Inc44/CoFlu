@@ -485,9 +485,9 @@ textarea
 
 .btn-list
 {
-	border-radius: 0.25rem;
+	border-radius: 0.5rem;
 	border: 0.125rem dashed var(--bs-border-color);
-	min-height: 3rem;
+	min-height: 3.1875rem;
 	padding: 0.5rem;
 }
 

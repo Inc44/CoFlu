@@ -22,6 +22,7 @@ class SettingsApp
 			exportBtn: document.getElementById('exportSettings'),
 			externalModelsToggle: document.getElementById('externalModelsToggle'),
 			googleCompatToggle: document.getElementById('googleCompatToggle'),
+			hiddenButtonsList: document.getElementById('hiddenButtonsList'),
 			highCostToggle: document.getElementById('highCostToggle'),
 			importBtn: document.getElementById('importSettings'),
 			langSelect: document.getElementById('language'),
@@ -47,6 +48,7 @@ class SettingsApp
 			tokensToggle: document.getElementById('tokensToggle'),
 			transcribeLang: document.getElementById('transcribeLanguage'),
 			transcribeModel: document.getElementById('transcriptionApiModel'),
+			visibleButtonsList: document.getElementById('visibleButtonsList'),
 			wideToggle: document.getElementById('wideToggle'),
 			whisperBoxes:
 			{
@@ -104,11 +106,12 @@ class SettingsApp
 	{
 		await window.CONFIG.API.MODELS.LOADED;
 		this.loadSettings();
+		this.setupDragAndDrop();
 		this.setupEvents();
-		this.updateModelVisibility(this.els.apiModel.value);
-		this.updateTranscribeModelVisibility(this.els.transcribeModel.value);
-		this.updateThemeAndLayout();
 		this.syncThinkingInputs();
+		this.updateModelVisibility(this.els.apiModel.value);
+		this.updateThemeAndLayout();
+		this.updateTranscribeModelVisibility(this.els.transcribeModel.value);
 	}
 	updateThemeAndLayout()
 	{
@@ -145,6 +148,7 @@ class SettingsApp
 		this.loadSelect('apiModel', 'selected_api_model', 'openai');
 		this.loadSelect('rendererSelect', 'selected_renderer', 'katex');
 		this.loadSelect('transcribeModel', 'selected_transcription_api_model', 'groq');
+		this.loadButtonsList();
 		this.loadModelOptions();
 		this.loadWhisperOptions();
 		this.updateModelVisibility(this.els.apiModel.value);
@@ -152,6 +156,72 @@ class SettingsApp
 		this.updateApiKeyLabel(this.els.apiModel.value);
 		this.displaySettings();
 		this.syncThinkingInputs();
+	}
+	loadButtonsList()
+	{
+		const defaultButtonsIds = CONFIG.UI.BUTTONS.map(btn => btn.id);
+		const visibleButtonsIds = StorageService.load('button_visibility', defaultButtonsIds);
+		const visibleButtons = [];
+		const hiddenButtons = [];
+		CONFIG.UI.BUTTONS.forEach(btn =>
+		{
+			if (visibleButtonsIds.includes(btn.id))
+			{
+				visibleButtons.push(btn);
+			}
+			else
+			{
+				hiddenButtons.push(btn);
+			}
+		});
+		this.renderButtonsList(this.els.visibleButtonsList, visibleButtons);
+		this.renderButtonsList(this.els.hiddenButtonsList, hiddenButtons);
+	}
+	renderButtonsList(container, buttons)
+	{
+		if (!container) return;
+		buttons.forEach(btn =>
+		{
+			const button = document.createElement('button');
+			button.className = `btn btn-sm ${btn.colorClass}`;
+			button.dataset.id = btn.id;
+			button.dataset.order = btn.order;
+			button.draggable = true;
+			button.textContent = btn.label;
+			button.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', btn.id));
+			container.appendChild(button);
+		});
+	}
+	setupDragAndDrop()
+	{
+		[this.els.visibleButtonsList, this.els.hiddenButtonsList].forEach(container =>
+		{
+			if (!container) return;
+			container.addEventListener('dragover', (event) => event.preventDefault());
+			container.addEventListener('drop', (event) =>
+			{
+				event.preventDefault();
+				const id = event.dataTransfer.getData('text/plain');
+				const button = document.querySelector(`[data-id="${id}"]`);
+				container.appendChild(button);
+				this.sortButtonsList(container);
+				this.saveButtonVisibility();
+			});
+		});
+	}
+	sortButtonsList(container)
+	{
+		const buttons = Array.from(container.children);
+		buttons.sort((current, next) => current.dataset.order - next.dataset.order);
+		buttons.forEach(btn => container.appendChild(btn));
+	}
+	saveButtonVisibility()
+	{
+		const container = this.els.visibleButtonsList;
+		if (!container) return;
+		const buttons = Array.from(container.children);
+		const visibleButtonsIds = buttons.map(btn => btn.dataset.id);
+		StorageService.save('button_visibility', visibleButtonsIds);
 	}
 	loadSelect(elemKey, storeKey, defValue)
 	{
@@ -638,6 +708,7 @@ class SettingsApp
 		const settings = {
 			accessibility_enabled: this.els.accessibilityToggle.checked,
 			auto_split_enabled: this.els.autoSplitToggle.checked,
+			button_visibility: StorageService.load('button_visibility', CONFIG.UI.BUTTONS.map(btn => btn.id)),
 			cleanup_enabled: this.els.cleanupToggle.checked,
 			dark_enabled: this.els.darkToggle.checked,
 			download_optimized_enabled: this.els.downloadOptimizedToggle.checked,
