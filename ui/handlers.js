@@ -1,4 +1,44 @@
 const UIHandlers = {
+	setupButtonsContainers()
+	{
+		const defaultButtonsIds = CONFIG.UI.BUTTONS.map(btn => btn.id);
+		const visibleButtonsIds = StorageService.load('button_visibility', defaultButtonsIds);
+		const visibleButtons = CONFIG.UI.BUTTONS.filter(btn => visibleButtonsIds.includes(btn.id));
+		['source', 'target'].forEach(type =>
+		{
+			const container = document.getElementById(`${type}ButtonsContainer`);
+			if (!container) return;
+			visibleButtons.forEach(btn =>
+			{
+				if (btn.id === 'load')
+				{
+					const div = document.createElement('div');
+					div.className = 'upload-file';
+					const label = document.createElement('label');
+					label.htmlFor = `load${this.cap(type)}`;
+					label.className = `btn btn-sm ${btn.colorClass} input-file-label`;
+					label.textContent = btn.label;
+					const input = document.createElement('input');
+					input.type = 'file';
+					input.id = `load${this.cap(type)}`;
+					input.accept = '.epub,.txt,.html,.htm,.css,.xml,.json';
+					input.className = 'input-file';
+					input.multiple = true;
+					div.appendChild(label);
+					div.appendChild(input);
+					container.appendChild(div);
+				}
+				else
+				{
+					const button = document.createElement('button');
+					button.className = `btn btn-sm ${btn.colorClass}`;
+					button.id = `${btn.id}${this.cap(type)}`;
+					button.textContent = btn.label;
+					container.appendChild(button);
+				}
+			});
+		});
+	},
 	setupTextAreaHandlers(els)
 	{
 		['source', 'target'].forEach(type =>

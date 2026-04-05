@@ -87,24 +87,7 @@
 		<div class="row">
 			<div class="col-md-6">
 				<div class="card">
-					<div class="card-header d-flex flex-wrap gap-1">
-						<div class="upload-file">
-							<label for="loadSource" class="btn btn-sm input-file-label">Upload File</label>
-							<input type="file" id="loadSource" accept=".epub,.txt,.html,.htm,.css,.xml,.json" class="input-file" multiple>
-						</div>
-						<button class="btn btn-sm" id="clearSource">Clear</button>
-						<button class="btn btn-sm" id="copySource">Copy</button>
-						<button class="btn btn-sm" id="uppercaseSource">UPPERCASE</button>
-						<button class="btn btn-sm" id="lowercaseSource">lowercase</button>
-						<button class="btn btn-sm" id="dedupeSource">Dedupe</button>
-						<button class="btn btn-sm" id="sortSource">Sort</button>
-						<button class="btn btn-sm" id="unboldSource">Unbold</button>
-						<button class="btn btn-sm" id="unspaceSource">Unspace</button>
-						<button class="btn btn-sm" id="retabSource">Retab</button>
-						<button class="btn btn-sm" id="latexSource">LaTeX</button>
-						<button class="btn btn-sm" id="htmlSource">HTML</button>
-						<button class="btn btn-sm" id="urlSource">URL</button>
-					</div>
+					<div class="card-header d-flex flex-wrap gap-1" id="sourceButtonsContainer"></div>
 					<div class="card-body"><span id="sourceWordsLabel">Words</span>: <span id="sourceWords">0</span>, Characters: <span id="sourceChars">0</span>
 						<p></p>
 						<textarea id="sourceText" class="form-control" rows="10" placeholder="Type / Paste Source Text"></textarea>
@@ -113,24 +96,7 @@
 			</div>
 			<div class="col-md-6">
 				<div class="card">
-					<div class="card-header d-flex flex-wrap gap-1">
-						<div class="upload-file">
-							<label for="loadTarget" class="btn btn-sm input-file-label">Upload File</label>
-							<input type="file" id="loadTarget" accept=".epub,.txt,.html,.htm,.css,.xml,.json" class="input-file" multiple>
-						</div>
-						<button class="btn btn-sm" id="clearTarget">Clear</button>
-						<button class="btn btn-sm" id="copyTarget">Copy</button>
-						<button class="btn btn-sm" id="uppercaseTarget">UPPERCASE</button>
-						<button class="btn btn-sm" id="lowercaseTarget">lowercase</button>
-						<button class="btn btn-sm" id="dedupeTarget">Dedupe</button>
-						<button class="btn btn-sm" id="sortTarget">Sort</button>
-						<button class="btn btn-sm" id="unboldTarget">Unbold</button>
-						<button class="btn btn-sm" id="unspaceTarget">Unspace</button>
-						<button class="btn btn-sm" id="retabTarget">Retab</button>
-						<button class="btn btn-sm" id="latexTarget">LaTeX</button>
-						<button class="btn btn-sm" id="htmlTarget">HTML</button>
-						<button class="btn btn-sm" id="urlTarget">URL</button>
-					</div>
+					<div class="card-header d-flex flex-wrap gap-1" id="targetButtonsContainer"></div>
 					<div class="card-body"><span id="targetWordsLabel">Words</span>: <span id="targetWords">0</span>, Characters: <span id="targetChars">0</span>
 						<span id="speed-container" style="display: none;">, <span id="speedLabel">WPM</span>: <span id="speed">0</span>
 						</span>
@@ -366,6 +332,9 @@
 			</div>
 		</div>
 	</div>
+	<script>
+		UIHandlers.setupButtonsContainers();
+	</script>
 </body>
 
 </html>

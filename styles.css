@@ -152,15 +152,15 @@ textarea
 	margin-right: 0.5rem;
 }
 
-#clearSource,
-#clearTarget,
 #cleanChat,
 #deletePrompt,
 #clearAll,
+.btn-red,
+.btn-red:hover,
 .delete-button,
 .delete-button:hover
 {
-	background-color: var(--red);
+	background-color: var(--red) !important;
 	color: white;
 }
 
@@ -177,71 +177,59 @@ textarea
 	color: white;
 }
 
-#copySource,
-#copyTarget,
 #compareBtn,
 #downloadTranslated,
 #exportSettings,
 #downloadEdited,
+.btn-green,
+.btn-green:hover,
 .copy-button,
 .copy-button:hover
 {
-	background-color: var(--green);
+	background-color: var(--green) !important;
 	color: white;
 }
 
 #generateTarget,
-#unboldSource,
-#unboldTarget,
-#unspaceSource,
-#unspaceTarget,
-#retabSource,
-#retabTarget,
-#latexSource,
-#latexTarget,
-#htmlSource,
-#htmlTarget,
-#urlSource,
-#urlTarget,
-#generateAll
+#generateAll,
+.btn-cyan,
+.btn-cyan:hover
 {
-	background-color: var(--cyan);
+	background-color: var(--cyan) !important;
 	color: white;
 }
 
 #savePrompt,
-#dedupeSource,
-#dedupeTarget,
-#sortSource,
-#sortTarget,
 #transcribeBtn,
 #translateBtn,
 #saveSettings,
-#sendMessage
+#sendMessage,
+.btn-blue,
+.btn-blue:hover
 {
-	background-color: var(--blue);
+	background-color: var(--blue) !important;
 	color: white;
 }
 
 #downloadOptimized,
-#uppercaseSource,
-#uppercaseTarget,
-#lowercaseSource,
-#lowercaseTarget,
-.assistant-message
+.assistant-message,
+.btn-indigo,
+.btn-indigo:hover
 {
-	background-color: var(--indigo);
+	background-color: var(--indigo) !important;
 	color: white;
 }
 
 #renderMarkdownBtn,
 #importSettings,
 #editorBtn,
+.btn-purple,
+.btn-purple:hover,
 .input-file-label,
 .progress-bar,
 .user-message
 {
-	background-color: var(--purple);
+	background-color: var(--purple) !important;
 	color: white;
 }
 

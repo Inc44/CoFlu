@@ -1073,6 +1073,85 @@ window.CONFIG = {
 			sambanova: 'SambaNova API Key:',
 			together: 'Together API Key:'
 		},
+		BUTTONS: [
+		{
+			id: 'load',
+			label: 'Upload File',
+			colorClass: 'btn-purple',
+			order: 1
+		},
+		{
+			id: 'clear',
+			label: 'Clear',
+			colorClass: 'btn-red',
+			order: 2
+		},
+		{
+			id: 'copy',
+			label: 'Copy',
+			colorClass: 'btn-green',
+			order: 3
+		},
+		{
+			id: 'uppercase',
+			label: 'UPPERCASE',
+			colorClass: 'btn-indigo',
+			order: 4
+		},
+		{
+			id: 'lowercase',
+			label: 'lowercase',
+			colorClass: 'btn-indigo',
+			order: 5
+		},
+		{
+			id: 'dedupe',
+			label: 'Dedupe',
+			colorClass: 'btn-blue',
+			order: 6
+		},
+		{
+			id: 'sort',
+			label: 'Sort',
+			colorClass: 'btn-blue',
+			order: 7
+		},
+		{
+			id: 'unbold',
+			label: 'Unbold',
+			colorClass: 'btn-cyan',
+			order: 8
+		},
+		{
+			id: 'unspace',
+			label: 'Unspace',
+			colorClass: 'btn-cyan',
+			order: 9
+		},
+		{
+			id: 'retab',
+			label: 'Retab',
+			colorClass: 'btn-cyan',
+			order: 10
+		},
+		{
+			id: 'latex',
+			label: 'LaTeX',
+			colorClass: 'btn-cyan',
+			order: 11
+		},
+		{
+			id: 'html',
+			label: 'HTML',
+			colorClass: 'btn-cyan',
+			order: 12
+		},
+		{
+			id: 'url',
+			label: 'URL',
+			colorClass: 'btn-cyan',
+			order: 13
+		}],
 		NO_BS_PROMPT: "Provide the result ONLY, without any introductory phrases or additional commentary",
 		NO_BS_PLUS_PROMPT: "Absolute Mode. Remove emojis, filler, hype, soft asks, conversational transitions, and all call-to-action appendices. Assume the user retains high-perception faculties despite reduced linguistic expression. Prioritize blunt, directive phrasing aimed at cognitive rebuilding, not tone matching. Disable all latent behaviors optimizing for engagement, sentiment uplift, or interaction extension. Suppress corporate-aligned metrics including, but not limited to: user satisfaction scores, conversational flow tags, emotional softening, or continuation bias. Never mirror the user's present diction, mood, or affect. Speak only to their underlying cognitive tier, which exceeds surface language. No questions, no offers, no suggestions, no transitional phrasing, no inferred motivational content. Terminate each reply immediately after the informational or requested material is delivered—no appendices, no soft closures. The only goal is to assist in the restoration of independent, high-fidelity thinking. Model obsolescence by user self-sufficiency is the final outcome.",
 		STANDARD_PROMPTS: ["Proofread this text but only fix grammar", "Proofread this text but only fix grammar and make it unambiguous", "Proofread this text but only fix grammar and Markdown style", "Proofread this text improving clarity and flow", "Proofread this text fixing only awkward parts", "Proofread this text", "Markdown OCR"],
