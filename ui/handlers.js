@@ -69,6 +69,7 @@ const UIHandlers = {
 					TextService.updateStats(els[`${type}Text`], type);
 					StorageService.save(`${type}Text`, content);
 				}
+				e.target.value = '';
 			});
 		});
 	},
