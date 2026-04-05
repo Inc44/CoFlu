@@ -143,7 +143,7 @@ class TranslateApp
 	}
 	setTranslateButtonState(isTranslating)
 	{
-		this.els.translateBtn.style.backgroundColor = isTranslating ? 'var(--red)' : '';
+		this.els.translateBtn.style.backgroundColor = isTranslating ? 'var(--red) !important' : '';
 		this.els.translateBtn.textContent = isTranslating ? 'Stop Translation' : 'Start Translation';
 		this.els.translateBtn.dataset.translating = isTranslating;
 		this.state.isTranslating = isTranslating;
@@ -722,7 +722,7 @@ class TranslateApp
 	setEditorState(isEditorActive)
 	{
 		this.els.editorSection.style.display = isEditorActive ? '' : 'none';
-		this.els.editorBtn.style.backgroundColor = isEditorActive ? 'var(--red)' : '';
+		this.els.editorBtn.style.backgroundColor = isEditorActive ? 'var(--red) !important' : '';
 		this.els.editorBtn.textContent = isEditorActive ? 'Close Editor' : 'Open Editor';
 		this.state.isEditorActive = isEditorActive;
 	}
@@ -783,7 +783,7 @@ class TranslateApp
 	}
 	setGenerateAllButtonState(isGeneratingAll)
 	{
-		this.els.generateAll.style.backgroundColor = isGeneratingAll ? 'var(--red)' : '';
+		this.els.generateAll.style.backgroundColor = isGeneratingAll ? 'var(--red) !important' : '';
 		this.els.generateAll.textContent = isGeneratingAll ? 'Stop Generating All' : 'Generate All';
 		this.els.generateAll.dataset.generatingAll = isGeneratingAll;
 		this.state.isGeneratingAll = isGeneratingAll;
