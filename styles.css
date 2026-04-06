@@ -483,12 +483,28 @@ textarea
 	color: white !important;
 }
 
+#sourceButtonsContainer:empty,
+#targetButtonsContainer:empty
+{
+	display: none !important;
+}
+
 .btn-list
 {
 	border-radius: 0.5rem;
 	border: 0.125rem dashed var(--bs-border-color);
 	min-height: 3.1875rem;
 	padding: 0.5rem;
+}
+
+.btn-list button
+{
+	cursor: grab;
+}
+
+.btn-list button:active
+{
+	cursor: grabbing;
 }
 
 .btn-list-item
