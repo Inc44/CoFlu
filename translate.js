@@ -76,7 +76,7 @@ class TranslateApp
 		const targetLang = this.els.langSelect.value;
 		const customPrompt = PromptService.getCustomPrompt(this.els);
 		let prompt = customPrompt ? `${customPrompt}\n\n` : '';
-		prompt += `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n${origText}`;
+		prompt += `${CONFIG.UI.TRANSLATION_PROMPT} ${targetLang}. ${CONFIG.UI.NO_BS_PROMPT}.\n\n<text>\n${origText}\n</text>`;
 		return prompt;
 	}
 	setupEvents()

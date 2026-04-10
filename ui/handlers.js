@@ -183,7 +183,7 @@ const UIHandlers = {
 			UIState.setGenerating(true, els);
 			state.abortCtrl = new AbortController();
 			let prompt = PromptService.getCustomPrompt(els);
-			prompt += "\n\n" + els.sourceText.value;
+			prompt += "\n\n<text>\n" + els.sourceText.value + "\n</text>";
 			if (els.translateToggle.checked)
 			{
 				const targetLang = els.langSelect.value;
