@@ -159,7 +159,8 @@ class SettingsApp
 	}
 	loadButtonsList()
 	{
-		const defaultButtonsIds = CONFIG.UI.BUTTONS.map(btn => btn.id);
+		const defaultButtonsIds = CONFIG.UI.BUTTONS.filter(btn => !btn.defaultHidden)
+			.map(btn => btn.id);
 		const visibleButtonsIds = StorageService.load('button_visibility', defaultButtonsIds);
 		const visibleButtons = [];
 		const hiddenButtons = [];
@@ -708,7 +709,8 @@ class SettingsApp
 		const settings = {
 			accessibility_enabled: this.els.accessibilityToggle.checked,
 			auto_split_enabled: this.els.autoSplitToggle.checked,
-			button_visibility: StorageService.load('button_visibility', CONFIG.UI.BUTTONS.map(btn => btn.id)),
+			button_visibility: StorageService.load('button_visibility', CONFIG.UI.BUTTONS.filter(btn => !btn.defaultHidden)
+				.map(btn => btn.id)),
 			cleanup_enabled: this.els.cleanupToggle.checked,
 			dark_enabled: this.els.darkToggle.checked,
 			download_optimized_enabled: this.els.downloadOptimizedToggle.checked,

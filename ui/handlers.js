@@ -1,7 +1,8 @@
 const UIHandlers = {
 	setupButtonsContainers()
 	{
-		const defaultButtonsIds = CONFIG.UI.BUTTONS.map(btn => btn.id);
+		const defaultButtonsIds = CONFIG.UI.BUTTONS.filter(btn => !btn.defaultHidden)
+			.map(btn => btn.id);
 		const visibleButtonsIds = StorageService.load('button_visibility', defaultButtonsIds);
 		const visibleButtons = CONFIG.UI.BUTTONS.filter(btn => visibleButtonsIds.includes(btn.id));
 		['source', 'target'].forEach(type =>

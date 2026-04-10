@@ -170,10 +170,12 @@ textarea
 }
 
 #switchBtn,
+.btn-orange,
+.btn-orange:hover,
 .edit-button,
 .edit-button:hover
 {
-	background-color: var(--orange);
+	background-color: var(--orange) !important;
 	color: white;
 }
 
