@@ -39,7 +39,16 @@
 			const tokensEnabled = localStorage.getItem('tokens_enabled') === 'true';
 			if (tokensEnabled)
 			{
-				load('https://cdn.jsdelivr.net/npm/gpt-tokenizer/dist/o200k_base.min.js');
+				load('https://cdn.jsdelivr.net/npm/gpt-tokenizer/dist/o200k_base.min.js', function()
+				{
+					if (typeof TextService !== 'undefined')
+					{
+						const sourceText = document.getElementById('sourceText');
+						const targetText = document.getElementById('targetText');
+						if (sourceText) TextService.updateStats(sourceText, 'source');
+						if (targetText) TextService.updateStats(targetText, 'target');
+					}
+				});
 			}
 		})();
 	</script>
