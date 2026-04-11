@@ -184,6 +184,7 @@ class SettingsApp
 	renderButtonsList(container, buttons)
 	{
 		if (!container) return;
+		container.innerHTML = '';
 		buttons.forEach(btn =>
 		{
 			const button = document.createElement('button');
