@@ -270,7 +270,7 @@ const UIHandlers = {
 				}
 				else
 				{
-					await generateText(state.abortCtrl);
+					await generateText(state);
 				}
 			}
 			finally
