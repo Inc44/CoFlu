@@ -152,9 +152,6 @@ textarea
 	margin-right: 0.5rem;
 }
 
-#cleanChat,
-#deletePrompt,
-#clearAll,
 .btn-red,
 .btn-red:hover,
 .delete-button,
@@ -164,13 +161,12 @@ textarea
 	color: white;
 }
 
-#deletePrompt:disabled
+.btn-red:disabled
 {
 	border-color: var(--red);
 }
 
-#generateTarget.iterate,
-#switchBtn,
+.btn-cyan.iterate,
 .btn-orange,
 .btn-orange:hover,
 .edit-button,
@@ -180,10 +176,6 @@ textarea
 	color: white;
 }
 
-#compareBtn,
-#downloadTranslated,
-#exportSettings,
-#downloadEdited,
 .btn-green,
 .btn-green:hover,
 .copy-button,
@@ -193,8 +185,6 @@ textarea
 	color: white;
 }
 
-#generateTarget,
-#generateAll,
 .btn-cyan,
 .btn-cyan:hover
 {
@@ -202,11 +192,6 @@ textarea
 	color: white;
 }
 
-#savePrompt,
-#transcribeBtn,
-#translateBtn,
-#saveSettings,
-#sendMessage,
 .btn-blue,
 .btn-blue:hover
 {
@@ -214,7 +199,6 @@ textarea
 	color: white;
 }
 
-#downloadOptimized,
 .assistant-message,
 .btn-indigo,
 .btn-indigo:hover
@@ -223,9 +207,6 @@ textarea
 	color: white;
 }
 
-#renderMarkdownBtn,
-#importSettings,
-#editorBtn,
 .btn-purple,
 .btn-purple:hover,
 .input-file-label,

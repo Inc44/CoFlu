@@ -81,8 +81,8 @@
 							<label for="customPrompt" class="form-label">Custom Prompt:</label>
 							<input type="text" class="form-control" id="customPrompt" placeholder="Type / Paste Custom Prompt">
 							<div class="d-flex flex-wrap gap-1 mt-3">
-								<button class="btn btn-sm" id="savePrompt">Save Prompt</button>
-								<button class="btn btn-sm" id="deletePrompt">Delete Prompt</button>
+								<button class="btn btn-sm btn-blue" id="savePrompt">Save Prompt</button>
+								<button class="btn btn-sm btn-red" id="deletePrompt">Delete Prompt</button>
 							</div>
 						</div>
 					</div>
@@ -120,15 +120,15 @@
 							<input type="file" id="documentFile" class="form-control" accept=".docx">
 						</div>
 						<div class="d-flex flex-wrap gap-1 mt-3">
-							<button class="btn btn-sm" id="translateBtn" title="Generates missing translations without saving, uses existing ones, downloads">Start Translation</button>
-							<button class="btn btn-sm" id="editorBtn">Open Editor</button>
+							<button class="btn btn-sm btn-blue" id="translateBtn" title="Generates missing translations without saving, uses existing ones, downloads">Start Translation</button>
+							<button class="btn btn-sm btn-purple" id="editorBtn">Open Editor</button>
 						</div>
 						<div class="progress mt-3" style="display: none;" id="translateProgress">
 							<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
 						</div>
 						<div class="d-flex flex-wrap gap-1 mt-3">
-							<button class="btn btn-sm" id="downloadOptimized" style="display: none;">Download Optimized</button>
-							<button class="btn btn-sm" id="downloadTranslated" style="display: none;">Download Translation</button>
+							<button class="btn btn-sm btn-indigo" id="downloadOptimized" style="display: none;">Download Optimized</button>
+							<button class="btn btn-sm btn-green" id="downloadTranslated" style="display: none;">Download Translation</button>
 						</div>
 					</div>
 				</div>
@@ -140,9 +140,9 @@
 					<div class="card-body">
 						<h5>Editor</h5>
 						<div class="d-flex flex-wrap gap-1 mb-3">
-							<button class="btn btn-sm" id="generateAll" title="Generates missing translations">Generate All</button>
-							<button class="btn btn-sm" id="clearAll">Clear All</button>
-							<button class="btn btn-sm" id="downloadEdited">Download Translation</button>
+							<button class="btn btn-sm btn-cyan" id="generateAll" title="Generates missing translations">Generate All</button>
+							<button class="btn btn-sm btn-red" id="clearAll">Clear All</button>
+							<button class="btn btn-sm btn-green" id="downloadEdited">Download Translation</button>
 						</div>
 						<div class="progress mb-3" style="display: none;" id="editorProgress">
 							<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
