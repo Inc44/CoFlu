@@ -142,12 +142,22 @@ const UIHandlers = {
 	{
 		els.switchBtn.addEventListener('click', () =>
 		{
-			[els.sourceText.value, els.targetText.value] = [els.targetText.value, els.sourceText.value];
-			TextService.updateStats(els.sourceText, 'source');
-			TextService.updateStats(els.targetText, 'target');
-			StorageService.save('sourceText', els.sourceText.value);
-			StorageService.save('targetText', els.targetText.value);
+			this.switchText(els);
 		});
+	},
+	switchText(els)
+	{
+		[els.sourceText.value, els.targetText.value] = [els.targetText.value, els.sourceText.value];
+		TextService.updateStats(els.sourceText, 'source');
+		TextService.updateStats(els.targetText, 'target');
+		StorageService.save('sourceText', els.sourceText.value);
+		StorageService.save('targetText', els.targetText.value);
+	},
+	isConverged(sourceText, targetText, previousText)
+	{
+		if (sourceText === targetText) return true;
+		if (targetText === previousText) return true;
+		return false;
 	},
 	calcSpeed(text, secs)
 	{
@@ -164,25 +174,17 @@ const UIHandlers = {
 	setupGenerateButton(els, state)
 	{
 		let startTime = null;
-		els.genTargetBtn.addEventListener('click', async () =>
+		const generateText = async (state) =>
 		{
-			if (els.genTargetBtn.dataset.generating === 'true')
-			{
-				state.abortCtrl?.abort();
-				UIState.setGenerating(false, els);
-				state.abortCtrl = null;
-				return;
-			}
 			const provider = StorageService.load('selected_api_model', 'openai');
 			const details = UtilService.getDetails(provider);
 			const audios = details && details.audio ? Object.values(state.audioUploader.getAudios()) : [];
 			if (provider === 'openai' && details && details.modality === 'audio' && audios.length === 0)
 			{
 				alert('Selected OpenAI audio model requires audio input. Attach at least one audio file.');
-				return;
+				state.abortCtrl.abort();
+				return false;
 			}
-			UIState.setGenerating(true, els);
-			state.abortCtrl = new AbortController();
 			let prompt = PromptService.getCustomPrompt(els);
 			prompt += "\n\n<text>\n" + els.sourceText.value + "\n</text>";
 			if (els.translateToggle.checked)
@@ -198,7 +200,11 @@ const UIHandlers = {
 			{
 				prompt = `${CONFIG.UI.NO_BS_PLUS_PROMPT}.\n\n${prompt}`;
 			}
-			if (!prompt.trim()) return;
+			if (!prompt.trim())
+			{
+				state.abortCtrl.abort();
+				return false;
+			}
 			const files = details && details.file ? state.fileUploader.getFiles() :
 			{};
 			const images = details && details.image ? Object.values(state.imageUploader.getImages()) : [];
@@ -232,9 +238,45 @@ const UIHandlers = {
 				TextService.updateStats(els.targetText, 'target');
 				StorageService.save('targetText', els.targetText.value);
 			}
-			UIState.setGenerating(false, els);
-			state.abortCtrl = null;
-			startTime = null;
+			return true;
+		};
+		els.genTargetBtn.addEventListener('click', async () =>
+		{
+			if (els.genTargetBtn.dataset.generating === 'true')
+			{
+				state.abortCtrl?.abort();
+				UIState.setGenerating(false, els, state.iterate);
+				state.abortCtrl = null;
+				return;
+			}
+			UIState.setGenerating(true, els, state.iterate);
+			state.abortCtrl = new AbortController();
+			try
+			{
+				if (state.iterate)
+				{
+					let previousText = '';
+					while (!state.abortCtrl.signal.aborted)
+					{
+						const generateSuccess = await generateText(state);
+						if (!generateSuccess || state.abortCtrl.signal.aborted) break;
+						if (this.isConverged(els.sourceText.value, els.targetText.value, previousText)) break;
+						previousText = els.sourceText.value;
+						this.switchText(els);
+					}
+				}
+				else
+				{
+					await generateText(state.abortCtrl);
+				}
+			}
+			finally
+			{
+				if (!state.abortCtrl.signal.aborted) state.abortCtrl.abort();
+				UIState.setGenerating(false, els, state.iterate);
+				state.abortCtrl = null;
+				startTime = null;
+			}
 		});
 	},
 	setupModelSelectionHandler(els)
