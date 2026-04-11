@@ -107,6 +107,7 @@ class SettingsApp
 	{
 		await window.CONFIG.API.MODELS.LOADED;
 		this.loadSettings();
+		StorageService.onSave = this.displaySettings.bind(this);
 		this.setupDragAndDrop();
 		this.setupEvents();
 		this.syncThinkingInputs();

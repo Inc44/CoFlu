@@ -1,4 +1,5 @@
 const StorageService = {
+	onSave: null,
 	save(key, value)
 	{
 		if (typeof value === 'object')
@@ -8,6 +9,10 @@ const StorageService = {
 		else
 		{
 			localStorage.setItem(key, value);
+		}
+		if (typeof StorageService.onSave === 'function')
+		{
+			StorageService.onSave();
 		}
 		return true;
 	},
