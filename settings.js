@@ -26,6 +26,7 @@ class SettingsApp
 			highCostToggle: document.getElementById('highCostToggle'),
 			importBtn: document.getElementById('importSettings'),
 			langSelect: document.getElementById('language'),
+			maximumIterations: document.getElementById('maximumIterations'),
 			noBSPlusToggle: document.getElementById('noBSPlusToggle'),
 			noBSToggle: document.getElementById('noBSToggle'),
 			numberedLinesToggle: document.getElementById('numberedLinesToggle'),
@@ -144,6 +145,7 @@ class SettingsApp
 		this.loadInput('batchSize', 'translation_batch_size', 10, 'number');
 		this.loadInput('expRetry', 'exponential_retry', 10, 'number');
 		this.loadInput('langSelect', 'selected_language', 'English (American)');
+		this.loadInput('maximumIterations', 'maximum_iterations', 10, 'number');
 		this.loadInput('transcribeLang', 'transcribe_language', 'en');
 		this.loadSelect('apiModel', 'selected_api_model', 'openai');
 		this.loadSelect('rendererSelect', 'selected_renderer', 'katex');
@@ -491,6 +493,7 @@ class SettingsApp
 		this.els.highCostToggle?.addEventListener('change', this.handleHighCostToggleChange.bind(this));
 		this.els.importBtn?.addEventListener('click', this.importSettings.bind(this));
 		this.els.langSelect?.addEventListener('change', this.handleLangChange.bind(this));
+		this.els.maximumIterations?.addEventListener('change', this.handleNumericChange.bind(this, 'maximumIterations', 'maximum_iterations', 1, 100));
 		this.els.noBSPlusToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSPlusToggle', 'no_bs_plus_enabled'));
 		this.els.noBSToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'noBSToggle', 'no_bs_enabled'));
 		this.els.numberedLinesToggle?.addEventListener('change', this.handleToggleChange.bind(this, 'numberedLinesToggle', 'numbered_lines_enabled'));

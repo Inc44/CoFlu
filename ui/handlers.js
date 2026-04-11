@@ -255,11 +255,14 @@ const UIHandlers = {
 			{
 				if (state.iterate)
 				{
+					const maximumIterations = StorageService.load('maximum_iterations', 10);
+					let iterationCount = 0;
 					let previousText = '';
-					while (!state.abortCtrl.signal.aborted)
+					while (!state.abortCtrl.signal.aborted && iterationCount < maximumIterations)
 					{
 						const generateSuccess = await generateText(state);
 						if (!generateSuccess || state.abortCtrl.signal.aborted) break;
+						iterationCount++;
 						if (this.isConverged(els.sourceText.value, els.targetText.value, previousText)) break;
 						previousText = els.sourceText.value;
 						this.switchText(els);
