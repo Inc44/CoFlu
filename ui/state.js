@@ -1,8 +1,26 @@
 const UIState = {
-	setGenerating(isGenerating, els)
+	setGenerating(isGenerating, els, isIterate = false)
 	{
-		els.genTargetBtn.style.backgroundColor = isGenerating ? 'var(--red) !important' : '';
-		els.genTargetBtn.textContent = isGenerating ? 'Stop Generating' : 'Generate';
+		if (isGenerating)
+		{
+			els.genTargetBtn.textContent = isIterate ? 'Stop Iterating' : 'Stop Generating';
+			els.genTargetBtn.style.backgroundColor = 'var(--red) !important';
+			els.genTargetBtn.classList.remove('iterate');
+		}
+		else
+		{
+			els.genTargetBtn.style.backgroundColor = '';
+			if (isIterate)
+			{
+				els.genTargetBtn.textContent = 'Iterate';
+				els.genTargetBtn.classList.add('iterate');
+			}
+			else
+			{
+				els.genTargetBtn.textContent = 'Generate';
+				els.genTargetBtn.classList.remove('iterate');
+			}
+		}
 		els.genTargetBtn.dataset.generating = isGenerating;
 	},
 	setTranscribing(isTranscribing, els)

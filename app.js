@@ -9,7 +9,8 @@ class App
 			audioUploader: null,
 			fileUploader: null,
 			imageUploader: null,
-			videoUploader: null
+			videoUploader: null,
+			iterate: false
 		};
 		this.loadSavedSettings();
 	}
@@ -51,8 +52,48 @@ class App
 		await this.initComponents();
 		this.loadSavedContent();
 		this.setupEvents();
+		this.setupIterate();
 		this.updateUI();
 		this.setupErrorHandling();
+	}
+	setupIterate()
+	{
+		const genTargetBtn = this.els.genTargetBtn;
+		if (!genTargetBtn) return;
+		document.addEventListener('keydown', (event) =>
+		{
+			if (event.key === 'Alt')
+			{
+				event.preventDefault();
+				this.state.iterate = true;
+				if (!this.state.abortCtrl)
+				{
+					genTargetBtn.textContent = 'Iterate';
+					genTargetBtn.classList.add('iterate');
+				}
+			}
+		});
+		document.addEventListener('keyup', (event) =>
+		{
+			if (event.key === 'Alt')
+			{
+				this.state.iterate = false;
+				if (!this.state.abortCtrl)
+				{
+					genTargetBtn.textContent = 'Generate';
+					genTargetBtn.classList.remove('iterate');
+				}
+			}
+		});
+		window.addEventListener('blur', () =>
+		{
+			this.state.iterate = false;
+			if (!this.state.abortCtrl)
+			{
+				genTargetBtn.textContent = 'Generate';
+				genTargetBtn.classList.remove('iterate');
+			}
+		});
 	}
 	async initComponents()
 	{

@@ -169,6 +169,7 @@ textarea
 	border-color: var(--red);
 }
 
+#generateTarget.iterate,
 #switchBtn,
 .btn-orange,
 .btn-orange:hover,
