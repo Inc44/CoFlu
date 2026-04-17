@@ -167,6 +167,7 @@ textarea
 }
 
 .btn-cyan.iterate,
+.btn-cyan.iterate:hover,
 .btn-orange,
 .btn-orange:hover,
 .edit-button,
