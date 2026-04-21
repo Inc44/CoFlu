@@ -693,15 +693,15 @@ class TranslateApp
 			const buttons = document.createElement('div');
 			buttons.className = 'editor-buttons';
 			const generate = document.createElement('button');
-			generate.className = 'btn btn-sm editor-generate';
+			generate.className = 'btn btn-sm btn-cyan';
 			generate.textContent = 'Generate';
 			generate.addEventListener('click', () => this.generateEditorTranslation(i, origText, target, generate));
 			const copy = document.createElement('button');
-			copy.className = 'btn btn-sm editor-copy';
+			copy.className = 'btn btn-sm btn-green';
 			copy.textContent = 'Copy';
 			copy.addEventListener('click', () => navigator.clipboard.writeText(target.value));
 			const clear = document.createElement('button');
-			clear.className = 'btn btn-sm editor-clear';
+			clear.className = 'btn btn-sm btn-red';
 			clear.textContent = 'Clear';
 			clear.addEventListener('click', () =>
 			{

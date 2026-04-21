@@ -153,8 +153,7 @@ textarea
 }
 
 .btn-red,
-.delete-button,
-.editor-clear
+.delete-button
 {
 	--btn-bg: var(--red);
 	background-color: var(--btn-bg);
@@ -176,16 +175,14 @@ textarea
 }
 
 .btn-green,
-.copy-button,
-.editor-copy
+.copy-button
 {
 	--btn-bg: var(--green);
 	background-color: var(--btn-bg);
 	color: white;
 }
 
-.btn-cyan,
-.editor-generate
+.btn-cyan
 {
 	--btn-bg: var(--cyan);
 	background-color: var(--btn-bg);
