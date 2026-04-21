@@ -153,11 +153,11 @@ textarea
 }
 
 .btn-red,
-.btn-red:hover,
 .delete-button,
-.delete-button:hover
+.editor-clear
 {
-	background-color: var(--red) !important;
+	--btn-bg: var(--red);
+	background-color: var(--btn-bg);
 	color: white;
 }
 
@@ -167,55 +167,84 @@ textarea
 }
 
 .btn-cyan.iterate,
-.btn-cyan.iterate:hover,
 .btn-orange,
-.btn-orange:hover,
-.edit-button,
-.edit-button:hover
+.edit-button
 {
-	background-color: var(--orange) !important;
+	--btn-bg: var(--orange);
+	background-color: var(--btn-bg);
 	color: white;
 }
 
 .btn-green,
-.btn-green:hover,
 .copy-button,
-.copy-button:hover
+.editor-copy
 {
-	background-color: var(--green) !important;
+	--btn-bg: var(--green);
+	background-color: var(--btn-bg);
 	color: white;
 }
 
 .btn-cyan,
-.btn-cyan:hover
+.editor-generate
 {
-	background-color: var(--cyan) !important;
+	--btn-bg: var(--cyan);
+	background-color: var(--btn-bg);
 	color: white;
 }
 
-.btn-blue,
-.btn-blue:hover
+.btn-blue
 {
-	background-color: var(--blue) !important;
+	--btn-bg: var(--blue);
+	background-color: var(--btn-bg);
 	color: white;
 }
 
 .assistant-message,
-.btn-indigo,
-.btn-indigo:hover
+.btn-indigo
 {
-	background-color: var(--indigo) !important;
+	--btn-bg: var(--indigo);
+	background-color: var(--btn-bg);
 	color: white;
 }
 
 .btn-purple,
-.btn-purple:hover,
-.input-file-label,
+.input-file-label
+{
+	--btn-bg: var(--purple);
+	background-color: var(--btn-bg);
+	color: white;
+}
+
 .progress-bar,
 .user-message
 {
-	background-color: var(--purple) !important;
+	background-color: var(--purple);
 	color: white;
+}
+
+.btn-check:checked+.btn,
+.btn.active,
+.btn.show,
+.btn:first-child:active,
+:not(.btn-check)+.btn:active
+{
+	background-color: var(--btn-bg);
+}
+
+.btn.disabled,
+.btn:disabled
+{
+	background-color: var(--btn-bg);
+}
+
+.btn:focus-visible
+{
+	background-color: var(--btn-bg);
+}
+
+.btn:hover
+{
+	background-color: var(--btn-bg);
 }
 
 .upload-file
@@ -448,24 +477,6 @@ textarea
 	display: flex;
 	flex-direction: column;
 	gap: 0.25rem;
-}
-
-.editor-clear
-{
-	background-color: var(--red) !important;
-	color: white !important;
-}
-
-.editor-copy
-{
-	background-color: var(--green) !important;
-	color: white !important;
-}
-
-.editor-generate
-{
-	background-color: var(--cyan) !important;
-	color: white !important;
 }
 
 #sourceButtonsContainer:empty,
