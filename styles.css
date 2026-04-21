@@ -196,7 +196,6 @@ textarea
 	color: white;
 }
 
-.assistant-message,
 .btn-indigo
 {
 	--btn-bg: var(--indigo);
@@ -212,11 +211,15 @@ textarea
 	color: white;
 }
 
+.assistant-message
+{
+	background-color: var(--indigo);
+}
+
 .progress-bar,
 .user-message
 {
 	background-color: var(--purple);
-	color: white;
 }
 
 .btn-check:checked+.btn,
@@ -226,22 +229,26 @@ textarea
 :not(.btn-check)+.btn:active
 {
 	background-color: var(--btn-bg);
+	color: white;
 }
 
 .btn.disabled,
 .btn:disabled
 {
 	background-color: var(--btn-bg);
+	color: white;
 }
 
 .btn:focus-visible
 {
 	background-color: var(--btn-bg);
+	color: white;
 }
 
 .btn:hover
 {
 	background-color: var(--btn-bg);
+	color: white;
 }
 
 .upload-file
