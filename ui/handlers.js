@@ -174,6 +174,8 @@ const UIHandlers = {
 	setupGenerateButton(els, state)
 	{
 		let startTime = null;
+		let throttleTimer = null;
+		const throttleDelay = 10;
 		const generateText = async (state) =>
 		{
 			const provider = StorageService.load('selected_api_model', 'openai');
@@ -218,19 +220,31 @@ const UIHandlers = {
 				abortSignal: state.abortCtrl.signal,
 				onProgress: (text) =>
 				{
-					els.targetText.value = text;
-					TextService.updateStats(els.targetText, 'target');
-					StorageService.save('targetText', text);
-					els.targetText.scrollTop = els.targetText.scrollHeight;
-					const elapsed = (Date.now() - startTime) / 1000;
-					const speed = this.calcSpeed(text, elapsed);
-					els.speedDisplay.textContent = speed;
+					if (!throttleTimer)
+					{
+						throttleTimer = setTimeout(() =>
+						{
+							throttleTimer = null;
+							els.targetText.value = text;
+							TextService.updateStats(els.targetText, 'target');
+							StorageService.save('targetText', text);
+							els.targetText.scrollTop = els.targetText.scrollHeight;
+							const elapsed = (Date.now() - startTime) / 1000;
+							const speed = this.calcSpeed(text, elapsed);
+							els.speedDisplay.textContent = speed;
+						}, throttleDelay);
+					}
 				}
 			};
 			els.targetText.value = '';
 			UIState.showSpeed(els);
 			startTime = Date.now();
 			const resp = await AiService.generate(prompt, provider, genOptions);
+			if (throttleTimer)
+			{
+				clearTimeout(throttleTimer);
+				throttleTimer = null;
+			}
 			if (!genOptions.streaming)
 			{
 				const modelConfig = CONFIG.API.CONFIG.COMPLETION[provider];
