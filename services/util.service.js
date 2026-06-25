@@ -10,10 +10,12 @@ const UtilService = {
 			};
 		}
 		const modelName = StorageService.load(`${provider}_model`, CONFIG.API.MODELS.COMPLETION[provider]?.default);
-		let details = CONFIG.API.MODELS.COMPLETION[provider]?.options.find(option => option.name === modelName);
-		if (!details && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider])
+		const completion = CONFIG.API.MODELS.COMPLETION[provider];
+		let details = completion?.options.find(option => option.name === modelName);
+		if (!details && StorageService.load('high_cost_enabled', false))
 		{
-			details = CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider].options.find(option => option.name === modelName);
+			const completionHighCost = CONFIG.API.MODELS.COMPLETION_HIGH_COST[provider];
+			details = completionHighCost?.options.find(option => option.name === modelName);
 		}
 		return details || null;
 	}

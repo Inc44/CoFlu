@@ -36,14 +36,13 @@ const ComparisonService = {
 	},
 	genSingleView(diffs = [])
 	{
-		const htmlParts = [];
-		diffs.forEach(([type, text]) =>
-		{
-			const className = type === this.EQUAL ? 'diff-equal' : type === this.DEL ? 'diff-deletion' : 'diff-insertion';
-			const escText = TextService.format.escape(text);
-			htmlParts.push(`<span class="${className}">${escText}</span>`);
-		});
-		return htmlParts.join('');
+		return diffs.map(([type, text]) =>
+			{
+				const className = type === this.EQUAL ? 'diff-equal' : type === this.DEL ? 'diff-deletion' : 'diff-insertion';
+				const escText = TextService.format.escape(text);
+				return `<span class="${className}">${escText}</span>`;
+			})
+			.join('');
 	},
 	genDoubleView(diffs = [])
 	{
@@ -73,19 +72,9 @@ const ComparisonService = {
 	},
 	addLineNumbers(html = '')
 	{
-		let lineNum = 1;
-		const lines = html.split('\n');
-		let newHtml = '';
-		for (let i = 0; i < lines.length; i++)
-		{
-			if (i > 0)
-			{
-				newHtml += '\n';
-			}
-			newHtml += `<span class="line-number">${lineNum}</span>${lines[i]}`;
-			lineNum++;
-		}
-		return newHtml;
+		return html.split('\n')
+			.map((line, i) => `<span class="line-number">${i + 1}</span>${line}`)
+			.join('\n');
 	},
 	calcStats(diffs = [])
 	{

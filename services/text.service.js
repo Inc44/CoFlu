@@ -15,7 +15,7 @@ const TextService = {
 	},
 	countWords(text)
 	{
-		if (!text) return 0;
+		if (!text || !text.trim()) return 0;
 		return text.trim()
 			.split(/\s+/)
 			.length;
@@ -69,13 +69,11 @@ const TextService = {
 	{
 		retab(text)
 		{
-			const lines = text.split('\n');
-			const result = [];
-			for (const line of lines)
-			{
-				const match = line.match(/^(\s*)/);
-				if (match)
+			return text.split('\n')
+				.map(line =>
 				{
+					const match = line.match(/^(\s*)/);
+					if (!match) return line;
 					const whitespace = match[1];
 					const tabMatch = whitespace.match(/^(\t*)/);
 					const existingTabs = tabMatch ? tabMatch[0] : '';
@@ -83,22 +81,14 @@ const TextService = {
 					const tabsToAdd = Math.floor(spaceCount / 2);
 					const tabString = '\t'.repeat(tabsToAdd);
 					const trimmedLine = line.replace(/^(\s+)/, '');
-					result.push(existingTabs + tabString + trimmedLine);
-				}
-				else
-				{
-					result.push(line);
-				}
-			}
-			return result.join('\n');
+					return existingTabs + tabString + trimmedLine;
+				})
+				.join('\n');
 		},
 		latex(text)
 		{
-			text = text.replace(/\\[\s\n]*\[([\s\S]*?)\\[\s\n]*\]/g,
-				(_, p1) => `$$\n${p1.trim()}\n$$`);
-			text = text.replace(/\\[\s\n]*\(([\s\S]*?)\\[\s\n]*\)/g,
-				(_, p1) => `$${p1.trim()}$`);
-			return text;
+			return text.replace(/\\[\s\n]*\[([\s\S]*?)\\[\s\n]*\]/g, (_, p1) => `$$\n${p1.trim()}\n$$`)
+				.replace(/\\[\s\n]*\(([\s\S]*?)\\[\s\n]*\)/g, (_, p1) => `$${p1.trim()}$`);
 		},
 		html(text)
 		{
