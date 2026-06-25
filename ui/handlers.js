@@ -245,13 +245,10 @@ const UIHandlers = {
 				clearTimeout(throttleTimer);
 				throttleTimer = null;
 			}
-			if (!genOptions.streaming)
-			{
-				const modelConfig = CONFIG.API.CONFIG.COMPLETION[provider];
-				els.targetText.value = modelConfig.extractContent(resp);
-				TextService.updateStats(els.targetText, 'target');
-				StorageService.save('targetText', els.targetText.value);
-			}
+			const modelConfig = CONFIG.API.CONFIG.COMPLETION[provider];
+			els.targetText.value = modelConfig.extractContent(resp);
+			TextService.updateStats(els.targetText, 'target');
+			StorageService.save('targetText', els.targetText.value);
 			return true;
 		};
 		els.genTargetBtn.addEventListener('click', async () =>
