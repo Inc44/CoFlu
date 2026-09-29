@@ -38,8 +38,15 @@ window.CONFIG = {
 				},
 				openai:
 				{
-					default: "gpt-5",
+					default: "gpt-6.1-sol",
 					options: [
+					{
+						name: "gpt-6.1-sol",
+						max_tokens: 128000,
+						reasoning_effort: ["low", "medium", "high", "xhigh", "max"],
+						file: true,
+						image: true
+					},
 					{
 						name: "gpt-5",
 						max_tokens: 128000,
@@ -58,6 +65,12 @@ window.CONFIG = {
 						name: "gpt-5-mini",
 						max_tokens: 128000,
 						reasoning_effort: ["minimal", "low", "medium", "high"],
+						file: true,
+						image: true
+					},
+					{
+						name: "gpt-4.1",
+						max_tokens: 32768,
 						file: true,
 						image: true
 					},
@@ -134,7 +147,7 @@ window.CONFIG = {
 					{
 						name: "gemini-flash-latest",
 						max_tokens: 65536,
-						reasoning_effort: ["none", "low", "medium", "high"],
+						reasoning_effort: ["low", "medium", "high"],
 						thinking: true,
 						audio: true,
 						image: true,
@@ -154,7 +167,8 @@ window.CONFIG = {
 					{
 						name: "gemini-pro-latest",
 						max_tokens: 65536,
-						easoning_effort: ["low", "medium", "high"],
+						reasoning_effort: ["low", "medium", "high"],
+						thinking: true,
 						audio: true,
 						image: true,
 						video: true,
@@ -269,8 +283,22 @@ window.CONFIG = {
 			{
 				openai:
 				{
-					default: "chatgpt-4o-latest",
+					default: "gpt-6-astra",
 					options: [
+					{
+						name: "gpt-6-astra",
+						max_tokens: 128000,
+						reasoning_effort: ["low", "medium", "high", "xhigh", "max"],
+						file: true,
+						image: true
+					},
+					{
+						name: "gpt-5.5",
+						max_tokens: 128000,
+						reasoning_effort: ["none", "low", "medium", "high", "xhigh"],
+						file: true,
+						image: true
+					},
 					{
 						name: "gpt-5-search-api",
 						max_tokens: 0,
