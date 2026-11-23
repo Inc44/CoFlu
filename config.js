@@ -373,6 +373,16 @@ window.CONFIG = {
 						search: true
 					}]
 				},
+				hyperbolic:
+				{
+					default: "kimi-k3",
+					options: [
+					{
+						name: "kimi-k3",
+						max_tokens: 943718,
+						image: true
+					}]
+				},
 				x:
 				{
 					default: "grok-4-0709",
@@ -1373,6 +1383,8 @@ window.CONFIG = {
 	};
 	const completionHighCost = {
 		anthropic: 'completion.high.cost/Anthropic.json',
+		google: 'completion.high.cost/Google.json',
+		hyperbolic: 'completion.high.cost/Hyperbolic.json',
 		openai: 'completion.high.cost/OpenAI.json',
 		perplexity: 'completion.high.cost/Perplexity.json',
 		x: 'completion.high.cost/X.json'
