@@ -70,37 +70,29 @@ const UIState = {
 			accessibilityToggle.checked = isEnabled;
 		}
 	},
+	updateUploadRowVisibility(listId, isVisible)
+	{
+		const row = document.querySelector(`.row:has(#${listId})`);
+		if (row)
+		{
+			row.style.display = isVisible ? '' : 'none';
+		}
+	},
 	updateAudioUploadVisibility(modelDetails)
 	{
-		const audioRow = document.querySelector('.row:has(#audioList)');
-		if (audioRow)
-		{
-			audioRow.style.display = modelDetails.audio ? '' : 'none';
-		}
+		this.updateUploadRowVisibility('audioList', modelDetails.audio);
 	},
 	updateFileUploadVisibility(modelDetails)
 	{
-		const fileRow = document.querySelector('.row:has(#fileList)');
-		if (fileRow)
-		{
-			fileRow.style.display = modelDetails.file ? '' : 'none';
-		}
+		this.updateUploadRowVisibility('fileList', modelDetails.file);
 	},
 	updateImageUploadVisibility(modelDetails)
 	{
-		const imageRow = document.querySelector('.row:has(#imageList)');
-		if (imageRow)
-		{
-			imageRow.style.display = modelDetails.image ? '' : 'none';
-		}
+		this.updateUploadRowVisibility('imageList', modelDetails.image);
 	},
 	updateVideoUploadVisibility(modelDetails)
 	{
-		const videoRow = document.querySelector('.row:has(#videoList)');
-		if (videoRow)
-		{
-			videoRow.style.display = modelDetails.video ? '' : 'none';
-		}
+		this.updateUploadRowVisibility('videoList', modelDetails.video);
 	},
 	updateUploadsVisibility(modelDetails)
 	{

@@ -80,11 +80,8 @@ const AiService = {
 				};
 			});
 	},
-	async complete(apiKey, prompt, model, options, attempt)
+	getModelConfig(model, modelName)
 	{
-		const maxRetries = StorageService.load('exponential_retry', 4);
-		const customModel = StorageService.load(`${model}_custom_model`, '');
-		const modelName = customModel ? customModel : StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
 		let modelConfig = CONFIG.API.MODELS.COMPLETION[model]?.options.find(m => m.name === modelName);
 		if (!modelConfig && StorageService.load('high_cost_enabled', false) && CONFIG.API.MODELS.COMPLETION_HIGH_COST[model])
 		{
@@ -97,12 +94,24 @@ const AiService = {
 				custom_model: true
 			};
 		}
+		return modelConfig || null;
+	},
+	getEndpoint(model, modelConfig)
+	{
+		return (model === 'openai' && modelConfig.responses_api_only) ? 'openai_responses' : model;
+	},
+	async complete(apiKey, prompt, model, options, attempt)
+	{
+		const maxRetries = StorageService.load('exponential_retry', 4);
+		const customModel = StorageService.load(`${model}_custom_model`, '');
+		const modelName = customModel ? customModel : StorageService.load(`${model}_model`, CONFIG.API.MODELS.COMPLETION[model].default);
+		const modelConfig = this.getModelConfig(model, modelName);
 		if (!modelConfig)
 		{
 			alert(`Model ${modelName} not found in config.`);
 			return;
 		}
-		const endpoint = (model === 'openai' && modelConfig.responses_api_only) ? 'openai_responses' : model;
+		const endpoint = this.getEndpoint(model, modelConfig);
 		const config = CONFIG.API.CONFIG.COMPLETION[endpoint];
 		if (!config)
 		{
@@ -134,27 +143,23 @@ const AiService = {
 		{
 			return await this.handleStreamResponse(resp, endpoint, options.onProgress);
 		}
-		else
-		{
-			const jsonResponse = await resp.json();
-			const content = config.extractContent(jsonResponse);
-			return {
-				choices: [
+		const jsonResponse = await resp.json();
+		const content = config.extractContent(jsonResponse);
+		return {
+			choices: [
+			{
+				message:
 				{
-					message:
-					{
-						content: content || ""
-					}
-				}]
-			};
-		}
+					content: content || ""
+				}
+			}]
+		};
 	},
-	buildReqBody(prompt, model, modelConfig, options)
+	buildMessages(prompt, options)
 	{
-		let msgs = [];
 		if (options.messages && Array.isArray(options.messages))
 		{
-			msgs = options.messages.map(msg =>
+			return options.messages.map(msg =>
 			{
 				let content = [];
 				if (msg.content)
@@ -178,58 +183,61 @@ const AiService = {
 				};
 			});
 		}
-		else
+		return [
 		{
-			msgs = [
+			role: "user",
+			content: prompt
+		}];
+	},
+	findLastUserIndex(msgs)
+	{
+		for (let i = msgs.length - 1; i >= 0; --i)
+		{
+			if (msgs[i].role === "user") return i;
+		}
+		return -1;
+	},
+	uploadMediaToMessages(msgs, model, modelConfig, options)
+	{
+		const hasMedia = options.audios?.length > 0 || options.files || options.images?.length > 0 || options.videos?.length > 0;
+		if (!hasMedia) return msgs;
+		let userMsgIdx = this.findLastUserIndex(msgs);
+		if (userMsgIdx === -1)
+		{
+			userMsgIdx = msgs.length;
+			msgs.push(
 			{
 				role: "user",
-				content: prompt
-			}];
+				content: []
+			});
 		}
-		if (options.audios?.length > 0 || options.files || options.images?.length > 0 || options.videos?.length > 0)
+		let userContent = [];
+		if (typeof msgs[userMsgIdx].content === 'string')
 		{
-			let userMsgIdx = msgs.findIndex(m => m.role === 'user');
-			for (let i = msgs.length - 1; i >= 0; --i)
+			userContent.push(
 			{
-				if (msgs[i].role === "user")
-				{
-					userMsgIdx = i;
-					break;
-				}
-			}
-			if (userMsgIdx === -1)
-			{
-				userMsgIdx = msgs.length;
-				msgs.push(
-				{
-					role: "user",
-					content: []
-				});
-			}
-			let userContent = [];
-			if (typeof msgs[userMsgIdx].content === 'string')
-			{
-				userContent.push(
-				{
-					type: "text",
-					text: msgs[userMsgIdx].content
-				});
-			}
-			else
-			{
-				userContent = msgs[userMsgIdx].content;
-			}
-			userContent = userContent.concat(this.buildMediaContent(options.audios, options.images, options.videos, options.files, model, modelConfig));
-			if (userContent.length === 1 && typeof userContent[0] === "object" && userContent[0].text !== null)
-			{
-				msgs[userMsgIdx].content = userContent[0].text;
-			}
-			else
-			{
-				msgs[userMsgIdx].content = userContent;
-			}
+				type: "text",
+				text: msgs[userMsgIdx].content
+			});
 		}
-		msgs = msgs.filter(msg =>
+		else
+		{
+			userContent = msgs[userMsgIdx].content;
+		}
+		userContent = userContent.concat(this.buildMediaContent(options.audios, options.images, options.videos, options.files, model, modelConfig));
+		if (userContent.length === 1 && typeof userContent[0] === "object" && userContent[0].text !== null)
+		{
+			msgs[userMsgIdx].content = userContent[0].text;
+		}
+		else
+		{
+			msgs[userMsgIdx].content = userContent;
+		}
+		return msgs;
+	},
+	filterEmptyMessages(msgs)
+	{
+		return msgs.filter(msg =>
 		{
 			if (typeof msg.content === 'string')
 			{
@@ -244,6 +252,74 @@ const AiService = {
 			}
 			return true;
 		});
+	},
+	applyReasoningEffort(reqBody, model, modelConfig)
+	{
+		if (!modelConfig.reasoning_effort) return;
+		let reasoningEffort = StorageService.load('reasoning_effort', modelConfig.reasoning_effort[0]);
+		if (!modelConfig.reasoning_effort.includes(reasoningEffort))
+		{
+			reasoningEffort = modelConfig.reasoning_effort[0];
+			StorageService.save('reasoning_effort', reasoningEffort);
+		}
+		if (model === 'openai' && modelConfig.responses_api_only)
+		{
+			reqBody.reasoning = {
+				effort: reasoningEffort
+			};
+		}
+		else
+		{
+			reqBody.reasoning_effort = reasoningEffort;
+		}
+	},
+	applyTemperature(modelConfig)
+	{
+		const isClaudeThinking = modelConfig.thinking_budget && modelConfig.name.startsWith('claude-');
+		return !modelConfig.reasoning_effort && !modelConfig.responses_api_only && !modelConfig.search_context_size && !isClaudeThinking;
+	},
+	applySearchContextSize(reqBody, modelConfig)
+	{
+		if (!modelConfig.search_context_size) return;
+		let searchContextSize = StorageService.load('search_context_size', modelConfig.search_context_size[0]);
+		if (!modelConfig.search_context_size.includes(searchContextSize))
+		{
+			searchContextSize = modelConfig.search_context_size[0];
+			StorageService.save('search_context_size', searchContextSize);
+		}
+		reqBody.web_search_options = {
+			search_context_size: searchContextSize
+		};
+	},
+	applyThinkingBudget(reqBody, modelConfig)
+	{
+		if (!modelConfig.thinking_budget) return;
+		const minThinkingBudget = modelConfig.thinking_budget[0];
+		const thinkingBudget = parseInt(StorageService.load('thinking', minThinkingBudget), 10);
+		if (thinkingBudget >= minThinkingBudget)
+		{
+			reqBody.thinking = {
+				type: "enabled",
+				budget_tokens: thinkingBudget
+			};
+		}
+		else
+		{
+			reqBody.temperature = 0;
+		}
+	},
+	applyMaxTokens(reqBody, model, modelConfig)
+	{
+		const excludedProviders = ['chutes', 'openrouter', 'perplexity', 'sambanova', 'together'];
+		const hasIncompatibleAttribute = modelConfig.reasoning_effort || modelConfig.responses_api_only || modelConfig.search_context_size || modelConfig.custom_model;
+		if (excludedProviders.includes(model) || hasIncompatibleAttribute || modelConfig.name === 'grok-2-1212') return;
+		reqBody.max_tokens = modelConfig.max_tokens;
+	},
+	buildReqBody(prompt, model, modelConfig, options)
+	{
+		let msgs = this.buildMessages(prompt, options);
+		msgs = this.uploadMediaToMessages(msgs, model, modelConfig, options);
+		msgs = this.filterEmptyMessages(msgs);
 		let reqBody = {
 			model: modelConfig.name,
 			stream: options.streaming
@@ -258,69 +334,19 @@ const AiService = {
 					type: tool
 				}));
 			}
-			if (modelConfig.reasoning_effort)
-			{
-				let reasoningEffort = StorageService.load('reasoning_effort', modelConfig.reasoning_effort[0]);
-				if (!modelConfig.reasoning_effort.includes(reasoningEffort))
-				{
-					reasoningEffort = modelConfig.reasoning_effort[0];
-					StorageService.save('reasoning_effort', reasoningEffort);
-				}
-				reqBody.reasoning = {
-					effort: reasoningEffort
-				};
-			}
 		}
 		else
 		{
 			reqBody.messages = msgs;
-			if (modelConfig.reasoning_effort)
-			{
-				let reasoningEffort = StorageService.load('reasoning_effort', modelConfig.reasoning_effort[0]);
-				if (!modelConfig.reasoning_effort.includes(reasoningEffort))
-				{
-					reasoningEffort = modelConfig.reasoning_effort[0];
-					StorageService.save('reasoning_effort', reasoningEffort);
-				}
-				reqBody.reasoning_effort = reasoningEffort;
-			}
 		}
-		if (!modelConfig.reasoning_effort && !modelConfig.responses_api_only && !modelConfig.search_context_size && !(modelConfig.thinking_budget && modelConfig.name.startsWith('claude-')))
+		this.applyReasoningEffort(reqBody, model, modelConfig);
+		if (this.applyTemperature(modelConfig))
 		{
 			reqBody.temperature = 0;
 		}
-		if (modelConfig.search_context_size)
-		{
-			let searchContextSize = StorageService.load('search_context_size', modelConfig.search_context_size[0]);
-			if (!modelConfig.search_context_size.includes(searchContextSize))
-			{
-				searchContextSize = modelConfig.search_context_size[0];
-				StorageService.save('search_context_size', searchContextSize);
-			}
-			reqBody.web_search_options = {
-				search_context_size: searchContextSize
-			};
-		}
-		if (modelConfig.thinking_budget)
-		{
-			const minThinkingBudget = modelConfig.thinking_budget ? modelConfig.thinking_budget[0] : 0;
-			const thinkingBudget = parseInt(StorageService.load('thinking', minThinkingBudget), 10);
-			if (thinkingBudget >= minThinkingBudget)
-			{
-				reqBody.thinking = {
-					type: "enabled",
-					budget_tokens: thinkingBudget
-				};
-			}
-			else
-			{
-				reqBody.temperature = 0;
-			}
-		}
-		if (!['chutes', 'openrouter', 'perplexity', 'sambanova', 'together'].includes(model) && !modelConfig.reasoning_effort && !modelConfig.responses_api_only && !modelConfig.search_context_size && !modelConfig.custom_model && modelConfig.name !== 'grok-2-1212')
-		{
-			reqBody.max_tokens = modelConfig.max_tokens;
-		}
+		this.applySearchContextSize(reqBody, modelConfig);
+		this.applyThinkingBudget(reqBody, modelConfig);
+		this.applyMaxTokens(reqBody, model, modelConfig);
 		return reqBody;
 	},
 	buildMediaContent(audios = [], images = [], videos = [], files = [], model, modelConfig)
