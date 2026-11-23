@@ -53,13 +53,19 @@ class SettingsApp
 			wideToggle: document.getElementById('wideToggle'),
 			whisperBoxes:
 			{
+				chutes: document.getElementById('chutesWhisperModelContainer'),
+				google: document.getElementById('googleWhisperModelContainer'),
+				groq: document.getElementById('groqWhisperModelContainer'),
 				openai: document.getElementById('openaiWhisperModelContainer'),
-				groq: document.getElementById('groqWhisperModelContainer')
+				sambanova: document.getElementById('sambanovaWhisperModelContainer')
 			},
 			whisperModels:
 			{
+				chutes: document.getElementById('chutesWhisperModel'),
+				google: document.getElementById('googleWhisperModel'),
+				groq: document.getElementById('groqWhisperModel'),
 				openai: document.getElementById('openaiWhisperModel'),
-				groq: document.getElementById('groqWhisperModel')
+				sambanova: document.getElementById('sambanovaWhisperModel')
 			},
 			modelBoxes:
 			{

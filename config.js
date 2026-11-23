@@ -404,6 +404,14 @@ window.CONFIG = {
 						name: ""
 					}]
 				},
+				google:
+				{
+					default: "gemini-3.5-transcribe",
+					options: [
+					{
+						name: "gemini-3.5-transcribe"
+					}]
+				},
 				groq:
 				{
 					default: "whisper-large-v3",
@@ -420,6 +428,9 @@ window.CONFIG = {
 					default: "whisper-1",
 					options: [
 					{
+						name: "gpt-transcribe"
+					},
+					{
 						name: "gpt-4o-transcribe-diarize"
 					},
 					{
@@ -430,6 +441,14 @@ window.CONFIG = {
 					},
 					{
 						name: "whisper-1"
+					}]
+				},
+				sambanova:
+				{
+					default: "Whisper-Large-v3",
+					options: [
+					{
+						name: "Whisper-Large-v3"
 					}]
 				}
 			}
@@ -690,6 +709,12 @@ window.CONFIG = {
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer '
 				},
+				google:
+				{
+					url: 'https://generativelanguage.googleapis.com/v1beta/openai/audio/transcriptions',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer '
+				},
 				groq:
 				{
 					url: 'https://api.groq.com/openai/v1/audio/transcriptions',
@@ -699,6 +724,12 @@ window.CONFIG = {
 				openai:
 				{
 					url: 'https://api.openai.com/v1/audio/transcriptions',
+					apiKeyHeader: 'Authorization',
+					apiKeyPrefix: 'Bearer '
+				},
+				sambanova:
+				{
+					url: 'https://api.sambanova.ai/v1/audio/transcriptions',
 					apiKeyHeader: 'Authorization',
 					apiKeyPrefix: 'Bearer '
 				}
@@ -1066,12 +1097,27 @@ window.CONFIG = {
 		{
 			AUDIO:
 			{
+				chutes:
+				{
+					max: 1,
+					size: 25
+				},
+				google:
+				{
+					max: 1,
+					size: 25
+				},
 				groq:
 				{
 					max: 1,
 					size: 25
 				},
 				openai:
+				{
+					max: 1,
+					size: 25
+				},
+				sambanova:
 				{
 					max: 1,
 					size: 25
